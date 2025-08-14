@@ -1,6 +1,6 @@
 # controls-composite-kt
 
-`controls-composite-kt` is a multiplatform, asynchronous framework written in Kotlin for building declarative, resilient, and distributed control systems and device simulations. It is a complete architectural evolution of the original `controls-kt` project, redesigned from the ground up to support modern, mission-critical applications.
+`controls-composite-kt` is a multiplatform, asynchronous framework written in Kotlin for building declarative, resilient, and distributed control systems and device simulations. It is a complete architectural evolution of the original [controls-kt](https://github.com/SciProgCentre/controls-kt) project, redesigned from the ground up to support modern, mission-critical applications.
 
 The framework's philosophy is centered around separating a device's "what" (its specification, or `DeviceBlueprint`) from its "how" (its runtime implementation and driver). This declarative approach enables features like static validation, automatic UI generation, transactional operations, and robust state management.
 
