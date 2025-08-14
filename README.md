@@ -72,3 +72,38 @@ The framework's philosophy is centered around separating a device's "what" (its 
 | **Simulation Model**           | The `controls-constructor` module provides a separate DSL for building simulations. Simulated devices are conceptually different from "real" ones.      | **Unified Model**. Simulation is not a separate concept. A simulated device is simply a `DeviceBlueprint` with a `DeviceDriver` that implements simulation logic instead of hardware I/O. The same DSL is used for both.          | **Seamless Substitution**: Eliminates the artificial distinction between real and simulated devices. This allows a simulation to be replaced by a real device (or vice versa) by simply changing the driver, without altering the blueprint or any consuming code. |
 | **Integration with DataForge** | `controls-kt` is built as an application on top of DataForge, using its `Context`, `Plugin`, and `Meta` systems.                                        | `controls-composite-kt` uses the same foundational DataForge components but formalizes its integration points via `Feature`s like `DataSourceFeature` and `TaskExecutorFeature`. A `Device` can be exposed as a `DataTree<Meta>`. | **Explicit Integration**: The new framework makes its integration points with other systems (like `dataforge-workspace`) explicit and part of its static contract. This makes the system more modular and easier to reason about.                                  |
 
+---
+
+## Core Dependencies & Technology Stack
+
+### Foundational
+
+-   **[Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html):** The core of the project. It allows the definition of common business logic and contracts in a shared module, with platform-specific implementations for JVM, JS, Native, and WasmJs. This enables the framework to run anywhere from servers to browsers and embedded systems.
+
+-   **[Kotlin Coroutines](https://github.com/Kotlin/kotlinx.coroutines):** The backbone for all asynchronous operations. The framework's reactive state management and non-blocking I/O are all built on structured concurrency, ensuring efficient, scalable, and cancellation-safe code.
+
+-   **[Kotlinx Serialization](https://github.com/Kotlin/kotlinx.serialization):** Used for all serialization tasks. It provides a robust, multi-format (JSON, ProtoBuf, etc.) mechanism for converting declarative models like `DeviceBlueprint` and `DeviceMessage` into transportable and persistent formats. Its support for polymorphic serialization is critical for the framework's sealed class/interface hierarchies.
+
+-   **[DataForge](https://github.com/SciProgCentre/dataforge-core):** Provides the foundational building blocks for context management, plugins, and metadata.
+    -   **`Context` & `Plugin`:** A powerful dependency injection and modularization system that underpins the framework's pluggable architecture (e.g., for persistence, metrics).
+    -   **`Meta`:** A flexible, tree-like data structure used for device configuration, property values, and message payloads.
+    -   **`Name`:** A hierarchical naming system used for addressing devices and their properties.
+
+### State Management & Logic
+
+-   **[KStateMachine](https://github.com/KStateMachine/kstatemachine):** A powerful, type-safe library for creating Finite State Machines (FSMs). It is the engine behind the formal lifecycle (`Attaching`, `Running`, `Failed`) and operational state management within devices, providing robustness and predictability to device behavior.
+
+-   **[Kotlinx AtomicFU](https://github.com/Kotlin/kotlinx-atomicfu):** Used in the `controls-composite-metrics` to provide performant, lock-free, multiplatform atomic operations. This is crucial for high-throughput components like the `AtomicMetricCollector` and internal state management.
+
+### I/O, Networking, and Distributed Communication
+
+-   **[Okio](https://square.github.io/okio/):** A modern, multiplatform I/O library that provides an efficient and easy-to-use abstraction over byte streams. It is the foundation for the `controls-composite-persistence` module's file-based `SnapshotStore`.
+
+-   **[Ktor](https://ktor.io/):** Used in the `controls-exporter-prometheus` module to run a lightweight, non-blocking HTTP server for exposing the `/metrics` endpoint. Its multiplatform nature makes it a natural fit for the project.
+
+### Testing
+
+-   **[Kotlinx Coroutines Test](https://github.com/Kotlin/kotlinx.coroutines/tree/master/kotlinx-coroutines-test):** Provides tools for testing coroutine-based code, including virtual time control (`runTest`), which is essential for reliably testing time-dependent logic and simulations.
+
+-   **[Kotest](https://kotest.io/) / [JUnit](https://junit.org/junit5/):** (While not explicitly listed, one of these is typically used) Standard frameworks for structuring and running tests across all platforms.
+
