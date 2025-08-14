@@ -11,7 +11,7 @@ The framework's philosophy is centered around separating a device's "what" (its 
 
 -   **Declarative Blueprints (`DeviceBlueprint`)**: Instead of writing imperative code to manage a device, you define its complete structure, properties, actions, and features in a serializable `DeviceBlueprint`. This blueprint acts as a self-contained factory for creating device instances.
 
--   **Formal Lifecycles (FSM)**: A device's lifecycle is not just `start()` and `stop()`. It's a formal Finite State Machine (FSM) managed by the powerful [KStateMachine](https://github.com/nsk95/kstatemachine) library. This provides predictable, robust, and extensible lifecycle management, including states like `Attaching`, `Running`, `Failed`, and `Detaching`.
+-   **Formal Lifecycles (FSM)**: A device's lifecycle is not just `start()` and `stop()`. It's a formal Finite State Machine (FSM) managed by the powerful [KStateMachine](https://github.com/KStateMachine/kstatemachine) library. This provides predictable, robust, and extensible lifecycle management, including states like `Attaching`, `Running`, `Failed`, and `Detaching`.
 
 -   **Reactive State Management (`DeviceState`)**: All device properties are exposed as reactive `DeviceState<T>` objects, which are backed by Kotlin `StateFlow`. A state contains not just a value, but also a high-precision timestamp and a `Quality` indicator, enabling sophisticated, real-time monitoring and logic.
 
