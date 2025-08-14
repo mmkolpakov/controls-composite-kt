@@ -1,5 +1,3 @@
-[![](https://maven.sciprog.center/api/badge/latest/kscience/space/kscience/controls-core-jvm?color=40c14a&name=repo.kotlin.link&prefix=v)](https://maven.sciprog.center/)
-
 # controls-composite-kt
 
 `controls-composite-kt` is a multiplatform, asynchronous framework written in Kotlin for building declarative, resilient, and distributed control systems and device simulations. It is a complete architectural evolution of the original `controls-kt` project, redesigned from the ground up to support modern, mission-critical applications.
