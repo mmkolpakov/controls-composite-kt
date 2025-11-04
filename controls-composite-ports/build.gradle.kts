@@ -22,6 +22,7 @@ kscience {
     commonMain {
         api(projects.controlsCompositeModel)
         api(libs.dataforge.context)
+        api(libs.okio)
     }
 }
 

@@ -1,12 +1,15 @@
 [versions]
 # Core Framework
-atomicfu = "0.29.0"
+kscience-tools = "0.20.0-kotlin-2.3.0-Beta1"
+atomicfu = "0.30.0-beta"
 dataforge = "0.10.1"
-kstatemachine = "0.34.2"
+kstatemachine = "0.35.0"
 kotlinx-datetime = "0.7.1"
-kotlinx-coroutines = "1.8.0"
-ktor = "2.3.12"
-okio = "3.9.0"
+kotlinx-coroutines = "1.10.2"
+ktor = "3.3.1"
+okio = "3.16.2"
+kotlinx-io-core = "0.8.0"
+sqldelight = "2.1.0"
 
 # RSocket
 rsocket = "0.20.0"
@@ -31,12 +34,12 @@ tornadofx = "1.7.20"
 koala-plots = "0.9.0"
 
 # Testing
-logback = "1.5.6" # Обновлено
+logback = "1.5.20"
 testcontainers = "1.21.0"
-uuid = "0.8.0"
+uuid = "0.8.4"
 
 # Gradle Plugins
-ben-manes-versions = "0.51.0"
+ben-manes-versions = "0.53.0"
 version-catalog-update = "0.8.4"
 foojay-resolver = "0.8.0"
 
@@ -47,12 +50,15 @@ dataforge-meta = { module = "space.kscience:dataforge-meta", version.ref = "data
 dataforge-context = { module = "space.kscience:dataforge-context", version.ref = "dataforge" }
 dataforge-data = { module = "space.kscience:dataforge-data", version.ref = "dataforge" }
 
+# kscience
+kscience-gradle-tools = { module = "space.kscience:gradle-tools", version.ref = "kscience-tools" }
 
 # KotlinX
 kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io-core" }
 
 # KStateMachine
 kstatemachine-core = { module = "io.github.nsk90:kstatemachine", version.ref = "kstatemachine" }
@@ -62,17 +68,21 @@ kstatemachine-serialization = { module = "io.github.nsk90:kstatemachine-serializ
 # Ktor
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
+ktor-network = { module = "io.ktor:ktor-network", version.ref = "ktor" }
+ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
+rsocket-ktor-client = { module = "io.rsocket.kotlin:ktor-client-rsocket", version.ref = "rsocket" }
+rsocket-transport-ktor-tcp = { module = "io.rsocket.kotlin:rsocket-transport-ktor-tcp", version.ref = "rsocket" }
 
 # Okio
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
-
+okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
+okio-nodefilesystem = { module = "com.squareup.okio:okio-nodefilesystem", version.ref = "okio" }
+okio-wasifilesystem = { module = "com.squareup.okio:okio-wasifilesystem", version.ref = "okio" }
 
 # Other
 uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
-
 xodus-entity-store = { module = "org.jetbrains.xodus:xodus-entity-store", version.ref = "xodus" }
-rsocket-ktor-client = { module = "io.rsocket.kotlin:ktor-client-rsocket", version.ref = "rsocket" }
 tornadofx = { module = "no.tornado:tornadofx", version.ref = "tornadofx" }
 hivemq-mqtt-client = { module = "com.hivemq:hivemq-mqtt-client", version.ref = "hivemq" }
 rabbitmq-amqp-client = { module = "com.rabbitmq:amqp-client", version.ref = "rabbitmq" }
@@ -85,11 +95,26 @@ visionforge-server = { module = "space.kscience:visionforge-server", version.ref
 koalaplot-core = { module = "io.github.koalaplot:koalaplot-core", version.ref = "koala-plots" }
 testcontainers-core = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
 
+sqldelight-gradle = { module = "app.cash.sqldelight:gradle-plugin", version.ref = "sqldelight" }
+sqldelight-driver-sqlite = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
+sqldelight-driver-native = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
+sqldelight-driver-jdbc-sqlite = { module = "app.cash.sqldelight:jdbc-driver", version.ref = "sqldelight" }
+sqldelight-driver-sqljs = { module = "app.cash.sqldelight:sqljs-driver", version.ref = "sqldelight" }
+sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
+sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 
 [plugins]
 # KotlinX
 kotlinx-atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
 
+# KScience
+kscience-project = { id = "space.kscience.gradle.project", version.ref = "kscience-tools" }
+kscience-mpp = { id = "space.kscience.gradle.mpp", version.ref = "kscience-tools" }
+kscience-jvm = { id = "space.kscience.gradle.jvm", version.ref = "kscience-tools" }
+kscience-js = { id = "space.kscience.gradle.js", version.ref = "kscience-tools" }
+
 # Build tools
 ben-manes-versions = { id = "com.github.ben-manes.versions", version.ref = "ben-manes-versions" }
 version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version.ref = "version-catalog-update" }
+
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }

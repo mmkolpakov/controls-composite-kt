@@ -22,6 +22,22 @@ public interface CompositeDeviceHub {
     public val devices: Map<Name, Device>
 
     /**
+     * A dynamic, reactive view of all properties of all devices in this hub as a single [ObservableDataTree].
+     * This provides a unified entry point for data analysis and monitoring tools that work with the
+     * `dataforge-data` model. The structure of this tree mirrors the device hierarchy, and it emits
+     * updates as device properties and the device topology itself change.
+     */
+    public val data: ObservableDataTree<Meta>
+
+    /**
+     * Retrieves a map of all devices in the hub, including nested children, and their corresponding blueprint IDs.
+     * This method is essential for remote clients to discover the full topology and capabilities of the hub.
+     *
+     * @return A map where the key is the full hierarchical [Name] of a device and the value is its [BlueprintId].
+     */
+    public fun listDevices(): Map<Name, BlueprintId>
+
+    /**
      * Finds a device by its full network-wide address. The implementation is responsible
      * for checking if the `hubId` matches its own and then resolving the `deviceName`
      * within its local device tree.

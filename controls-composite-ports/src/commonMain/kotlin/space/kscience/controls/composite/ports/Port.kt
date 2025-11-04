@@ -1,26 +1,39 @@
 package space.kscience.controls.composite.ports
 
 import kotlinx.coroutines.flow.Flow
-import space.kscience.controls.composite.model.lifecycle.ManagedComponent
 
 /**
  * A raw byte port for low-level communication.
- * Its lifecycle is managed by the runtime via events. Implementations should handle resource allocation
- * (e.g., opening a socket) in their `onStart` hook and release them in `onStop`.
+ *
+ * A `Port` is a managed resource that must be explicitly opened before use and closed afterward.
+ * The lifecycle of a port (opening, closing, and resource management) is the responsibility of its owner,
+ * typically a [space.kscience.controls.composite.model.contracts.DeviceDriver], which should call
+ * methods like `connect()` (for client ports) or `open()` (for server ports) within its `onStart` hook,
+ * and `close()` within its `onStop` hook.
+ *
+ * @see SynchronousPort for request-response communication patterns.
  */
-public interface Port : ManagedComponent {
+public interface Port : AutoCloseable {
+    /**
+     * Indicates whether the port is currently open and active.
+     * Attempting to send data on a closed port will result in an exception.
+     */
+    public val isConnected: Boolean
+
     /**
      * Sends a raw byte array through the port. This is a suspendable function that may wait if an underlying
      * buffer is full, thus respecting backpressure.
      *
      * @param data The byte array to send.
-     * @throws PortClosedException if the port is not in a `Running` state.
+     * @throws PortClosedException if the port is not open.
      * @throws PortTimeoutException if the send operation times out.
      */
     public suspend fun send(data: ByteArray)
 
     /**
-     * A hot [Flow] of incoming byte arrays.
+     * A hot [Flow] of incoming byte arrays. The flow becomes active when the port is opened
+     * and completes when it is closed. Observers should expect to handle raw chunks of data, which may
+     * not correspond to complete messages.
      *
      * @return A hot [Flow] of byte arrays.
      */
@@ -28,8 +41,24 @@ public interface Port : ManagedComponent {
 }
 
 /**
+ * An extension of [Port] for client-side ports that require an explicit connection step.
+ */
+public interface ConnectablePort : Port {
+    /**
+     * Establishes the underlying connection for this port.
+     * This is a suspendable operation that completes when the connection is ready.
+     * @throws PortException if the connection cannot be established.
+     */
+    public suspend fun connect()
+
+    /**
+     * Terminates the underlying connection and releases associated resources.
+     */
+    public suspend fun disconnect()
+}
+
+/**
  * A port that supports a synchronous, request-response communication pattern.
- * This is suitable for protocols where each command expects a single, well-defined reply.
  */
 public interface SynchronousPort : Port {
     /**
@@ -37,13 +66,10 @@ public interface SynchronousPort : Port {
      *
      * @param request The byte array representing the request.
      * @return The byte array representing the complete response.
-     * @throws PortTimeoutException if a response is not received within the configured timeout.
-     * @throws PortClosedException if the port is not `Running`.
      */
     public suspend fun respond(request: ByteArray): ByteArray
 }
 
-// TODO
-// public class PortException(message: String, cause: Throwable? = null) : RuntimeException(message, cause)
-// public class PortTimeoutException(message: String, cause: Throwable? = null) : PortException(message, cause)
-// public class PortClosedException(message: String, cause: Throwable? = null) : PortException(message, cause)
+public open class PortException(message: String, cause: Throwable? = null) : RuntimeException(message, cause)
+public class PortTimeoutException(message: String, cause: Throwable? = null) : PortException(message, cause)
+public class PortClosedException(message: String, cause: Throwable? = null) : PortException(message, cause)

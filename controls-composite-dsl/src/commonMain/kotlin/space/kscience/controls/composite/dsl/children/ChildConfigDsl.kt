@@ -1,8 +1,6 @@
 package space.kscience.controls.composite.dsl.children
 
-import space.kscience.controls.composite.dsl.CompositeSpecBuilder
 import space.kscience.controls.composite.dsl.CompositeSpecDsl
-import space.kscience.controls.composite.dsl.lifecycle.DeviceLifecycleConfigBuilder
 import space.kscience.controls.composite.model.*
 import space.kscience.controls.composite.model.contracts.Device
 import space.kscience.controls.composite.model.lifecycle.DeviceLifecycleConfig
@@ -118,13 +116,11 @@ public class ChildConfigBuilder<P : Device, C : Device> {
     private val bindingsBuilder = PropertyBindingBuilder<P, C>()
 
     /**
-     * Configures the lifecycle for the child device.
+     * Configures the lifecycle for the child device using a type-safe DSL block.
+     * This block operates on an instance of [DeviceLifecycleConfig], which is a [Scheme].
      */
-    public fun lifecycle(block: DeviceLifecycleConfigBuilder.() -> Unit) {
-        contract {
-            callsInPlace(block, InvocationKind.EXACTLY_ONCE)
-        }
-        this.lifecycle = DeviceLifecycleConfigBuilder().apply(block).build()
+    public fun lifecycle(block: DeviceLifecycleConfig.() -> Unit) {
+        this.lifecycle = DeviceLifecycleConfig(block)
     }
 
     /**
@@ -146,9 +142,6 @@ public class ChildConfigBuilder<P : Device, C : Device> {
      * ```
      */
     public fun bindings(block: PropertyBindingBuilder<P, C>.() -> Unit) {
-        contract {
-            callsInPlace(block, InvocationKind.EXACTLY_ONCE)
-        }
         bindingsBuilder.apply(block)
     }
 

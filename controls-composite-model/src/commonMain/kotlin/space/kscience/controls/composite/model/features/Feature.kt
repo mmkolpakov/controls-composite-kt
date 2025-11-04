@@ -120,9 +120,13 @@ public data class OperationalFsmFeature(
     val states: Set<String>,
     val events: Set<String>,
 ) : Feature {
-    override val capability: String = "ru.nsk.kstatemachine.statemachine.StateMachine"
+    override val capability: String = CAPABILITY
 
     override fun toMeta(): Meta = serializableToMeta(serializer(), this)
+
+    public companion object {
+        public const val CAPABILITY: String = "ru.nsk.kstatemachine.statemachine.StateMachine"
+    }
 }
 
 /**
@@ -147,9 +151,9 @@ public data class BinaryDataFeature(
  */
 @Serializable
 @SerialName("feature.planExecutor")
-public class PlanExecutorFeature : Feature {
-    override val capability: String get() = PlanExecutorDevice.CAPABILITY
-
+public data class PlanExecutorFeature(
+    override val capability: String = PlanExecutorDevice.CAPABILITY
+) : Feature {
     override fun toMeta(): Meta = Meta {
         "capability" put capability
     }

@@ -3,9 +3,10 @@ package space.kscience.controls.composite.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import space.kscience.controls.composite.model.serialization.SchemeAsMetaSerializer
+import space.kscience.controls.composite.model.serialization.serializable
 import space.kscience.controls.composite.model.serialization.serializableToMeta
-import space.kscience.dataforge.meta.Meta
-import space.kscience.dataforge.meta.MetaRepr
+import space.kscience.dataforge.meta.*
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -36,27 +37,48 @@ public sealed interface RestartStrategy : MetaRepr {
 
 /**
  * Defines the policy for restarting a failed device.
+ * This class is a [Scheme], allowing for type-safe configuration via DSL and
+ * automatic conversion to and from [Meta].
+ * It is now serializable and provides structural equality checks.
  *
- * @property maxAttempts The maximum number of restart attempts before giving up. A value <= 0 means infinite attempts.
- * @property strategy The [RestartStrategy] to use for calculating delays.
+ * @property maxAttempts The maximum number of restart attempts. `0` means no retries. A value less than 0 means infinite retries.
+ * @property strategy The [RestartStrategy] to use for calculating delays between retries.
  * @property resetOnSuccess If true, the attempt counter is reset after a successful start.
  */
-@Serializable
-public data class RestartPolicy(
-    val maxAttempts: Int = 5,
-    val strategy: RestartStrategy = RestartStrategy.Linear(2.seconds),
-    val resetOnSuccess: Boolean = true,
-) : MetaRepr {
+@Serializable(with = RestartPolicy.Serializer::class)
+public class RestartPolicy : Scheme() {
+    public var maxAttempts: Int by int(5)
+    public var strategy: RestartStrategy by convertable(
+        MetaConverter.serializable(RestartStrategy.serializer()),
+        default = RestartStrategy.Linear(2.seconds)
+    )
+    public var resetOnSuccess: Boolean by boolean(true)
+
+
     /**
      * The effective number of attempts to be used by a runtime.
      * Treats non-positive `maxAttempts` as [Int.MAX_VALUE] to represent infinity in a loop-safe manner.
      */
     @Transient
-    public val effectiveMaxAttempts: Int = if (maxAttempts <= 0) Int.MAX_VALUE else maxAttempts
+    public val effectiveMaxAttempts: Int
+        get() = if (maxAttempts <= 0) Int.MAX_VALUE else maxAttempts
 
-    override fun toMeta(): Meta = serializableToMeta(serializer(), this)
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        val otherMeta = (other as? MetaRepr)?.toMeta() ?: return false
+        return Meta.equals(this.toMeta(), otherMeta)
+    }
 
-    public companion object {
+    override fun hashCode(): Int {
+        return Meta.hashCode(this.toMeta())
+    }
+
+    public companion object : SchemeSpec<RestartPolicy>(::RestartPolicy) {
         public val DEFAULT: RestartPolicy = RestartPolicy()
     }
+
+    /**
+     * Custom serializer for RestartPolicy that delegates to Meta serialization.
+     */
+    public object Serializer : SchemeAsMetaSerializer<RestartPolicy>(RestartPolicy)
 }

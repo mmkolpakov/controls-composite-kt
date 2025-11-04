@@ -1,3 +1,6 @@
+@file:OptIn(ExperimentalWasmDsl::class)
+
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import space.kscience.gradle.KScienceNativeTarget
 
 plugins {
@@ -25,21 +28,22 @@ kscience {
         api(projects.controlsCompositeModel)
         api(libs.dataforge.io)
         implementation(spclibs.kotlinx.coroutines.core)
-        implementation("com.squareup.okio:okio:3.15.0")
+        api(libs.okio)
     }
 
     commonTest {
         implementation(kotlin("test"))
+        implementation(libs.okio.fakefilesystem)
     }
 
     wasmJsMain{
-        implementation("org.jetbrains.kotlinx:kotlinx-browser:0.3")
+        implementation("org.jetbrains.kotlinx:kotlinx-browser:0.5.0")
         js {
             browser {
                 testTask {
                     useKarma {
-                        useFirefox()
-                        useChrome()
+                        useFirefoxHeadless()
+                        useChromeHeadless()
                     }
                 }
             }

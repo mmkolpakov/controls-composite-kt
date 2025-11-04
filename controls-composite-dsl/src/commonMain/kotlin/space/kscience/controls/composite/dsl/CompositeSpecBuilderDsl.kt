@@ -6,14 +6,18 @@ import space.kscience.controls.composite.dsl.actions.plan
 import space.kscience.controls.composite.dsl.children.ChildConfigBuilder
 import space.kscience.controls.composite.dsl.properties.ActionDescriptorBuilder
 import space.kscience.controls.composite.dsl.properties.PropertyDescriptorBuilder
+import space.kscience.controls.composite.dsl.streams.StreamDescriptorBuilder
 import space.kscience.controls.composite.model.LocalChildComponentConfig
 import space.kscience.controls.composite.model.contracts.*
 import space.kscience.controls.composite.model.features.PlanExecutorFeature
 import space.kscience.controls.composite.model.features.TaskExecutorFeature
 import space.kscience.controls.composite.model.meta.DeviceActionSpec
 import space.kscience.controls.composite.model.meta.DevicePropertySpec
+import space.kscience.controls.composite.model.meta.DeviceStreamSpec
 import space.kscience.controls.composite.model.meta.MutableDevicePropertySpec
 import space.kscience.controls.composite.model.meta.PropertyDescriptor
+import space.kscience.controls.composite.model.meta.PropertyKind
+import space.kscience.controls.composite.model.meta.StreamDescriptor
 import space.kscience.controls.composite.model.meta.unit
 import space.kscience.dataforge.meta.*
 import space.kscience.dataforge.misc.DFExperimental
@@ -21,6 +25,7 @@ import space.kscience.dataforge.names.Name
 import space.kscience.dataforge.names.asName
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+import kotlin.enums.enumEntries
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
@@ -73,6 +78,7 @@ public fun <D : Device, C : Device> CompositeSpecBuilder<D>.child(
  * @param T The type of the property value.
  * @param name The name of the property.
  * @param converter The [MetaConverter] for serialization.
+ * @param kind The semantic [PropertyKind] of the property. Defaults to `PHYSICAL`, indicating a direct link to a driver or hardware.
  * @param descriptorBuilder A DSL block to configure the property's descriptor.
  * @param read The suspendable logic for reading the property's value from a device instance.
  * @return The created and registered [DevicePropertySpec].
@@ -80,10 +86,14 @@ public fun <D : Device, C : Device> CompositeSpecBuilder<D>.child(
 public inline fun <D : Device, reified T> CompositeSpecBuilder<D>.property(
     name: Name,
     converter: MetaConverter<T>,
+    kind: PropertyKind = PropertyKind.PHYSICAL,
     noinline descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {},
     noinline read: suspend D.() -> T?,
 ): DevicePropertySpec<D, T> {
-    val dslBuilder = PropertyDescriptorBuilder(name).apply(descriptorBuilder)
+    val dslBuilder = PropertyDescriptorBuilder(name).apply{
+        this.kind = kind
+        descriptorBuilder()
+    }
     val descriptor = dslBuilder.build(
         mutable = false,
         valueTypeName = serializer<T>().descriptor.serialName
@@ -105,16 +115,28 @@ public inline fun <D : Device, reified T> CompositeSpecBuilder<D>.property(
 /**
  * Declares and registers a mutable property directly within a `CompositeSpecBuilder`.
  *
+ * @param D The type of the device contract.
+ * @param T The type of the property value.
+ * @param name The name of the property.
+ * @param converter The [MetaConverter] for serialization.
+ * @param kind The semantic [PropertyKind] of the property. Defaults to `PHYSICAL`.
+ * @param descriptorBuilder A DSL block to configure the property's descriptor.
+ * @param read The suspendable logic for reading the property's value.
+ * @param write The suspendable logic for writing a new value.
  * @return The created and registered [MutableDevicePropertySpec].
  */
 public inline fun <D : Device, reified T> CompositeSpecBuilder<D>.mutableProperty(
     name: Name,
     converter: MetaConverter<T>,
+    kind: PropertyKind = PropertyKind.PHYSICAL,
     noinline descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {},
     noinline read: suspend D.() -> T?,
     noinline write: suspend D.(value: T) -> Unit,
 ): MutableDevicePropertySpec<D, T> {
-    val dslBuilder = PropertyDescriptorBuilder(name).apply(descriptorBuilder)
+    val dslBuilder = PropertyDescriptorBuilder(name).apply{
+        this.kind = kind
+        descriptorBuilder()
+    }
     val descriptor = dslBuilder.build(
         mutable = true,
         valueTypeName = serializer<T>().descriptor.serialName
@@ -165,19 +187,19 @@ public fun <D : Device, I, O> CompositeSpecBuilder<D>.action(
 
 // --- Specialized Read-only Properties ---
 
-public fun <D : Device> CompositeSpecBuilder<D>.doubleProperty(name: Name, descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {}, read: suspend D.() -> Double?): DevicePropertySpec<D, Double> = property(name, MetaConverter.double, valueDescriptor(ValueType.NUMBER, descriptorBuilder), read)
-public fun <D : Device> CompositeSpecBuilder<D>.stringProperty(name: Name, descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {}, read: suspend D.() -> String?): DevicePropertySpec<D, String> = property(name, MetaConverter.string, valueDescriptor(ValueType.STRING, descriptorBuilder), read)
-public fun <D : Device> CompositeSpecBuilder<D>.booleanProperty(name: Name, descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {}, read: suspend D.() -> Boolean?): DevicePropertySpec<D, Boolean> = property(name, MetaConverter.boolean, valueDescriptor(ValueType.BOOLEAN, descriptorBuilder), read)
-public fun <D : Device> CompositeSpecBuilder<D>.metaProperty(name: Name, descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {}, read: suspend D.() -> Meta?): DevicePropertySpec<D, Meta> = property(name, MetaConverter.meta, descriptorBuilder, read)
-public inline fun <D : Device, reified E : Enum<E>> CompositeSpecBuilder<D>.enumProperty(name: Name, noinline descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {}, noinline read: suspend D.() -> E?): DevicePropertySpec<D, E> = property(name, MetaConverter.enum(), { meta { valueType(ValueType.STRING) }; allowedValues = enumValues<E>().map { it.name.asValue() }; descriptorBuilder() }, read)
+public fun <D : Device> CompositeSpecBuilder<D>.doubleProperty(name: Name, descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {}, read: suspend D.() -> Double?): DevicePropertySpec<D, Double> = property(name, MetaConverter.double, PropertyKind.PHYSICAL, valueDescriptor(ValueType.NUMBER, descriptorBuilder), read)
+public fun <D : Device> CompositeSpecBuilder<D>.stringProperty(name: Name, descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {}, read: suspend D.() -> String?): DevicePropertySpec<D, String> = property(name, MetaConverter.string, PropertyKind.PHYSICAL, valueDescriptor(ValueType.STRING, descriptorBuilder), read)
+public fun <D : Device> CompositeSpecBuilder<D>.booleanProperty(name: Name, descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {}, read: suspend D.() -> Boolean?): DevicePropertySpec<D, Boolean> = property(name, MetaConverter.boolean, PropertyKind.PHYSICAL, valueDescriptor(ValueType.BOOLEAN, descriptorBuilder), read)
+public fun <D : Device> CompositeSpecBuilder<D>.metaProperty(name: Name, descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {}, read: suspend D.() -> Meta?): DevicePropertySpec<D, Meta> = property(name, MetaConverter.meta, PropertyKind.PHYSICAL, descriptorBuilder, read)
+public inline fun <D : Device, reified E : Enum<E>> CompositeSpecBuilder<D>.enumProperty(name: Name, noinline descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {}, noinline read: suspend D.() -> E?): DevicePropertySpec<D, E> = property(name, MetaConverter.enum(), PropertyKind.PHYSICAL, { meta { valueType(ValueType.STRING) }; allowedValues = enumEntries<E>().map { it.name.asValue() }; descriptorBuilder() }, read)
 
 // --- Specialized Mutable Properties ---
 
-public fun <D : Device> CompositeSpecBuilder<D>.mutableDoubleProperty(name: Name, descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {}, read: suspend D.() -> Double?, write: suspend D.(Double) -> Unit): MutableDevicePropertySpec<D, Double> = mutableProperty(name, MetaConverter.double, valueDescriptor(ValueType.NUMBER, descriptorBuilder), read, write)
-public fun <D : Device> CompositeSpecBuilder<D>.mutableStringProperty(name: Name, descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {}, read: suspend D.() -> String?, write: suspend D.(String) -> Unit): MutableDevicePropertySpec<D, String> = mutableProperty(name, MetaConverter.string, valueDescriptor(ValueType.STRING, descriptorBuilder), read, write)
-public fun <D : Device> CompositeSpecBuilder<D>.mutableBooleanProperty(name: Name, descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {}, read: suspend D.() -> Boolean?, write: suspend D.(Boolean) -> Unit): MutableDevicePropertySpec<D, Boolean> = mutableProperty(name, MetaConverter.boolean, valueDescriptor(ValueType.BOOLEAN, descriptorBuilder), read, write)
-public fun <D : Device> CompositeSpecBuilder<D>.mutableMetaProperty(name: Name, descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {}, read: suspend D.() -> Meta?, write: suspend D.(Meta) -> Unit): MutableDevicePropertySpec<D, Meta> = mutableProperty(name, MetaConverter.meta, descriptorBuilder, read, write)
-public inline fun <D : Device, reified E : Enum<E>> CompositeSpecBuilder<D>.mutableEnumProperty(name: Name, noinline descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {}, noinline read: suspend D.() -> E?, noinline write: suspend D.(E) -> Unit): MutableDevicePropertySpec<D, E> = mutableProperty(name, MetaConverter.enum(), { meta { valueType(ValueType.STRING) }; allowedValues = enumValues<E>().map { it.name.asValue() }; descriptorBuilder() }, read, write)
+public fun <D : Device> CompositeSpecBuilder<D>.mutableDoubleProperty(name: Name, descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {}, read: suspend D.() -> Double?, write: suspend D.(Double) -> Unit): MutableDevicePropertySpec<D, Double> = mutableProperty(name, MetaConverter.double, PropertyKind.PHYSICAL, valueDescriptor(ValueType.NUMBER, descriptorBuilder), read, write)
+public fun <D : Device> CompositeSpecBuilder<D>.mutableStringProperty(name: Name, descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {}, read: suspend D.() -> String?, write: suspend D.(String) -> Unit): MutableDevicePropertySpec<D, String> = mutableProperty(name, MetaConverter.string, PropertyKind.PHYSICAL, valueDescriptor(ValueType.STRING, descriptorBuilder), read, write)
+public fun <D : Device> CompositeSpecBuilder<D>.mutableBooleanProperty(name: Name, descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {}, read: suspend D.() -> Boolean?, write: suspend D.(Boolean) -> Unit): MutableDevicePropertySpec<D, Boolean> = mutableProperty(name, MetaConverter.boolean, PropertyKind.PHYSICAL, valueDescriptor(ValueType.BOOLEAN, descriptorBuilder), read, write)
+public fun <D : Device> CompositeSpecBuilder<D>.mutableMetaProperty(name: Name, descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {}, read: suspend D.() -> Meta?, write: suspend D.(Meta) -> Unit): MutableDevicePropertySpec<D, Meta> = mutableProperty(name, MetaConverter.meta, PropertyKind.PHYSICAL, descriptorBuilder, read, write)
+public inline fun <D : Device, reified E : Enum<E>> CompositeSpecBuilder<D>.mutableEnumProperty(name: Name, noinline descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {}, noinline read: suspend D.() -> E?, noinline write: suspend D.(E) -> Unit): MutableDevicePropertySpec<D, E> = mutableProperty(name, MetaConverter.enum(), PropertyKind.PHYSICAL, { meta { valueType(ValueType.STRING) }; allowedValues = enumEntries<E>().map { it.name.asValue() }; descriptorBuilder() }, read, write)
 
 // --- Specialized Actions ---
 
@@ -245,4 +267,39 @@ public inline fun <reified I, reified O, D> CompositeSpecBuilder<D>.taskAction(
                     "It must be executed by a task-aware runtime via the 'TaskExecutorDevice.executeTask' contract, not directly."
         )
     }
+}
+
+// --- Stream DSL ---
+
+/**
+ * Declares and registers a device data stream directly within a `CompositeSpecBuilder`.
+ *
+ * @param T The type of the primary data object in the stream.
+ * @param name The name of the stream.
+ * @param descriptorBuilder A DSL block to configure the stream's descriptor.
+ * @param get A suspendable factory lambda that creates a [StreamPort] instance. The runtime is responsible
+ *            for managing the lifecycle of the created port.
+ * @return The created and registered [DeviceStreamSpec].
+ */
+public inline fun <reified T, D : Device> CompositeSpecBuilder<D>.stream(
+    name: Name,
+    noinline descriptorBuilder: StreamDescriptorBuilder.() -> Unit = {},
+    noinline get: suspend D.() -> StreamPort,
+): DeviceStreamSpec<D> {
+    val dslBuilder = StreamDescriptorBuilder(name).apply(descriptorBuilder)
+    val fqName = serializer<T>().descriptor.serialName
+    val descriptor = StreamDescriptor(
+        name = name,
+        description = dslBuilder.description,
+        dataTypeFqName = fqName,
+        permissions = dslBuilder.permissions
+    )
+
+    val spec = object : DeviceStreamSpec<D> {
+        override val name: Name = name
+        override val descriptor: StreamDescriptor = descriptor
+        override val get: suspend D.() -> StreamPort = get
+    }
+    registerStream(spec)
+    return spec
 }

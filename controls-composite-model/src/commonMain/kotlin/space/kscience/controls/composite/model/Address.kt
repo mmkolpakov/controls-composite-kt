@@ -2,6 +2,7 @@ package space.kscience.controls.composite.model
 
 import kotlinx.serialization.Serializable
 import space.kscience.dataforge.names.Name
+import space.kscience.dataforge.names.plus
 
 /**
  * Represents a unique, network-wide address for a device.
@@ -31,6 +32,22 @@ import space.kscience.dataforge.names.Name
 @Serializable
 public data class Address(val hubId: String, val deviceName: Name) {
     override fun toString(): String = "$hubId::$deviceName"
+
+    /**
+     * Creates a new [Address] for a direct child of the device at this address.
+     * This is the idiomatic way to construct addresses for nested components within plans and logic.
+     *
+     * Example:
+     * ```
+     * val parentAddress = Address("myHub", "robot".asName())
+     * val armAddress = parentAddress.resolveChild("arm".asName()) // -> myHub::robot.arm
+     * ```
+     *
+     * @param childName The local name of the child device.
+     * @return The full network-wide address of the child.
+     */
+    public fun resolveChild(childName: Name): Address =
+        this.copy(deviceName = this.deviceName + childName)
 
     public companion object {
         /**

@@ -46,8 +46,9 @@ public object SystemPrincipal : Principal {
  * Represents a permission required to execute an action.
  * @param id A unique identifier for the permission, e.g., "device.control.motor".
  */
+@JvmInline
 @Serializable
-public data class Permission(public val id: String)
+public value class Permission(public val id: String)
 
 /**
  * A type-safe, serializable CoroutineContext element to carry a unique correlation ID for tracing a request
@@ -70,6 +71,10 @@ public value class CorrelationId(public val id: String) : CoroutineContext.Eleme
  * @param principal The identity of the caller. Defaults to a system principal.
  * @param correlationId A type-safe ID to trace a request through different components. Defaults to a random value.
  * @param originAddress The network address from which the original request was initiated. Can be null for internal requests.
+ * @param fromCache Indicates that the primary result of this execution context was retrieved from a cache rather than being computed live.
+ * @param traceContext An optional map containing trace propagation headers (e.g., W3C Trace Context).
+ *                     This allows for seamless integration with distributed tracing systems like OpenTelemetry.
+ *                     The runtime is responsible for propagating this context across network boundaries.
  * @param attributes Additional metadata for the execution context, for extensibility.
  */
 @Serializable
@@ -77,5 +82,7 @@ public data class ExecutionContext(
     val principal: Principal = SystemPrincipal,
     val correlationId: CorrelationId = CorrelationId("exec-${Random.nextLong().toString(16)}"),
     val originAddress: Address? = null,
+    val fromCache: Boolean = false,
+    val traceContext: Map<String, String>? = null,
     val attributes: Meta = Meta.EMPTY,
 )

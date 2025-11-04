@@ -7,18 +7,16 @@ import ru.nsk.kstatemachine.event.Event
 import ru.nsk.kstatemachine.state.IState
 import space.kscience.controls.composite.model.ExecutionContext
 import space.kscience.controls.composite.model.InternalControlsApi
-import space.kscience.controls.composite.model.Permission
 import space.kscience.controls.composite.model.SystemPrincipal
+import space.kscience.controls.composite.model.contracts.Device.Companion.CHILD_DEVICE_TARGET
 import space.kscience.controls.composite.model.lifecycle.DeviceLifecycleState
 import space.kscience.controls.composite.model.lifecycle.ManagedComponent
 import space.kscience.controls.composite.model.messages.DeviceMessage
-import space.kscience.controls.composite.model.meta.ActionDescriptor
-import space.kscience.controls.composite.model.meta.DeviceActionSpec
-import space.kscience.controls.composite.model.meta.DevicePropertySpec
-import space.kscience.controls.composite.model.meta.MutableDevicePropertySpec
-import space.kscience.controls.composite.model.meta.PropertyDescriptor
+import space.kscience.controls.composite.model.meta.*
 import space.kscience.dataforge.meta.Meta
+import space.kscience.dataforge.meta.ObservableMeta
 import space.kscience.dataforge.names.Name
+import space.kscience.dataforge.provider.Provider
 import kotlin.time.Clock
 
 /**
@@ -82,7 +80,8 @@ public interface ActionDevice {
 
 /**
  * A general interface describing a managed Device. A [Device] instance serves as a [CoroutineScope]
- * for all its internal operations.
+ * for all its internal operations. It also acts as a [Provider] for its children, properties, and actions,
+ * enabling seamless integration with the DataForge ecosystem.
  *
  * The device's lifecycle is formally defined and managed by a Finite State Machine (FSM).
  * Commands to change the lifecycle state (e.g., start, stop) are sent as events to this FSM,
@@ -105,7 +104,7 @@ public interface ActionDevice {
  *   and errors. It is not used for requests or direct command responses.
  *
  */
-public interface Device : ManagedComponent, CoroutineScope, PropertyDevice, ActionDevice {
+public interface Device : ManagedComponent, CoroutineScope, PropertyDevice, ActionDevice, Provider {
     /**
      * Companion object holding stable identifiers for the capability.
      */
@@ -115,6 +114,13 @@ public interface Device : ManagedComponent, CoroutineScope, PropertyDevice, Acti
          * Used for feature detection and serialization.
          */
         public const val CAPABILITY: String = "space.kscience.controls.composite.model.contracts.Device"
+
+        /** DataForge provider target for accessing child devices. */
+        public const val CHILD_DEVICE_TARGET: String = "child"
+        /** DataForge provider target for accessing property descriptors. */
+        public const val PROPERTY_TARGET: String = PropertyDescriptor.TYPE
+        /** DataForge provider target for accessing action descriptors. */
+        public const val ACTION_TARGET: String = ActionDescriptor.TYPE
     }
 
     /**
@@ -124,9 +130,11 @@ public interface Device : ManagedComponent, CoroutineScope, PropertyDevice, Acti
     public val name: Name
 
     /**
-     * The initial configuration meta for the device, provided upon its creation.
+     * The configuration meta for the device. This is an [ObservableMeta], meaning that the device
+     * can react to configuration changes in real-time without requiring a restart. The runtime
+     * is responsible for constructing this meta by layering blueprint, child, and attachment configurations.
      */
-    public val meta: Meta
+    public val meta: ObservableMeta
 
     /**
      * A reactive [StateFlow] representing the current state of the device's lifecycle.
@@ -156,17 +164,30 @@ public interface Device : ManagedComponent, CoroutineScope, PropertyDevice, Acti
 
     /**
      * The clock associated with this device. It may be a system clock, a virtual clock for simulations,
-     * or a compressed-time clock.
+     * or a compressed-time clock. This clock **must** be used as the source for all timestamps
+     * in [StateValue] updates originating from this device to ensure time consistency.
      */
     public val clock: Clock
+
+    /**
+     * Provides content for DataForge's [Provider] mechanism. A runtime implementation of [Device]
+     * **must** override this method to expose its properties, actions, and child devices for introspection.
+     * The default implementation returns an empty map.
+     *
+     * Standard targets:
+     * - [PROPERTY_TARGET]: Exposes [PropertyDescriptor]s.
+     * - [ACTION_TARGET]: Exposes [ActionDescriptor]s.
+     * - [CHILD_DEVICE_TARGET]: Exposes child [Device]s.
+     *
+     * @param target A string identifier for the type of content being requested.
+     * @return A map of named content items.
+     */
+    override fun content(target: String): Map<Name, Any> = emptyMap()
 
     /**
      * Attempts to programmatically post a new [Event] to the device's operational FSM, if it exists.
      * This is the primary mechanism for actions and internal logic to interact with the operational state.
      * The default implementation is provided by the runtime and checks for the existence of an operational FSM.
-     *
-     * This method is safer than its throwing alternatives as it allows the caller to gracefully handle cases
-     * where a device does not support an operational FSM.
      *
      * @param event The operational event to post.
      * @return `true` if the device has an operational FSM and the event was posted, `false` otherwise.

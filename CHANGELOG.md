@@ -54,3 +54,33 @@ Initial release of the `controls-composite-kt` framework. This version represent
 -   **Low-Level IO (`controls-composite-ports`)**:
     -   Created a multiplatform `Port` and `SynchronousPort` API for raw byte-level communication, abstracting over transports like TCP or Serial.
     -   Added a `PortManager` plugin for discovering and creating `Port` instances from configuration.
+
+## 1.0.0-alpha-2 - 2025-11-04
+
+### Changed
+
+-   **Architectural Shift: Separation of Specification and Logic**: The core paradigm has shifted. All executable logic for properties and actions is now defined exclusively in a `driverLogic { ... }` block, completely decoupling it from the `DeviceSpecification`. The `DeviceBlueprint` is now a pure, serializable data contract.
+-   **`TransactionPlan` as a Workflow Engine**: `TransactionPlan` has been evolved from a simple sequence of commands into a workflow engine. It now supports passing data between steps using a type-safe `ref()` mechanism, conditional execution (`condition`), loops (`forEach`), and pauses (`delay`, `await`).
+-   **Validation Framework**: Introduced a pluggable, deep validation system. A new `CompositeSpecValidator` discovers and applies `FeatureValidator` plugins to recursively verify an entire blueprint hierarchy before runtime.
+-   **Persistence API**: The `SnapshotStore` interface has been updated to support storing and loading binary blobs in addition to `Meta`, enabling persistence for devices with file-based state.
+
+### Added
+
+-   **Behavioral Modeling & Guards**:
+    -   Introduced `PropertyKind` enum (`PHYSICAL`, `LOGICAL`, `DERIVED`, `PREDICATE`) to semantically classify properties.
+    -   Added a `guards { ... }` DSL to declaratively define operational guards that monitor predicates and automatically post events to the FSM (e.g., `whenTrue(...).forAtLeast(...).post<Event>()`).
+-   **Distributed System Features**:
+    -   Added a `mirrors { ... }` DSL and `RemoteMirrorFeature` to provide an "honest" abstraction for reactively mirroring properties from remote devices.
+    -   Introduced `StreamPort` and `DeviceStreamSpec` to model continuous, bidirectional data streams as device members, complementing the message-based `Port`.
+-   **API Formalization and Introspection**:
+    -   Added `ActionOutputSpec` to formally declare the structure of an action's result `Meta`, enabling type-safe data flow in plans.
+    -   Introduced extensible `MemberTag`s (e.g., `ProfileTag`, `AliasTag`) and `AdapterBinding` to attach semantic and protocol-specific metadata to device members.
+    -   Added declarative validation rules for mutable properties via a `validation { ... }` block.
+-   **Non-Functional Requirements in Model**:
+    -   Added declarative resource locking (`ResourceLockSpec`) and caching policies (`CachePolicy`) to property and action descriptors.
+-   **New Modules**:
+    -   `controls-composite-protocol-api`: Defines the `ProtocolAdapter` contract to separate protocol logic from transport.
+    -   `controls-composite-ktor`: Provides Ktor-based implementations for `Port` and `PeerConnection`.
+    -   `controls-composite-magix`: Provides `MessageBroker` and signaling services based on the Magix message bus.
+    -   `controls-composite-simulation`: Provides a virtual time engine for deterministic testing and simulation.
+    -   `controls-composite-persistence-log`: A high-performance, SQLite-based implementation of `AuditLogService` using SQLDelight.

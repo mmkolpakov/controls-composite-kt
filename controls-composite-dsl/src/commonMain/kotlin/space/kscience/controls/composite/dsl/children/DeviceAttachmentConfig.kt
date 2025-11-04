@@ -1,6 +1,5 @@
 package space.kscience.controls.composite.dsl.children
 
-import space.kscience.controls.composite.dsl.lifecycle.DeviceLifecycleConfigBuilder
 import space.kscience.controls.composite.model.lifecycle.DeviceLifecycleConfig
 import space.kscience.controls.composite.model.lifecycle.StartMode
 import space.kscience.dataforge.meta.Meta
@@ -30,8 +29,8 @@ public class AttachmentConfiguration {
     /**
      * Configures the lifecycle for this device. Overrides any static configuration.
      */
-    public fun lifecycle(block: DeviceLifecycleConfigBuilder.() -> Unit) {
-        this.lifecycle = DeviceLifecycleConfigBuilder().apply(block).build()
+    public fun lifecycle(block: DeviceLifecycleConfig.() -> Unit) {
+        this.lifecycle = DeviceLifecycleConfig(block)
     }
 
     /**

@@ -1,15 +1,16 @@
 package space.kscience.controls.composite.dsl.properties
 
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.serializer
 import space.kscience.controls.composite.dsl.DeviceSpecification
 import space.kscience.controls.composite.model.contracts.Device
 import space.kscience.controls.composite.model.meta.DevicePropertySpec
 import space.kscience.controls.composite.model.meta.MutableDevicePropertySpec
 import space.kscience.controls.composite.model.meta.PropertyDescriptor
+import space.kscience.controls.composite.model.meta.PropertyKind
 import space.kscience.dataforge.meta.*
 import space.kscience.dataforge.names.Name
 import space.kscience.dataforge.names.parseAsName
+import kotlin.enums.enumEntries
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KType
@@ -24,47 +25,94 @@ internal fun valueDescriptor(
     userBuilder()
 }
 
-// Read-only properties
-
+/**
+ * A centralized, internal factory for creating property delegate providers.
+ *
+ * This function handles all the boilerplate logic for:
+ * 1. Resolving the property name.
+ * 2. Creating and configuring the [PropertyDescriptorBuilder].
+ * 3. Building the final [PropertyDescriptor], including serializable validation rules.
+ * 4. Creating the appropriate [DevicePropertySpec] or [MutableDevicePropertySpec] instance.
+ * 5. Wrapping the `write` logic with runtime validation predicates.
+ * 6. Registering the specification with the correct visibility.
+ */
 @PublishedApi
-internal inline fun <D : Device, reified T> DeviceSpecification<D>.internalProperty(
+internal inline fun <D : Device, reified T> createPropertyDelegateProvider(
+    crossinline specProvider: DeviceSpecification<D>.() -> Unit,
+    name: Name?,
+    kind: PropertyKind,
+    mutable: Boolean,
     converter: MetaConverter<T>,
-    noinline descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {},
-    name: Name? = null,
-    noinline read: suspend D.() -> T?,
+    crossinline descriptorBuilder: PropertyDescriptorBuilder.() -> Unit,
+    noinline read: (suspend D.() -> T?)?,
+    noinline write: (suspend D.(value: T) -> Unit)?,
+    noinline validation: (ValidationBuilder<D, T>.() -> Unit)? = null
 ): PropertyDelegateProvider<DeviceSpecification<D>, ReadOnlyProperty<DeviceSpecification<D>, DevicePropertySpec<D, T>>> =
     PropertyDelegateProvider { thisRef, property ->
+        thisRef.apply(specProvider)
+
         val propertyName = name ?: property.name.parseAsName()
-        val dslBuilder = PropertyDescriptorBuilder(propertyName).apply(descriptorBuilder)
+
+        // 1. Resolve validation rules
+        val validationBuilder = validation?.let { ValidationBuilder<D, T>().apply(it) }
+        val runtimeValidationLogic = validationBuilder?.build()
+
+        val dslBuilder = PropertyDescriptorBuilder(propertyName).apply {
+            this.kind = kind
+            // Add serializable validation rules to the descriptor builder
+            validationBuilder?.specs?.let { this.validationRules.addAll(it) }
+            descriptorBuilder()
+        }
         val descriptor = dslBuilder.build(
-            mutable = false,
+            mutable = mutable,
             valueTypeName = serializer<T>().descriptor.serialName
         )
 
-        val devProp = object : DevicePropertySpec<D, T> {
-            override val name: Name = propertyName
-            override val descriptor: PropertyDescriptor = descriptor
-            override val converter: MetaConverter<T> = converter
-            override val valueType: KType = typeOf<T>()
-
-            override suspend fun read(device: D): T? = withContext(device.coroutineContext) { device.read() }
+        // 2. Wrap the original write logic with runtime validation
+        val finalWrite: (suspend D.(T) -> Unit)? = write?.let { originalWrite ->
+            if (runtimeValidationLogic != null) {
+                { value: T ->
+                    // Execute runtime predicates first (throws DeviceFaultException on failure)
+                    runtimeValidationLogic(this, value)
+                    // If validation passes, execute original write logic
+                    originalWrite(this, value)
+                }
+            } else {
+                originalWrite // No runtime validation needed
+            }
         }
-        thisRef.registerPropertySpec(devProp)
-        ReadOnlyProperty { _, _ -> devProp }
+
+
+        // 3. Create and register the specification
+        val spec: DevicePropertySpec<D, T> = if (mutable && finalWrite != null) {
+            object : MutableDevicePropertySpec<D, T> {
+                override val name: Name = propertyName
+                override val descriptor: PropertyDescriptor = descriptor
+                override val converter: MetaConverter<T> = converter
+                override val valueType: KType = typeOf<T>()
+                override suspend fun read(device: D): T? = read?.invoke(device)
+                override suspend fun write(device: D, value: T): Unit = finalWrite.invoke(device, value)
+            }
+        } else {
+            object : DevicePropertySpec<D, T> {
+                override val name: Name = propertyName
+                override val descriptor: PropertyDescriptor = descriptor
+                override val converter: MetaConverter<T> = converter
+                override val valueType: KType = typeOf<T>()
+                override suspend fun read(device: D): T? = read?.invoke(device)
+            }
+        }
+
+        thisRef.registerPropertySpec(spec)
+
+        ReadOnlyProperty { _, _ -> spec }
     }
 
 
 /**
  * Creates a delegate for a read-only property specification.
- * This delegate provides a static [DevicePropertySpec] instance that is **automatically registered**
- * when the enclosing [DeviceSpecification] is configured.
  *
- * @param D The type of the device contract.
- * @param T The type of the property value.
- * @param converter The [MetaConverter] for serialization.
- * @param descriptorBuilder A DSL block to configure the property's [PropertyDescriptor].
- * @param name An optional explicit name for the property. If not provided, the delegated property name is used.
- * @param read The suspendable logic for reading the property's value from a device instance.
+ * @see property
  */
 public inline fun <D : Device, reified T> DeviceSpecification<D>.property(
     converter: MetaConverter<T>,
@@ -72,59 +120,51 @@ public inline fun <D : Device, reified T> DeviceSpecification<D>.property(
     name: Name? = null,
     noinline read: suspend D.() -> T?,
 ): PropertyDelegateProvider<DeviceSpecification<D>, ReadOnlyProperty<DeviceSpecification<D>, DevicePropertySpec<D, T>>> =
-    internalProperty(converter, descriptorBuilder, name, read)
-
-
-// Mutable properties
-
-@PublishedApi
-internal inline fun <D : Device, reified T> DeviceSpecification<D>.internalMutableProperty(
-    converter: MetaConverter<T>,
-    noinline descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {},
-    name: Name? = null,
-    noinline read: suspend D.() -> T?,
-    noinline write: suspend D.(value: T) -> Unit,
-): PropertyDelegateProvider<DeviceSpecification<D>, ReadOnlyProperty<DeviceSpecification<D>, MutableDevicePropertySpec<D, T>>> =
-    PropertyDelegateProvider { thisRef, property ->
-        val propertyName = name ?: property.name.parseAsName()
-        val dslBuilder = PropertyDescriptorBuilder(propertyName).apply(descriptorBuilder)
-        val descriptor = dslBuilder.build(
-            mutable = true,
-            valueTypeName = serializer<T>().descriptor.serialName
-        )
-
-        val devProp = object : MutableDevicePropertySpec<D, T> {
-            override val name: Name = propertyName
-            override val descriptor: PropertyDescriptor = descriptor
-            override val converter: MetaConverter<T> = converter
-            override val valueType: KType = typeOf<T>()
-            override suspend fun read(device: D): T? = withContext(device.coroutineContext) { device.read() }
-            override suspend fun write(device: D, value: T): Unit =
-                withContext(device.coroutineContext) { device.write(value) }
-        }
-        thisRef.registerPropertySpec(devProp)
-        ReadOnlyProperty { _, _ -> devProp }
-    }
+    createPropertyDelegateProvider(
+        specProvider = {},
+        name = name,
+        kind = PropertyKind.PHYSICAL,
+        mutable = false,
+        converter = converter,
+        descriptorBuilder = descriptorBuilder,
+        read = read,
+        write = null
+    )
 
 
 /**
- * Creates a delegate for a mutable property specification, automatically registering it.
+ * Creates a delegate for a mutable property specification, automatically registering it with respect to visibility scope.
+ * It now accepts an optional `validation` block to define declarative and runtime constraints.
  *
+ * @param validation An optional DSL block for defining validation rules that are checked before writing the new value.
  * @see property
  */
+@Suppress("UNCHECKED_CAST")
 public inline fun <D : Device, reified T> DeviceSpecification<D>.mutableProperty(
     converter: MetaConverter<T>,
     noinline descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {},
     name: Name? = null,
     noinline read: suspend D.() -> T?,
     noinline write: suspend D.(value: T) -> Unit,
+    noinline validation: (ValidationBuilder<D, T>.() -> Unit)? = null,
 ): PropertyDelegateProvider<DeviceSpecification<D>, ReadOnlyProperty<DeviceSpecification<D>, MutableDevicePropertySpec<D, T>>> =
-    internalMutableProperty(converter, descriptorBuilder, name, read, write)
+    createPropertyDelegateProvider(
+        specProvider = {},
+        name = name,
+        kind = PropertyKind.PHYSICAL,
+        mutable = true,
+        converter = converter,
+        descriptorBuilder = descriptorBuilder,
+        read = read,
+        write = write,
+        validation = validation
+    ) as PropertyDelegateProvider<DeviceSpecification<D>, ReadOnlyProperty<DeviceSpecification<D>, MutableDevicePropertySpec<D, T>>>
+
 
 // Type-safe helpers for common types, now as extensions on DeviceSpecification
 
 /**
- * Declares a read-only property of type [Number].
+ * Declares a read-only property of type [Number]. The property is semantically classified as [PropertyKind.PHYSICAL].
  *
  * @see property
  */
@@ -140,7 +180,7 @@ public fun <D : Device> DeviceSpecification<D>.numberProperty(
 )
 
 /**
- * Declares a read-only property of type [Double].
+ * Declares a read-only property of type [Double]. The property is semantically classified as [PropertyKind.PHYSICAL].
  *
  * @see property
  */
@@ -156,7 +196,7 @@ public fun <D : Device> DeviceSpecification<D>.doubleProperty(
 )
 
 /**
- * Declares a read-only property of type [Float].
+ * Declares a read-only property of type [Float]. The property is semantically classified as [PropertyKind.PHYSICAL].
  *
  * @see property
  */
@@ -172,7 +212,7 @@ public fun <D : Device> DeviceSpecification<D>.floatProperty(
 )
 
 /**
- * Declares a read-only property of type [Long].
+ * Declares a read-only property of type [Long]. The property is semantically classified as [PropertyKind.PHYSICAL].
  *
  * @see property
  */
@@ -188,7 +228,7 @@ public fun <D : Device> DeviceSpecification<D>.longProperty(
 )
 
 /**
- * Declares a read-only property of type [Int].
+ * Declares a read-only property of type [Int]. The property is semantically classified as [PropertyKind.PHYSICAL].
  *
  * @see property
  */
@@ -204,7 +244,7 @@ public fun <D : Device> DeviceSpecification<D>.intProperty(
 )
 
 /**
- * Declares a read-only property of type [String].
+ * Declares a read-only property of type [String]. The property is semantically classified as [PropertyKind.PHYSICAL].
  *
  * @see property
  */
@@ -220,7 +260,7 @@ public fun <D : Device> DeviceSpecification<D>.stringProperty(
 )
 
 /**
- * Declares a read-only property of type [Boolean].
+ * Declares a read-only property of type [Boolean]. The property is semantically classified as [PropertyKind.PHYSICAL].
  *
  * @see property
  */
@@ -236,7 +276,7 @@ public fun <D : Device> DeviceSpecification<D>.booleanProperty(
 )
 
 /**
- * Declares a read-only property of type [Meta].
+ * Declares a read-only property of type [Meta]. The property is semantically classified as [PropertyKind.PHYSICAL].
  *
  * @see property
  */
@@ -249,7 +289,7 @@ public fun <D : Device> DeviceSpecification<D>.metaProperty(
 )
 
 /**
- * Declares a read-only property of an enum type.
+ * Declares a read-only property of an enum type. The property is semantically classified as [PropertyKind.PHYSICAL].
  *
  * @see property
  */
@@ -260,13 +300,13 @@ public inline fun <D : Device, reified E : Enum<E>> DeviceSpecification<D>.enumP
 ): PropertyDelegateProvider<DeviceSpecification<D>, ReadOnlyProperty<DeviceSpecification<D>, DevicePropertySpec<D, E>>> = property(
     MetaConverter.enum(), {
         meta { valueType(ValueType.STRING) }
-        allowedValues = enumValues<E>().map { it.name.asValue() }
+        allowedValues = enumEntries<E>().map { it.name.asValue() }
         descriptorBuilder()
     }, name, read
 )
 
 /**
- * Declares a mutable property of type [Boolean].
+ * Declares a mutable property of type [Boolean]. The property is semantically classified as [PropertyKind.PHYSICAL].
  *
  * @see mutableProperty
  */
@@ -275,16 +315,18 @@ public fun <D : Device> DeviceSpecification<D>.mutableBooleanProperty(
     name: Name? = null,
     read: suspend D.() -> Boolean?,
     write: suspend D.(Boolean) -> Unit,
+    validation: (ValidationBuilder<D, Boolean>.() -> Unit)? = null,
 ): PropertyDelegateProvider<DeviceSpecification<D>, ReadOnlyProperty<DeviceSpecification<D>, MutableDevicePropertySpec<D, Boolean>>> = mutableProperty(
     MetaConverter.boolean,
-    valueDescriptor(ValueType.BOOLEAN, descriptorBuilder),
+    descriptorBuilder,
     name,
     read,
-    write
+    write,
+    validation
 )
 
 /**
- * Declares a mutable property of type [Double].
+ * Declares a mutable property of type [Double]. The property is semantically classified as [PropertyKind.PHYSICAL].
  *
  * @see mutableProperty
  */
@@ -293,16 +335,18 @@ public fun <D : Device> DeviceSpecification<D>.mutableDoubleProperty(
     name: Name? = null,
     read: suspend D.() -> Double?,
     write: suspend D.(Double) -> Unit,
+    validation: (ValidationBuilder<D, Double>.() -> Unit)? = null,
 ): PropertyDelegateProvider<DeviceSpecification<D>, ReadOnlyProperty<DeviceSpecification<D>, MutableDevicePropertySpec<D, Double>>> = mutableProperty(
     MetaConverter.double,
-    valueDescriptor(ValueType.NUMBER, descriptorBuilder),
+    descriptorBuilder,
     name,
     read,
-    write
+    write,
+    validation
 )
 
 /**
- * Declares a mutable property of type [Float].
+ * Declares a mutable property of type [Float]. The property is semantically classified as [PropertyKind.PHYSICAL].
  *
  * @see mutableProperty
  */
@@ -311,16 +355,18 @@ public fun <D : Device> DeviceSpecification<D>.mutableFloatProperty(
     name: Name? = null,
     read: suspend D.() -> Float?,
     write: suspend D.(Float) -> Unit,
+    validation: (ValidationBuilder<D, Float>.() -> Unit)? = null,
 ): PropertyDelegateProvider<DeviceSpecification<D>, ReadOnlyProperty<DeviceSpecification<D>, MutableDevicePropertySpec<D, Float>>> = mutableProperty(
     MetaConverter.float,
-    valueDescriptor(ValueType.NUMBER, descriptorBuilder),
+    descriptorBuilder,
     name,
     read,
-    write
+    write,
+    validation
 )
 
 /**
- * Declares a mutable property of type [Long].
+ * Declares a mutable property of type [Long]. The property is semantically classified as [PropertyKind.PHYSICAL].
  *
  * @see mutableProperty
  */
@@ -329,16 +375,18 @@ public fun <D : Device> DeviceSpecification<D>.mutableLongProperty(
     name: Name? = null,
     read: suspend D.() -> Long?,
     write: suspend D.(Long) -> Unit,
+    validation: (ValidationBuilder<D, Long>.() -> Unit)? = null,
 ): PropertyDelegateProvider<DeviceSpecification<D>, ReadOnlyProperty<DeviceSpecification<D>, MutableDevicePropertySpec<D, Long>>> = mutableProperty(
     MetaConverter.long,
-    valueDescriptor(ValueType.NUMBER, descriptorBuilder),
+    descriptorBuilder,
     name,
     read,
-    write
+    write,
+    validation
 )
 
 /**
- * Declares a mutable property of type [Int].
+ * Declares a mutable property of type [Int]. The property is semantically classified as [PropertyKind.PHYSICAL].
  *
  * @see mutableProperty
  */
@@ -347,16 +395,18 @@ public fun <D : Device> DeviceSpecification<D>.mutableIntProperty(
     name: Name? = null,
     read: suspend D.() -> Int?,
     write: suspend D.(Int) -> Unit,
+    validation: (ValidationBuilder<D, Int>.() -> Unit)? = null,
 ): PropertyDelegateProvider<DeviceSpecification<D>, ReadOnlyProperty<DeviceSpecification<D>, MutableDevicePropertySpec<D, Int>>> = mutableProperty(
     MetaConverter.int,
-    valueDescriptor(ValueType.NUMBER, descriptorBuilder),
+    descriptorBuilder,
     name,
     read,
-    write
+    write,
+    validation
 )
 
 /**
- * Declares a mutable property of type [String].
+ * Declares a mutable property of type [String]. The property is semantically classified as [PropertyKind.PHYSICAL].
  *
  * @see mutableProperty
  */
@@ -365,14 +415,14 @@ public fun <D : Device> DeviceSpecification<D>.mutableStringProperty(
     name: Name? = null,
     read: suspend D.() -> String?,
     write: suspend D.(String) -> Unit,
+    validation: (ValidationBuilder<D, String>.() -> Unit)? = null,
 ): PropertyDelegateProvider<DeviceSpecification<D>, ReadOnlyProperty<DeviceSpecification<D>, MutableDevicePropertySpec<D, String>>> = mutableProperty(
     MetaConverter.string,
-    valueDescriptor(ValueType.STRING, descriptorBuilder),
-    name, read, write
+    descriptorBuilder, name, read, write, validation
 )
 
 /**
- * Declares a mutable property of an enum type.
+ * Declares a mutable property of an enum type. The property is semantically classified as [PropertyKind.PHYSICAL].
  *
  * @see mutableProperty
  */
@@ -381,16 +431,17 @@ public inline fun <D : Device, reified E : Enum<E>> DeviceSpecification<D>.mutab
     name: Name? = null,
     noinline read: suspend D.() -> E?,
     noinline write: suspend D.(E) -> Unit,
+    noinline validation: (ValidationBuilder<D, E>.() -> Unit)? = null,
 ): PropertyDelegateProvider<DeviceSpecification<D>, ReadOnlyProperty<DeviceSpecification<D>, MutableDevicePropertySpec<D, E>>> = mutableProperty(
     MetaConverter.enum(), {
         meta { valueType(ValueType.STRING) }
-        allowedValues = enumValues<E>().map { it.name.asValue() }
+        allowedValues = enumEntries<E>().map { it.name.asValue() }
         descriptorBuilder()
-    }, name, read, write
+    }, name, read, write, validation
 )
 
 /**
- * Declares a mutable property of type [Meta].
+ * Declares a mutable property of type [Meta]. The property is semantically classified as [PropertyKind.PHYSICAL].
  *
  * @see mutableProperty
  */
@@ -399,6 +450,7 @@ public fun <D : Device> DeviceSpecification<D>.mutableMetaProperty(
     name: Name? = null,
     read: suspend D.() -> Meta?,
     write: suspend D.(Meta) -> Unit,
+    validation: (ValidationBuilder<D, Meta>.() -> Unit)? = null,
 ): PropertyDelegateProvider<DeviceSpecification<D>, ReadOnlyProperty<DeviceSpecification<D>, MutableDevicePropertySpec<D, Meta>>> = mutableProperty(
-    MetaConverter.meta, descriptorBuilder, name, read, write
+    MetaConverter.meta, descriptorBuilder, name, read, write, validation
 )

@@ -1,67 +1,40 @@
 package space.kscience.controls.composite.model.contracts
 
-import space.kscience.controls.composite.model.meta.DeviceActionSpec
-import space.kscience.controls.composite.model.meta.DevicePropertySpec
-import space.kscience.controls.composite.model.meta.MutableDevicePropertySpec
+import space.kscience.controls.composite.model.InternalControlsApi
 import space.kscience.dataforge.context.Context
-import space.kscience.dataforge.meta.Meta
+import space.kscience.dataforge.meta.ObservableMeta
 
 /**
- * A factory responsible for creating an instance of a device driver and managing its interactions.
- * The driver contains the actual hardware/simulation logic for a device. It serves as the bridge
- * between the abstract device model and the physical world.
+ * A factory responsible for creating an instance of a device and managing its lifecycle via hooks.
+ * The driver serves as the bridge between the abstract device model and the physical world (or a simulation).
+ * It is a stateless, reusable component.
  *
- * This is a `fun interface`, meaning its primary purpose is to create a device instance.
- * It also includes lifecycle hooks that the runtime will call at different stages,
- * allowing the driver to manage resources like connections or hardware initialization. These hooks
- * have default implementations.
+ * The `DeviceDriver` contract has two primary responsibilities:
+ * 1.  **Instantiation:** The [create] method acts as a factory for the device object itself.
+ * 2.  **Lifecycle Management:** The `on...` hooks are called by the runtime at specific points in the
+ *     device's lifecycle, allowing the driver to manage resources like hardware connections.
+ *
+ * **IMPORTANT:** The logic for a device's properties and actions is **not** defined here. It must be
+ * provided in a `driverLogic { ... }` block within the `DeviceBlueprint`'s definition. This separation
+ * ensures that the device's behavior is fully declared in the blueprint.
  *
  * @param D The type of the device contract this driver implements.
  */
 public fun interface DeviceDriver<D : Device> {
     /**
      * Creates a new device instance. This method should handle the initial setup of the device object itself.
+     * The provided [meta] is observable. A driver implementation can and should subscribe to changes
+     * on this meta within its lifecycle hooks (e.g., in `onAttach` or `onStart`) to support
+     * dynamic reconfiguration for parameters that allow it. The runtime guarantees that this `ObservableMeta`
+     * object will represent the live configuration for the entire lifecycle of the device instance.
+     *
      * @param context The DataForge context for the device.
-     * @param meta The configuration meta for the device.
+     * @param meta The observable configuration meta for the device.
      * @return A new instance of the device.
      */
-    public fun create(context: Context, meta: Meta): D
+    public fun create(context: Context, meta: ObservableMeta): D
 
-    /**
-     * Reads the value of a property from the physical or virtual device.
-     * This method is called by the runtime and should contain the specific logic to query the hardware or simulation.
-     *
-     * The implementation must ensure that the returned type matches the property's value type.
-     *
-     * @param device The device instance to read from.
-     * @param spec The specification of the property being read.
-     * @return The value of the property, or `null` if it cannot be read.
-     */
-    public suspend fun <T> read(device: D, spec: DevicePropertySpec<D, T>): T? =
-        error("Read for property '${spec.name}' is not implemented in this driver.")
-
-    /**
-     * Writes a new value to a physical or virtual property.
-     *
-     * @param device The device instance to write to.
-     * @param spec The specification of the property being written.
-     * @param value The value to write. The type of the value is expected to match the spec.
-     */
-    public suspend fun <T> write(device: D, spec: MutableDevicePropertySpec<D, T>, value: T) {
-        error("Write for property '${spec.name}' is not implemented in this driver.")
-    }
-
-    /**
-     * Executes an action on the physical or virtual device.
-     *
-     * @param device The device instance to execute the action on.
-     * @param spec The specification of the action being executed.
-     * @param input The input argument for the action. The type is expected to match the spec.
-     * @return The result of the action, or `null` if the action does not return a value.
-     */
-    public suspend fun <I, O> execute(device: D, spec: DeviceActionSpec<D, I, O>, input: I): O? =
-        error("Execution for action '${spec.name}' is not implemented in this driver.")
-
+    // Lifecycle hooks with default no-op implementations
 
     /**
      * A hook called by the runtime when the device is attached to the hub.

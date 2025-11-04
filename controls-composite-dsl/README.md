@@ -12,9 +12,8 @@ This module provides a powerful, type-safe, and declarative Domain-Specific Lang
 - **Declarative Composition**: Build complex devices by composing smaller, reusable child device blueprints using the `child` delegate.
 - **Formal Lifecycle**: Define a device's lifecycle as a formal Finite State Machine (FSM) using the powerful KStateMachine DSL via the `standardLifecycle` or `lifecycle` blocks.
 - **Property Bindings**: Declaratively bind properties of child devices to parent properties or constant values, creating reactive data flows.
-- **Transactional Plans**: Create complex, multi-step action plans (`plan { ... }`) that can be serialized and executed by a runtime.
+- **Transactional Plans**: Create complex, multistep action plans (`plan { ... }`) that can be serialized and executed by a runtime.
 - **Stateful Properties**: Manage internal, logical, and persistent state within a device using the `stateful` delegate.
-
-## Usage
-
-The primary entry point to the DSL is the `compositeDevice` function, which allows you to define a `DeviceBlueprint`. Alternatively, you can use the `DeviceSpecification` base class for a more object-oriented approach to defining reusable specifications.
+- **Time Constraints**: Declare timeouts and deadlines for properties and actions to ensure real-time performance and prevent deadlocks.
+- **Resource Locking**: Statically declare required locks (`SHARED_READ`, `EXCLUSIVE_WRITE`) on shared resources to prevent race conditions.
+- **First-Class Data Streams**: Declare continuous data streams as first-class device members using the `stream { ... }` delegate, on par with properties and actions.

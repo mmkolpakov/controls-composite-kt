@@ -18,13 +18,18 @@ public class DeviceSecurityException(message: String, cause: Throwable? = null) 
 /**
  * A serializable representation of a device failure, suitable for transmission over the network or between processes.
  * This structure captures the essential information about an exception without relying on platform-specific serialization.
+ * It can represent both unexpected system failures and predictable business faults.
  *
  * @property type The simple class name of the original exception, used for identification.
  * @property message The descriptive message of the failure.
- * @property stackTrace An optional string representation of the stack trace, useful for remote debugging.
- * @property details Additional context-specific details about the error.
+ * @property stackTrace An optional string representation of the stack trace, useful for remote debugging of system failures.
+ * @property details Additional context-specific details about the error, provided as a [Meta] object.
+ * @property code An optional, machine-readable error code (e.g., "E-1024", "TIMEOUT").
+ * @property retryable A flag indicating whether the operation that caused this failure can be safely retried.
+ * @property fault If non-null, this indicates that the failure was a predictable business fault, not a system error.
+ *                 Clients can use the presence of this field to handle the outcome as a valid negative response
+ *                 rather than an unexpected exception.
  * @property cause An optional serializable representation of the underlying cause, allowing for nested error reporting.
- * TODO
  */
 @Serializable
 public data class SerializableDeviceFailure(
@@ -34,12 +39,15 @@ public data class SerializableDeviceFailure(
     val details: Meta = Meta.EMPTY,
     val code: String? = null,
     val retryable: Boolean = false,
+    val fault: DeviceFault? = null,
     val cause: SerializableDeviceFailure? = null,
 )
 
 /**
  * A base exception for all control operations on a [space.kscience.controls.composite.model.contracts.CompositeDeviceHub].
  * This provides a common type for callers to catch for any hub-related issues, ensuring consistent error handling.
+ *
+ * This class represents an unexpected system failure. For predictable business errors, use [DeviceFaultException].
  *
  * @param message A descriptive message of the failure.
  * @param cause The underlying exception that caused this hub exception, if any.
@@ -56,6 +64,30 @@ public open class CompositeHubException(message: String, cause: Throwable? = nul
         cause = (cause as? CompositeHubException)?.toSerializableFailure()
     )
 }
+
+/**
+ * A specialized exception used to signal a predictable business fault.
+ * This exception should be thrown by device drivers or action logic to indicate an expected
+ * negative outcome (e.g., validation failure, precondition not met), as opposed to an
+ * unexpected system error.
+ *
+ * The runtime is expected to catch this exception and convert it into a `DeviceErrorMessage`
+ * containing the [fault] details, treating it as a valid response rather than a system failure
+ * that would trigger a rollback.
+ *
+ * @param fault The structured [DeviceFault] object describing the business error.
+ * @param cause An optional underlying exception, though typically not needed for business faults.
+ */
+public class DeviceFaultException(public val fault: DeviceFault, cause: Throwable? = null) :
+    CompositeHubException("A predictable business fault occurred: ${fault::class.simpleName}", cause) {
+    /**
+     * Overrides the base implementation to correctly populate the `fault` field in the
+     * resulting [SerializableDeviceFailure].
+     */
+    override fun toSerializableFailure(): SerializableDeviceFailure =
+        super.toSerializableFailure().copy(fault = this.fault)
+}
+
 
 /**
  * An exception indicating that a transaction containing one or more operations failed and was rolled back.

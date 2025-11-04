@@ -3,6 +3,7 @@ rootProject.name = "controls-composite-kt"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
+//    TODO use from libs versions toml
     val toolsVersion: String by extra
 
     repositories {
@@ -63,6 +64,16 @@ include(
     ":controls-composite-runtime",
     ":controls-composite-metrics",
     ":controls-composite-persistence",
+    ":controls-composite-persistence-log",
     ":controls-composite-ports",
+    ":controls-composite-protocol-api",
+    ":controls-composite-protocol-modbus",
     ":controls-exporter-prometheus",
+    ":magix-api",
+    ":magix-rsocket-core",
+    ":magix-transport-rsocket-ws",
+    ":magix-transport-rsocket-tcp",
+    ":controls-composite-magix",
+    ":controls-composite-ktor",
+    ":controls-composite-simulation"
 )

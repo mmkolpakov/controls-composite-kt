@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.StateFlow
 import space.kscience.controls.composite.model.Address
 import space.kscience.controls.composite.model.ExecutionContext
 import space.kscience.dataforge.io.Envelope
+import space.kscience.dataforge.names.Name
 import kotlin.time.Duration
 
 /**

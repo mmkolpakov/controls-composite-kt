@@ -44,19 +44,28 @@ public data class LocalChildComponentConfig(
 }
 
 /**
- * Configuration for a child device that exists remotely and is accessed via a proxy.
+ * Configuration for a child device that exists remotely and is accessed via a local proxy.
+ * This class contains all the necessary static information for the runtime to create and manage
+ * the proxy and its connection to the remote device.
  *
- * @property address The network-wide [Address] of the remote device.
- * @property peerName The name of the [PeerConnection] blueprint registered in the parent device.
- * @property blueprintId The [DeviceBlueprint] id of the remote device, used for static analysis,
- *                     type safety, and creating the client-side proxy.
- * @property config The [DeviceLifecycleConfig] for managing the lifecycle of the *proxy*.
- * @property meta Additional metadata for configuring the proxy.
+ * The full network-wide [Address] of the remote device is constructed at runtime by combining
+ * the logical `hubId` resolved from the `peerName` connection with the provided `remoteDeviceName`.
+ *
+ * @property remoteDeviceName The local, potentially hierarchical, name of the target device *on the remote hub*.
+ *                            This is NOT the name of the local proxy.
+ * @property peerName The local name of the [PeerBlueprint] registered in the parent device's specification.
+ *                    The runtime uses this name to look up the connection details (like host, port, and protocol)
+ *                    and to resolve the `hubId` of the remote hub.
+ * @property blueprintId The [DeviceBlueprint] id of the remote device.
+ * @property blueprintVersion The version of the remote device's blueprint, used for compatibility checks.
+ * @property config The [DeviceLifecycleConfig] for managing the lifecycle of the *local proxy*, not the remote device itself.
+ *                  For example, it defines restart policies for the connection to the remote device.
+ * @property meta Additional metadata for configuring the local proxy instance.
  */
 @Serializable
 @SerialName("remote")
 public data class RemoteChildComponentConfig(
-    val address: Address,
+    val remoteDeviceName: Name,
     val peerName: Name,
     override val blueprintId: BlueprintId,
     override val blueprintVersion: String,

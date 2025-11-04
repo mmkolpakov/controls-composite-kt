@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 import space.kscience.controls.composite.model.Address
 import space.kscience.controls.composite.model.CorrelationId
 import space.kscience.controls.composite.model.SerializableDeviceFailure
+import space.kscience.controls.composite.model.contracts.BlueprintId
 import space.kscience.controls.composite.model.meta.ActionDescriptor
 import space.kscience.controls.composite.model.meta.PropertyDescriptor
 import space.kscience.dataforge.meta.Meta
@@ -139,6 +140,31 @@ public data class DeviceErrorMessage(
 }
 
 /**
+ * Notifies that the logical state of a boolean predicate property has changed.
+ * This specialized message allows clients to react to changes in conditions (e.g., "ready", "in_range")
+ * without needing to subscribe to and evaluate the underlying numeric properties themselves.
+ *
+ * @param predicateName The name of the predicate property that changed.
+ * @param newState The new boolean state of the predicate.
+ * @param sourceDevice The address of the device owning the predicate. Mandatory.
+ */
+@Serializable
+@SerialName("predicate.changed")
+public data class PredicateChangedMessage(
+    override val time: Instant,
+    public val predicateName: String,
+    public val newState: Boolean,
+    override val sourceDevice: Address,
+    override val targetDevice: Address? = null,
+    override val requestId: String? = null,
+    override val correlationId: CorrelationId? = null,
+) : DeviceMessage {
+    override fun changeSource(block: (Name) -> Name): PredicateChangedMessage =
+        copy(sourceDevice = sourceDevice.copy(deviceName = block(sourceDevice.deviceName)))
+}
+
+
+/**
  * Notifies listeners that a new binary content is available for retrieval from this device.
  * The actual data transfer must be done via a separate mechanism like [space.kscience.controls.composite.model.contracts.PeerConnection].
  *
@@ -180,4 +206,48 @@ public data class BinaryDataRequest(
 ) : RequestMessage {
     override fun changeSource(block: (Name) -> Name): BinaryDataRequest =
         copy(sourceDevice = sourceDevice?.copy(deviceName = block(sourceDevice.deviceName)))
+}
+
+/**
+ * A notification that a new device has been attached to a hub.
+ * This allows clients to dynamically discover and update the device topology without polling.
+ *
+ * @param deviceName The local, hierarchical name of the newly attached device.
+ * @param blueprintId The identifier of the blueprint used to create the device.
+ * @param sourceDevice The address of the hub that originated this message. Mandatory.
+ */
+@Serializable
+@SerialName("hub.deviceAttached")
+public data class DeviceAttachedMessage(
+    override val time: Instant,
+    public val deviceName: Name,
+    public val blueprintId: BlueprintId,
+    override val sourceDevice: Address,
+    override val targetDevice: Address? = null,
+    override val requestId: String? = null,
+    override val correlationId: CorrelationId? = null,
+) : DeviceMessage {
+    override fun changeSource(block: (Name) -> Name): DeviceAttachedMessage =
+        copy(sourceDevice = sourceDevice.copy(deviceName = block(sourceDevice.deviceName)))
+}
+
+/**
+ * A notification that a device has been detached from a hub.
+ * This allows clients to remove the device from their representation of the hub's topology.
+ *
+ * @param deviceName The local, hierarchical name of the detached device.
+ * @param sourceDevice The address of the hub that originated this message. Mandatory.
+ */
+@Serializable
+@SerialName("hub.deviceDetached")
+public data class DeviceDetachedMessage(
+    override val time: Instant,
+    public val deviceName: Name,
+    override val sourceDevice: Address,
+    override val targetDevice: Address? = null,
+    override val requestId: String? = null,
+    override val correlationId: CorrelationId? = null,
+) : DeviceMessage {
+    override fun changeSource(block: (Name) -> Name): DeviceDetachedMessage =
+        copy(sourceDevice = sourceDevice.copy(deviceName = block(sourceDevice.deviceName)))
 }

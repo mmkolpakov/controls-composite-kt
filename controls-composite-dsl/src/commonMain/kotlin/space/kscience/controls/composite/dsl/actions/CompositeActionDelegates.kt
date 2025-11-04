@@ -1,7 +1,9 @@
 package space.kscience.controls.composite.dsl.actions
 
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.serializer
+import space.kscience.controls.composite.dsl.ActionDelegateProvider
 import space.kscience.controls.composite.dsl.DeviceSpecification
 import space.kscience.controls.composite.dsl.properties.ActionDescriptorBuilder
 import space.kscience.controls.composite.model.contracts.Device
@@ -11,6 +13,7 @@ import space.kscience.controls.composite.model.features.PlanExecutorFeature
 import space.kscience.controls.composite.model.features.TaskExecutorFeature
 import space.kscience.controls.composite.model.meta.*
 import space.kscience.controls.composite.model.plans.TransactionPlan
+import space.kscience.controls.composite.model.serialization.serializable
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.MetaConverter
 import space.kscience.dataforge.meta.MetaConverter.Companion.meta
@@ -21,34 +24,29 @@ import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
 
 /**
- * A base delegate for creating a device action specification. This is the generic entry point
- * used by more specialized, type-safe action delegates like [unitAction] or [metaAction].
- *
- * This function should be used within a [space.kscience.controls.composite.dsl.DeviceSpecification] to define an action.
- * The resulting [DeviceActionSpec] is **automatically registered** in the blueprint being constructed.
- *
- * @param D The type of the device contract.
- * @param I The input type of the action.
- * @param O The output type of the action.
- * @param inputConverter A [MetaConverter] to handle serialization of the input type.
- * @param outputConverter A [MetaConverter] to handle serialization of the output type.
- * @param descriptorBuilder A DSL block to configure the action's static [ActionDescriptor], including its description,
- *                          metadata, and links to the operational FSM.
- * @param name An optional explicit name for the action. If not provided, the delegated property name is used.
- * @param execute A suspendable lambda that defines the action's runtime logic. It receives the device instance (`this`)
- *                and the action's input as parameters.
- * @return A [PropertyDelegateProvider] for a read-only property that holds the created [DeviceActionSpec].
+ * A centralized, internal factory for creating action delegate providers.
+ * This function encapsulates the boilerplate for creating and registering a [DeviceActionSpec].
+ * It handles both inline logic (`execute` lambda) and external logic (`logicId`).
  */
-public fun <D : Device, I, O> DeviceSpecification<D>.action(
+@PublishedApi
+internal fun <D : Device, I, O> createActionDelegateProvider(
+    specProvider: DeviceSpecification<D>.() -> Unit,
+    name: Name?,
     inputConverter: MetaConverter<I>,
     outputConverter: MetaConverter<O>,
-    descriptorBuilder: ActionDescriptorBuilder.() -> Unit = {},
-    name: Name? = null,
-    execute: suspend D.(input: I) -> O?,
-): PropertyDelegateProvider<DeviceSpecification<D>, ReadOnlyProperty<DeviceSpecification<D>, DeviceActionSpec<D, I, O>>> {
+    descriptorBuilder: ActionDescriptorBuilder.() -> Unit,
+    execute: (suspend D.(input: I) -> O?)?,
+    logicId: Name? = null,
+    logicVersionConstraint: String? = null
+): ActionDelegateProvider<D, I, O> {
     return PropertyDelegateProvider { thisRef, property ->
+        thisRef.apply(specProvider)
         val actionName = name ?: property.name.parseAsName()
-        val dslBuilder = ActionDescriptorBuilder(actionName).apply(descriptorBuilder)
+        val dslBuilder = ActionDescriptorBuilder(actionName).apply {
+            this.logicId = logicId
+            this.logicVersionConstraint = logicVersionConstraint
+            descriptorBuilder()
+        }
         val descriptor = dslBuilder.build()
 
         val devAction = object : DeviceActionSpec<D, I, O> {
@@ -60,10 +58,15 @@ public fun <D : Device, I, O> DeviceSpecification<D>.action(
             override val operationalSuccessEventTypeName: String? get() = descriptor.operationalSuccessEventTypeName
             override val operationalFailureEventTypeName: String? get() = descriptor.operationalFailureEventTypeName
 
-            override suspend fun execute(device: D, input: I): O? =
-                withContext(device.coroutineContext) { device.execute(input) }
+            override suspend fun execute(device: D, input: I): O? = when {
+                execute != null -> withContext(device.coroutineContext) { device.execute(input) }
+                logicId != null -> error(
+                    "Action '$actionName' is backed by external logic '$logicId' and cannot be executed directly. " +
+                            "The runtime must resolve it via an ActionLogicProvider."
+                )
+                else -> error("Neither inline logic nor external logicId is provided for action '$actionName'.")
+            }
         }
-        // Automatic registration in the specification builder
         thisRef.registerActionSpec(devAction)
         ReadOnlyProperty { _, _ -> devAction }
     }
@@ -71,10 +74,69 @@ public fun <D : Device, I, O> DeviceSpecification<D>.action(
 
 
 /**
- * Declares a device action that takes no input ([Unit]) and produces no output ([Unit]).
- * This is the most common type of action for simple commands.
- * To link this action to an operational FSM event, use the `triggers` function
- * inside the `descriptorBuilder` block.
+ * A base delegate for creating a device action specification with an inline implementation.
+ * The visibility of the action is determined by the scope (`public`, `private`, etc.) in which this delegate is used.
+ * The resulting [DeviceActionSpec] is **automatically registered** in the blueprint being constructed.
+ *
+ * This function should be used within a [space.kscience.controls.composite.dsl.DeviceSpecification] to define an action.
+ *
+ * @param D The type of the device contract.
+ * @param I The input type of the action.
+ * @param O The output type of the action.
+ * @param inputConverter A [MetaConverter] to handle serialization of the input type.
+ * @param outputConverter A [MetaConverter] to handle serialization of the output type.
+ * @param descriptorBuilder A DSL block to configure the action's static [ActionDescriptor].
+ * @param name An optional explicit name for the action. If not provided, the delegated property name is used.
+ * @param execute A suspendable lambda that defines the action's runtime logic.
+ * @return A [PropertyDelegateProvider] for a read-only property that holds the created [DeviceActionSpec].
+ */
+public fun <D : Device, I, O> DeviceSpecification<D>.action(
+    inputConverter: MetaConverter<I>,
+    outputConverter: MetaConverter<O>,
+    descriptorBuilder: ActionDescriptorBuilder.() -> Unit = {},
+    name: Name? = null,
+    execute: suspend D.(input: I) -> O?,
+): ActionDelegateProvider<D, I, O> = createActionDelegateProvider(
+    specProvider = {},
+    name = name,
+    inputConverter = inputConverter,
+    outputConverter = outputConverter,
+    descriptorBuilder = descriptorBuilder,
+    execute = execute
+)
+
+
+/**
+ * A base delegate for creating a device action specification that references an external logic component.
+ * This overload does not take an `execute` lambda. Instead, it relies on the runtime to resolve the
+ * `logicId` to a [space.kscience.controls.composite.model.contracts.DeviceActionLogic] implementation.
+ *
+ * @param logicId The unique [Name] of the external action logic to be resolved by the runtime.
+ * @param logicVersionConstraint An optional version constraint for the external logic.
+ * @see action for other parameters.
+ */
+public fun <D : Device, I, O> DeviceSpecification<D>.action(
+    inputConverter: MetaConverter<I>,
+    outputConverter: MetaConverter<O>,
+    logicId: Name,
+    logicVersionConstraint: String? = null,
+    descriptorBuilder: ActionDescriptorBuilder.() -> Unit = {},
+    name: Name? = null,
+): ActionDelegateProvider<D, I, O> = createActionDelegateProvider(
+    specProvider = {},
+    name = name,
+    inputConverter = inputConverter,
+    outputConverter = outputConverter,
+    descriptorBuilder = descriptorBuilder,
+    execute = null,
+    logicId = logicId,
+    logicVersionConstraint = logicVersionConstraint
+)
+
+
+/**
+ * Declares a device action that takes no input ([Unit]) and produces no output ([Unit]),
+ * with an inline implementation. This is the most common type of action for simple commands.
  *
  * @see action
  */
@@ -87,9 +149,22 @@ public fun <D : Device> DeviceSpecification<D>.unitAction(
 ) { execute() }
 
 /**
- * Declares a device action that takes a [Meta] object as input and returns a [Meta] object as output.
- * This is useful for generic or complex actions where strong typing of inputs and outputs is not required,
- * allowing for flexible, data-driven commands.
+ * Declares a device action that takes no input and produces no output, implemented by external logic.
+ *
+ * @see action
+ */
+public fun <D : Device> DeviceSpecification<D>.unitAction(
+    logicId: Name,
+    logicVersionConstraint: String? = null,
+    descriptorBuilder: ActionDescriptorBuilder.() -> Unit = {},
+    name: Name? = null,
+): PropertyDelegateProvider<DeviceSpecification<D>, ReadOnlyProperty<DeviceSpecification<D>, DeviceActionSpec<D, Unit, Unit>>> = action(
+    MetaConverter.unit, MetaConverter.unit, logicId, logicVersionConstraint, descriptorBuilder, name
+)
+
+/**
+ * Declares a device action that takes a [Meta] object as input and returns a [Meta] object as output,
+ * with an inline implementation.
  *
  * @see action
  */
@@ -102,61 +177,98 @@ public fun <D : Device> DeviceSpecification<D>.metaAction(
 )
 
 /**
- * Declares a device action that is implemented by a `dataforge-data` `Task`.
- * This function is constrained to device contracts `D` that implement [TaskExecutorDevice], ensuring
- * compile-time safety. Using this function automatically adds [TaskExecutorFeature] to the blueprint.
+ * Declares a device action that takes a [Meta] object as input and returns a [Meta] object,
+ * implemented by external logic.
  *
- * The runtime is responsible for discovering the `TaskBlueprint` by its ID and invoking
- * [TaskExecutorDevice.executeTask]. The local `execute` block of this action spec serves as a safeguard,
- * throwing an error to prevent direct execution by a non-task-aware runtime.
+ * @see action
+ */
+public fun <D : Device> DeviceSpecification<D>.metaAction(
+    logicId: Name,
+    logicVersionConstraint: String? = null,
+    descriptorBuilder: ActionDescriptorBuilder.() -> Unit = {},
+    name: Name? = null,
+): PropertyDelegateProvider<DeviceSpecification<D>, ReadOnlyProperty<DeviceSpecification<D>, DeviceActionSpec<D, Meta, Meta>>> = action(
+    meta, meta, logicId, logicVersionConstraint, descriptorBuilder, name
+)
+
+/**
+ * A base delegate for creating a task-based device action, accepting explicit serializers.
+ *
+ * This version is not inline and requires manually providing the serializers for input and output types.
+ * It is the most flexible way to define a task action, especially when dealing with complex generic types
+ * (like `List<T>` or `Map<K,V>`) for which the compiler cannot infer a serializer automatically.
  *
  * @param D The device contract, which **must** implement [TaskExecutorDevice].
- * @param I The input type for the task, must be `@Serializable`.
- * @param O The output type for the task, must be `@Serializable`.
+ * @param I The input type for the task.
+ * @param O The output type for the task.
  * @param taskBlueprintId The unique identifier of the `TaskBlueprint` to be executed.
+ * @param inputSerializer The explicit [KSerializer] for the input type `I`.
+ * @param outputSerializer The explicit [KSerializer] for the output type `O`.
+ * @param distributable If `true`, the task is marked as a candidate for execution on a remote compute grid.
  * @param descriptorBuilder A DSL block for further configuring the action's descriptor.
  * @param name An optional explicit name for the action.
+ * @return A [PropertyDelegateProvider] for the created [DeviceActionSpec].
+ */
+@OptIn(DFExperimental::class)
+public inline fun <reified I, O, D> DeviceSpecification<D>.taskAction(
+    taskBlueprintId: String,
+    inputSerializer: KSerializer<I>,
+    outputSerializer: KSerializer<O>,
+    distributable: Boolean = false,
+    crossinline descriptorBuilder: ActionDescriptorBuilder.() -> Unit = {},
+    name: Name? = null,
+): ActionDelegateProvider<D, I, O> where D : Device, D : TaskExecutorDevice {
+    val executeLogic: suspend D.(I) -> O = {
+        error(
+            "Action '${name ?: "anonymous"}' on device '${this.name}' is backed by a DataForge Task. " +
+                    "It must be executed by a task-aware runtime via the 'TaskExecutorDevice.executeTask' contract, not directly."
+        )
+    }
+
+    return createActionDelegateProvider(
+        specProvider = { registerFeature(TaskExecutorFeature(listOf(taskBlueprintId))) },
+        name = name,
+        inputConverter = MetaConverter.serializable(inputSerializer),
+        outputConverter = MetaConverter.serializable(outputSerializer),
+        descriptorBuilder = {
+            this.taskBlueprintId = taskBlueprintId
+            this.distributable = distributable
+            this.taskInputTypeName = inputSerializer.descriptor.serialName
+            this.taskOutputTypeName = outputSerializer.descriptor.serialName
+            descriptorBuilder()
+        },
+        execute = executeLogic
+    )
+}
+
+/**
+ * Declares a device action that is implemented by a `dataforge-data` `Task`,
+ * inferring serializers for simple, non-generic types.
+ *
+ * This is a convenience wrapper around the more explicit `taskAction` that accepts serializers.
+ * It uses `reified` type parameters to automatically find serializers for `I` and `O`.
+ * This is the recommended approach for tasks with simple, `@Serializable` input/output classes.
+ *
+ * For complex generic types, use the overload that accepts explicit `KSerializer` instances.
+ *
+ * @see taskAction
  */
 @OptIn(DFExperimental::class)
 public inline fun <reified I, reified O, D> DeviceSpecification<D>.taskAction(
     taskBlueprintId: String,
-    crossinline descriptorBuilder: ActionDescriptorBuilder.() -> Unit = {},
+    distributable: Boolean = false,
+    noinline descriptorBuilder: ActionDescriptorBuilder.() -> Unit = {},
     name: Name? = null,
-): PropertyDelegateProvider<DeviceSpecification<D>, ReadOnlyProperty<DeviceSpecification<D>, DeviceActionSpec<D, I, O>>> where D : Device, D : TaskExecutorDevice {
-    return PropertyDelegateProvider { thisRef, property ->
-        // Automatically register the required feature for this capability.
-        thisRef.registerFeature(TaskExecutorFeature(listOf(taskBlueprintId)))
+): ActionDelegateProvider<D, I, O> where D : Device, D : TaskExecutorDevice =
+    taskAction(
+        taskBlueprintId = taskBlueprintId,
+        inputSerializer = serializer<I>(),
+        outputSerializer = serializer<O>(),
+        distributable = distributable,
+        descriptorBuilder = descriptorBuilder,
+        name = name
+    )
 
-        val actionName = name ?: property.name.parseAsName()
-        val dslBuilder = ActionDescriptorBuilder(actionName).apply {
-            this.taskBlueprintId = taskBlueprintId
-            this.taskInputTypeName = serializer<I>().descriptor.serialName
-            this.taskOutputTypeName = serializer<O>().descriptor.serialName
-            descriptorBuilder()
-        }
-        val descriptor = dslBuilder.build()
-
-        val devAction = object : DeviceActionSpec<D, I, O> {
-            override val name: Name = actionName
-            override val descriptor: ActionDescriptor = descriptor
-            override val inputConverter: MetaConverter<I> = MetaConverter.serializable()
-            override val outputConverter: MetaConverter<O> = MetaConverter.serializable()
-            override val operationalEventTypeName: String? get() = descriptor.operationalEventTypeName
-            override val operationalSuccessEventTypeName: String? get() = descriptor.operationalSuccessEventTypeName
-            override val operationalFailureEventTypeName: String? get() = descriptor.operationalFailureEventTypeName
-
-            override suspend fun execute(device: D, input: I): O {
-                error(
-                    "Action '$actionName' on device '${device.name}' is backed by a DataForge Task. " +
-                            "It must be executed by a task-aware runtime via the 'TaskExecutorDevice.executeTask' contract, not directly."
-                )
-            }
-        }
-
-        thisRef.registerActionSpec(devAction)
-        ReadOnlyProperty { _, _ -> devAction }
-    }
-}
 
 /**
  * Declares a device action implemented by a [TransactionPlan].
@@ -181,26 +293,20 @@ public fun <D> DeviceSpecification<D>.plan(
     val plan = plan(block)
     val planMeta = plan.toMeta()
 
-    return PropertyDelegateProvider { thisRef, property ->
-        // Automatically register the required feature for this capability.
-        thisRef.registerFeature(PlanExecutorFeature())
-
-        val actionName = name ?: property.name.parseAsName()
-        val action = unitAction(
-            descriptorBuilder = {
-                meta {
-                    "plan" put planMeta
-                }
-                // Apply user-provided configuration
-                descriptorBuilder()
-            },
-            name = actionName,
-        ) {
+    return createActionDelegateProvider(
+        specProvider = { registerFeature(PlanExecutorFeature()) },
+        name = name,
+        inputConverter = MetaConverter.unit,
+        outputConverter = MetaConverter.unit,
+        descriptorBuilder = {
+            meta { "plan" put planMeta }
+            descriptorBuilder()
+        },
+        execute = {
             error(
-                "Action '$actionName' on device '${this.name}' is backed by a TransactionPlan. " +
+                "Action '${name ?: "anonymous"}' on device '${this.name}' is backed by a TransactionPlan. " +
                         "It must be executed by a plan-aware runtime via the 'PlanExecutorDevice.executePlan' contract, not directly."
             )
         }
-        action.provideDelegate(thisRef, property)
-    }
+    )
 }

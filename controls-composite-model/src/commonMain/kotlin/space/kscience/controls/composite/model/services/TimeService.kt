@@ -14,15 +14,21 @@ import kotlin.time.Instant
  * In a distributed SCADA system, it is crucial that all components share a common
  * understanding of time for correct event ordering and data timestamping.
  *
- * The runtime can provide an implementation that uses NTP or other time synchronization protocols.
+ * The runtime can provide an implementation that uses NTP or other time synchronization protocols,
+ * or a virtual clock for simulations.
  */
 public interface TimeService : Plugin {
     override val tag: PluginTag get() = Companion.tag
 
     /**
-     * @return The current, high-precision, synchronized time.
+     * The [Clock] instance provided by this service.
      */
-    public fun now(): Instant
+    public val clock: Clock
+
+    /**
+     * @return The current, high-precision, synchronized time. A shortcut for `clock.now()`.
+     */
+    public fun now(): Instant = clock.now()
 
     public companion object : PluginFactory<TimeService> {
         override val tag: PluginTag = PluginTag("device.time", group = PluginTag.DATAFORGE_GROUP)
@@ -40,5 +46,5 @@ public interface TimeService : Plugin {
  */
 private class SystemTimeService(meta: Meta) : AbstractPlugin(meta), TimeService {
     override val tag: PluginTag get() = TimeService.tag
-    override fun now(): Instant = Clock.System.now()
+    override val clock: Clock = Clock.System
 }

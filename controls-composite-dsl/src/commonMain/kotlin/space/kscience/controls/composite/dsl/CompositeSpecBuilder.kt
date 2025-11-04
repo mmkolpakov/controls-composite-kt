@@ -1,8 +1,9 @@
 package space.kscience.controls.composite.dsl
 
 import ru.nsk.kstatemachine.statemachine.BuildingStateMachine
-import ru.nsk.kstatemachine.statemachine.StateMachine
 import space.kscience.controls.composite.dsl.children.ChildConfigBuilder
+import space.kscience.controls.composite.dsl.lifecycle.DriverLogicBuilder
+import space.kscience.controls.composite.model.contracts.runtime.HydratableDeviceState
 import space.kscience.controls.composite.model.*
 import space.kscience.controls.composite.model.contracts.*
 import space.kscience.controls.composite.model.contracts.runtime.DeviceFlows
@@ -10,15 +11,22 @@ import space.kscience.controls.composite.model.discovery.BlueprintRegistry
 import space.kscience.controls.composite.model.features.Feature
 import space.kscience.controls.composite.model.features.LifecycleFeature
 import space.kscience.controls.composite.model.features.OperationalFsmFeature
+import space.kscience.controls.composite.model.features.OperationalGuardsFeature
+import space.kscience.controls.composite.model.features.TimedPredicateGuardSpec
+import space.kscience.controls.composite.model.features.ValueChangeGuardSpec
 import space.kscience.controls.composite.model.lifecycle.LifecycleContext
 import space.kscience.controls.composite.model.meta.DeviceActionSpec
 import space.kscience.controls.composite.model.meta.DevicePropertySpec
+import space.kscience.controls.composite.model.meta.DeviceStreamSpec
+import space.kscience.controls.composite.model.meta.MemberTag
+import space.kscience.controls.composite.dsl.lifecycle.DriverLogicFragment
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.ContextAware
 import space.kscience.dataforge.context.logger
 import space.kscience.dataforge.context.warn
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.MutableMeta
+import space.kscience.dataforge.meta.ObservableMeta
 import space.kscience.dataforge.names.Name
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -39,21 +47,68 @@ public annotation class CompositeSpecDsl
  * This builder is used to configure other aspects like child components, lifecycle, and the device driver.
  *
  * @param D The type of the device contract being specified.
+ * @property context The [Context] for this builder, used for logging and accessing plugins.
  */
 @CompositeSpecDsl
 public class CompositeSpecBuilder<D : Device>(
     override val context: Context,
 ) : ContextAware {
 
+    // Storage for public members
     internal val _properties = mutableMapOf<Name, DevicePropertySpec<D, *>>()
     internal val _actions = mutableMapOf<Name, DeviceActionSpec<D, *, *>>()
+    internal val _streams = mutableMapOf<Name, DeviceStreamSpec<D>>()
+
+    // Storage for all non-public members (protected, internal, private)
+    internal val _protectedProperties = mutableMapOf<Name, DevicePropertySpec<D, *>>()
+    internal val _protectedActions = mutableMapOf<Name, DeviceActionSpec<D, *, *>>()
+    internal val _protectedStreams = mutableMapOf<Name, DeviceStreamSpec<D>>()
+
     internal val _children = mutableMapOf<Name, ChildComponentConfig>()
+    internal val _tags = mutableSetOf<MemberTag>()
     internal val _peerConnections = mutableMapOf<Name, PeerBlueprint<out PeerConnection>>()
     private var _lifecycle: suspend BuildingStateMachine.(device: D, context: LifecycleContext<D>) -> Unit = { _, _ -> }
     private var _operationalFsm: (suspend BuildingStateMachine.(device: D, context: LifecycleContext<D>) -> Unit)? = null
     private var _operationalFsmStates: Set<String> = emptySet()
-    private var deviceDriver: DeviceDriver<D>? = null
+    private var userDeviceDriver: DeviceDriver<D>? = null
+
+    // Internal maps to hold driver logic
+    @PublishedApi
+    internal val propertyReadLogic: MutableMap<Name, suspend D.() -> Any?> = mutableMapOf()
+
+    @PublishedApi
+    internal val propertyWriteLogic: MutableMap<Name, suspend D.(Any?) -> Unit> = mutableMapOf()
+
+    @PublishedApi
+    internal val actionExecutors: MutableMap<Name, suspend D.(Meta?) -> Meta?> = mutableMapOf()
+
+    // Placeholders for lifecycle logic from driverLogic block
+    @PublishedApi
+    internal var onAttachLogic: suspend D.() -> Unit = {}
+    @PublishedApi
+    internal var onStartLogic: suspend D.() -> Unit = {}
+    @PublishedApi
+    internal var afterStartLogic: suspend D.() -> Unit = {}
+    @PublishedApi
+    internal var onStopLogic: suspend D.() -> Unit = {}
+    @PublishedApi
+    internal var afterStopLogic: suspend D.() -> Unit = {}
+    @PublishedApi
+    internal var onResetLogic: suspend D.() -> Unit = {}
+    @PublishedApi
+    internal var onFailLogic: suspend D.(Throwable?) -> Unit = { _ -> }
+    @PublishedApi
+    internal var onDetachLogic: suspend D.() -> Unit = {}
+
+    @OptIn(InternalControlsApi::class)
+    internal val registeredHydrators: MutableMap<Name, HydratableDeviceState<D, *>> = mutableMapOf()
+
     internal val _features = mutableMapOf<String, Feature>()
+
+    /**
+     * The version for the blueprint being built.
+     */
+    public var version: String = "0.1.0"
 
     /**
      * A block of code defining the internal reactive logic of the device.
@@ -76,23 +131,105 @@ public class CompositeSpecBuilder<D : Device>(
     }
 
     /**
-     * Defines the driver for the device. The factory lambda receives the parent's [Context] and [Meta].
-     * The driver is responsible for creating the device instance and handling its physical interactions.
-     * A driver **must** be defined for a blueprint to be valid.
+     * Adds a semantic [MemberTag] to the blueprint itself, not to a specific property or action.
+     * This is the primary mechanism for high-level classification of a device, for example,
+     * to declare that it conforms to a specific profile or "dialect".
+     *
+     * Example:
+     * ```     * addTag(ProfileTag("yandex.light.dimmable", "1.0"))
+     * ```
+     *
+     * @param tag The [MemberTag] instance to add to the blueprint's tag set.
      */
-    public fun driver(factory: (context: Context, meta: Meta) -> D) {
-        this.deviceDriver = DeviceDriver { context, meta -> factory(context, meta) }
-    }
-
-    private fun checkNameCollision(name: Name) {
-        require(!_properties.containsKey(name)) { "Property with name '$name' is already registered." }
-        require(!_actions.containsKey(name)) { "Action with name '$name' is already registered." }
-        require(!_children.containsKey(name)) { "Child with name '$name' is already registered." }
-        require(!_peerConnections.containsKey(name)) { "Peer connection with name '$name' is already registered." }
+    public fun addTag(tag: MemberTag) {
+        _tags.add(tag)
     }
 
     /**
-     * Registers a pre-constructed [DevicePropertySpec]. Called automatically by property delegates.
+     * Defines the implementation logic for the device's properties, actions, and lifecycle hooks.
+     * This block provides a type-safe way to connect the declarative API of a [DeviceSpecification]
+     * to its concrete behavior. This is the **only** way to define property and action logic.
+     *
+     * @param spec An instance of the [DeviceSpecification] this logic implements. This is used
+     *             for type inference and to ensure that the implemented logic matches the declared API.
+     * @param fragments Optional, reusable [DriverLogicFragment]s to be applied before the main logic block.
+     * @param block The DSL block where the logic is defined using `onRead`, `onWrite`, `onExecute`, etc.
+     */
+    public fun driverLogic(
+        spec: DeviceSpecification<D>,
+        vararg fragments: DriverLogicFragment<D>,
+        block: DriverLogicBuilder<D>.() -> Unit
+    ) {
+        val builder = DriverLogicBuilder(spec).apply {
+            // Apply fragments first. Logic in the main block can override fragments.
+            fragments.forEach { it.apply(this) }
+            // Apply the main logic block.
+            block()
+        }
+        propertyReadLogic.putAll(builder.propertyReaders)
+        propertyWriteLogic.putAll(builder.propertyWriters)
+        actionExecutors.putAll(builder.actionExecutors)
+        onAttachLogic = builder.onAttachLogic
+        onStartLogic = builder.onStartLogic
+        afterStartLogic = builder.afterStartLogic
+        onStopLogic = builder.onStopLogic
+        afterStopLogic = builder.afterStopLogic
+        onResetLogic = builder.onResetLogic
+        onFailLogic = builder.onFailLogic
+        onDetachLogic = builder.onDetachLogic
+    }
+
+    /**
+     * Defines the driver for the device. The factory lambda receives the parent's [Context] and an [ObservableMeta].
+     * The driver is responsible for creating the device instance and handling its lifecycle hooks.
+     * The logic for properties and actions MUST be defined in a separate [driverLogic] block.
+     * A driver **must** be defined for a blueprint to be valid.
+     *
+     * @param factory A lambda that creates an instance of the device [D].
+     */
+    public fun driver(factory: (context: Context, meta: ObservableMeta) -> D) {
+        this.userDeviceDriver = DeviceDriver { context, meta -> factory(context, meta) }
+    }
+
+    /**
+     * Defines the implementation logic for the device's properties, actions, and lifecycle hooks.
+     * This block provides a type-safe way to connect the declarative API of a [DeviceSpecification]
+     * to its concrete behavior. This is the **only** way to define property and action logic.
+     *
+     * @param spec An instance of the [DeviceSpecification] this logic implements. This is used
+     *             for type inference and to ensure that the implemented logic matches the declared API.
+     * @param block The DSL block where the logic is defined using `onRead`, `onWrite`, `onExecute`, etc.
+     */
+    public fun driverLogic(spec: DeviceSpecification<D>, block: DriverLogicBuilder<D>.() -> Unit) {
+        val builder = DriverLogicBuilder(spec).apply(block)
+        propertyReadLogic.putAll(builder.propertyReaders)
+        propertyWriteLogic.putAll(builder.propertyWriters)
+        actionExecutors.putAll(builder.actionExecutors)
+        onAttachLogic = builder.onAttachLogic
+        onStartLogic = builder.onStartLogic
+        afterStartLogic = builder.afterStartLogic
+        onStopLogic = builder.onStopLogic
+        afterStopLogic = builder.afterStopLogic
+        onResetLogic = builder.onResetLogic
+        onFailLogic = builder.onFailLogic
+        onDetachLogic = builder.onDetachLogic
+    }
+
+
+    private fun checkNameCollision(name: Name) {
+        require(!_properties.containsKey(name)) { "A public property with name '$name' is already registered." }
+        require(!_protectedProperties.containsKey(name)) { "A non-public property with name '$name' is already registered." }
+        require(!_actions.containsKey(name)) { "A public action with name '$name' is already registered." }
+        require(!_protectedActions.containsKey(name)) { "A non-public action with name '$name' is already registered." }
+        require(!_streams.containsKey(name)) { "A public stream with name '$name' is already registered." }
+        require(!_protectedStreams.containsKey(name)) { "A non-public stream with name '$name' is already registered." }
+        require(!_children.containsKey(name)) { "A child with name '$name' is already registered." }
+        require(!_peerConnections.containsKey(name)) { "A peer connection with name '$name' is already registered." }
+    }
+
+    /**
+     * Registers a pre-constructed public [DevicePropertySpec]. Called automatically by property delegates.
+     * @param spec The property specification to register.
      * @throws IllegalArgumentException if a component with the same name already exists.
      */
     public fun registerProperty(spec: DevicePropertySpec<D, *>) {
@@ -100,14 +237,50 @@ public class CompositeSpecBuilder<D : Device>(
         _properties[spec.name] = spec
     }
 
+    /**
+     * Registers a pre-constructed non-public (protected, internal, or private) [DevicePropertySpec].
+     * @param spec The property specification to register.
+     * @throws IllegalArgumentException if a component with the same name already exists.
+     */
+    internal fun registerProtectedProperty(spec: DevicePropertySpec<D, *>) {
+        checkNameCollision(spec.name)
+        _protectedProperties[spec.name] = spec
+    }
 
     /**
-     * Registers a pre-constructed [DeviceActionSpec]. Called automatically by action delegates.
+     * Registers a pre-constructed public [DeviceActionSpec]. Called automatically by action delegates.
      * @throws IllegalArgumentException if a component with the same name already exists.
      */
     public fun registerAction(spec: DeviceActionSpec<D, *, *>) {
         checkNameCollision(spec.name)
         _actions[spec.name] = spec
+    }
+
+    /**
+     * Registers a pre-constructed non-public [DeviceActionSpec].
+     * @throws IllegalArgumentException if a component with the same name already exists.
+     */
+    internal fun registerProtectedAction(spec: DeviceActionSpec<D, *, *>) {
+        checkNameCollision(spec.name)
+        _protectedActions[spec.name] = spec
+    }
+
+    /**
+     * Registers a pre-constructed public [DeviceStreamSpec]. Called automatically by stream delegates.
+     * @throws IllegalArgumentException if a component with the same name already exists.
+     */
+    public fun registerStream(spec: DeviceStreamSpec<D>) {
+        checkNameCollision(spec.name)
+        _streams[spec.name] = spec
+    }
+
+    /**
+     * Registers a pre-constructed non-public [DeviceStreamSpec].
+     * @throws IllegalArgumentException if a component with the same name already exists.
+     */
+    internal fun registerProtectedStream(spec: DeviceStreamSpec<D>) {
+        checkNameCollision(spec.name)
+        _protectedStreams[spec.name] = spec
     }
 
     /**
@@ -130,12 +303,15 @@ public class CompositeSpecBuilder<D : Device>(
 
     /**
      * Declares a peer connection required by this device, using a static list of addresses.
+     * A peer connection represents a direct, efficient communication link to another hub or service,
+     * typically for binary data transfer.
      *
      * @param P The type of the [PeerConnection].
      * @param driver The driver to create the connection instance.
      * @param addresses A vararg list of static [Address] objects.
      * @param failoverStrategy The strategy for handling multiple addresses.
-     * @return A [PropertyDelegateProvider] for a [PeerBlueprint].
+     * @return A [PropertyDelegateProvider] for a [PeerBlueprint]. The delegate ensures the blueprint
+     * is registered at build time.
      */
     public fun <P : PeerConnection> peer(
         driver: PeerDriver<P>,
@@ -239,24 +415,29 @@ public class CompositeSpecBuilder<D : Device>(
     }
 
     /**
-     * A type-safe and recommended way to declare a remote child.
-     * It accepts a [PeerBlueprint] instance (obtained from a `peer` delegate), which eliminates the risk of
-     * errors from incorrect or non-existent peer connection names.
+     * A type-safe and recommended way to declare a remote child device accessed via a peer connection.
+     *
+     * This function declaratively creates a proxy for a device that exists in another hub. The runtime is
+     * responsible for resolving the `hubId` from the provided `via` peer connection and combining it with
+     * the `remoteDeviceName` to construct the full network-wide address for communication. This approach
+     * eliminates redundancy and prevents configuration errors where the hub ID might not match the peer connection.
      *
      * Note: Property bindings are not supported for remote children as they imply a local, reactive data flow.
      *
-     * @param name The local name for the remote child proxy.
-     * @param blueprint The blueprint of the remote device. Used for type safety and static analysis.
-     * @param address The network-wide [Address] of the remote device.
-     * @param via The [PeerBlueprint] instance to use for communication.
-     * @param configBuilder A DSL block to configure the child's proxy (lifecycle, meta overrides).
+     * @param name The local name for the remote child proxy within this composite device.
+     * @param blueprint The blueprint of the remote device. This is used for type safety, static analysis,
+     *                  and generating the client-side proxy with the correct properties and actions.
+     * @param remoteDeviceName The local name of the target device *on the remote hub*.
+     * @param via The [PeerBlueprint] instance (typically obtained from a `peer` delegate) that defines
+     *            the connection to the remote hub.
+     * @param configBuilder A DSL block to configure the local proxy's lifecycle and metadata overrides.
      */
     public fun <C : Device> remoteChild(
         name: Name,
         blueprint: DeviceBlueprint<C>,
-        address: Address,
+        remoteDeviceName: Name,
         via: PeerBlueprint<out PeerConnection>,
-        configBuilder: ChildConfigBuilder<D, C>.() -> Unit = {}
+        configBuilder: ChildConfigBuilder<D, C>.() -> Unit = {},
     ) {
         val peerName = this._peerConnections.entries.find { it.value == via }?.key
             ?: error("Peer connection blueprint '${via.id}' is not registered in this spec. It must be declared as a property before being used.")
@@ -268,7 +449,7 @@ public class CompositeSpecBuilder<D : Device>(
         }
 
         val config = RemoteChildComponentConfig(
-            address = address,
+            remoteDeviceName = remoteDeviceName,
             peerName = peerName,
             blueprintId = blueprint.id,
             blueprintVersion = blueprint.version,
@@ -334,38 +515,71 @@ public class CompositeSpecBuilder<D : Device>(
      * This method does NOT perform validation. Validation should be done by the caller
      * using [CompositeSpecValidator.validate] and a [BlueprintRegistry].
      */
-    internal fun build(id: String): DeviceBlueprint<D> {
-        val driver = this.deviceDriver ?: error("Device driver must be defined for the blueprint '$id'.")
+    @OptIn(InternalControlsApi::class)
+    @PublishedApi
+    internal fun build(id: String, deviceContractFqName: String): DeviceBlueprint<D> {
+        val finalDriver = this.userDeviceDriver ?: error("Device driver must be defined for the blueprint '$id'.")
 
         // Auto-add LifecycleFeature if not present
         if (!_features.containsKey(Device.CAPABILITY)) {
             feature(LifecycleFeature())
         }
 
-        // Auto-add OperationalFsmFeature if an FSM is defined
-        if (this._operationalFsm != null && !_features.containsKey("ru.nsk.kstatemachine.statemachine.StateMachine")) {
-            val eventNames = _actions.values.flatMap {
+        // Auto-add OperationalFsmFeature if an FSM is defined or guards are used.
+        if (this._operationalFsm != null || _features.containsKey(OperationalGuardsFeature.CAPABILITY)) {
+            // Get events from actions
+            val actionEventNames = (_actions.values + _protectedActions.values).flatMap {
                 listOfNotNull(
                     it.operationalEventTypeName,
                     it.operationalSuccessEventTypeName,
                     it.operationalFailureEventTypeName
                 )
             }.toSet()
-            feature(OperationalFsmFeature(states = this._operationalFsmStates, events = eventNames))
+
+            // Get events from guards
+            val guardEventNames =
+                (_features[OperationalGuardsFeature.CAPABILITY] as? OperationalGuardsFeature)?.guards?.map {
+                    when (it) {
+                        is TimedPredicateGuardSpec -> it.postEventSerialName
+                        is ValueChangeGuardSpec -> it.postEventSerialName
+                    }
+                }?.toSet() ?: emptySet()
+
+
+            val existingFsmFeature = _features[OperationalFsmFeature.CAPABILITY] as? OperationalFsmFeature
+
+            val updatedFeature = OperationalFsmFeature(
+                states = this._operationalFsmStates + (existingFsmFeature?.states ?: emptySet()),
+                events = actionEventNames + guardEventNames + (existingFsmFeature?.events ?: emptySet())
+            )
+
+            feature(updatedFeature)
         }
+
 
         return SimpleDeviceBlueprint(
             id = BlueprintId(id),
+            version = this.version,
+            tags = _tags.toSet(),
+            deviceContractFqName = deviceContractFqName,
             children = _children.toMap(),
             peerConnections = _peerConnections.toMap(),
             properties = _properties.toMap(),
             actions = _actions.toMap(),
+            streams = _streams.toMap(),
             meta = this.meta,
             lifecycle = this._lifecycle,
             operationalFsm = this._operationalFsm,
             logic = this.logic,
-            driver = driver,
-            features = _features.toMap()
+            driver = finalDriver,
+            features = _features.toMap(),
+            propertyReadLogic = propertyReadLogic.toMap(),
+            propertyWriteLogic = propertyWriteLogic.toMap(),
+            actionExecutors = actionExecutors.toMap(),
+            derivedStateFactories = registeredHydrators.toMap(),
+            protectedProperties = _protectedProperties.toMap(),
+            protectedActions = _protectedActions.toMap(),
+            protectedStreams = _protectedStreams.toMap()
         )
     }
 }

@@ -2,16 +2,16 @@ package space.kscience.controls.composite.model.contracts
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import ru.nsk.kstatemachine.statemachine.BuildingStateMachine
 import space.kscience.controls.composite.model.ChildComponentConfig
 import space.kscience.controls.composite.model.DeviceMigrator
+import space.kscience.controls.composite.model.InternalControlsApi
 import space.kscience.controls.composite.model.contracts.runtime.DeviceFlows
+import space.kscience.controls.composite.model.contracts.runtime.HydratableDeviceState
 import space.kscience.controls.composite.model.features.Feature
 import space.kscience.controls.composite.model.lifecycle.LifecycleContext
-import space.kscience.controls.composite.model.meta.ActionDescriptor
-import space.kscience.controls.composite.model.meta.DeviceActionSpec
-import space.kscience.controls.composite.model.meta.DevicePropertySpec
-import space.kscience.controls.composite.model.meta.PropertyDescriptor
+import space.kscience.controls.composite.model.meta.*
 import space.kscience.controls.composite.model.serialization.serializableToMeta
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.MetaRepr
@@ -23,13 +23,16 @@ import space.kscience.dataforge.names.Name
 public data class BlueprintMeta(
     val id: BlueprintId,
     val version: String = "0.1.0",
+    val deviceContractFqName: String,
     val features: Map<String, Feature>,
     val peerConnections: Map<Name, PeerBlueprint<out PeerConnection>>,
     val children: Map<Name, ChildComponentConfig>,
     val properties: Collection<PropertyDescriptor>,
     val actions: Collection<ActionDescriptor>,
+    val streams: Collection<StreamDescriptor>,
     val meta: Meta,
     val stateMigratorId: String? = null,
+    val tags: Set<MemberTag> = emptySet(),
 ) : MetaRepr {
     override fun toMeta(): Meta = serializableToMeta(serializer(), this)
 }
@@ -39,13 +42,15 @@ public data class BlueprintMeta(
  * entire structure, behavior, and lifecycle in a declarative way.
  *
  * A blueprint is a stateless factory that combines:
- * 1.  **Structure**: Child components, properties, and actions.
- * 2.  **Behavior**: Formal definitions of the device's lifecycle and operational logic as Finite State Machines (FSMs).
- * 3.  **Instantiation**: A [DeviceDriver] to create the device instance.
+ * 1.  **Structure**: Child components, properties, actions, and data streams.
+ * 2.  **Behavior**: Formal definitions of the device's lifecycle and operational logic as Finite State Machines (FSMs),
+ *     as well as the specific implementation logic for properties and actions.
+ * 3.  **Instantiation**: A [DeviceDriver] to create the device instance and manage its lifecycle hooks.
  * 4.  **Features**: A structured description of the device's capabilities.
  * 5.  **Versioning**: A static version identifier to support evolution and migration.
+ * 6.  **Semantics**: A set of [MemberTag]s to classify the blueprint itself (e.g., as implementing a specific profile).
  *
- * Blueprints are designed to be discoverable via context plugins and are serializable to [Meta].
+ * Blueprints are designed to be discoverable via context plugins and are serializable to [Meta] (excluding behavior logic).
  *
  * @param D The type of the device this blueprint creates.
  */
@@ -64,6 +69,12 @@ public interface DeviceBlueprint<D : Device> : MetaRepr {
      * and compatibility checks.
      */
     public val version: String get() = "0.1.0"
+
+    /**
+     * A set of extensible, semantic [MemberTag]s for classifying the blueprint itself.
+     * For example, a blueprint for a Yandex Smart Home light could be tagged with a `ProfileTag("yandex.light.dimmable", "1.0")`.
+     */
+    public val tags: Set<MemberTag>
 
     /**
      * A map of features supported by this device. The key is the fully qualified name of the capability interface,
@@ -96,16 +107,22 @@ public interface DeviceBlueprint<D : Device> : MetaRepr {
     public val children: Map<Name, ChildComponentConfig>
 
     /**
-     * A map of all property specifications defined for this device.
+     * A map of all **public** property specifications defined for this device.
      * The key is the property name.
      */
     public val properties: Map<Name, DevicePropertySpec<D, *>>
 
     /**
-     * A map of all action specifications defined for this device.
+     * A map of all **public** action specifications defined for this device.
      * The key is the action name.
      */
     public val actions: Map<Name, DeviceActionSpec<D, *, *>>
+
+    /**
+     * A map of all **public** data stream specifications defined for this device.
+     * The key is the stream name.
+     */
+    public val streams: Map<Name, DeviceStreamSpec<D>>
 
     /**
      * Additional metadata for the blueprint itself. This meta is layered at the bottom
@@ -126,23 +143,53 @@ public interface DeviceBlueprint<D : Device> : MetaRepr {
     public val operationalFsm: (suspend BuildingStateMachine.(device: D, context: LifecycleContext<D>) -> Unit)?
 
     /**
-     * The driver responsible for creating the device instance and handling its physical interactions.
+     * The driver responsible for creating the device instance and handling its lifecycle hooks.
+     * This driver does NOT contain the logic for properties and actions; that logic is part of the blueprint itself.
      */
+    @InternalControlsApi
     public val driver: DeviceDriver<D>
+
+    /**
+     * The fully qualified name of the device contract interface 'D'.
+     * For runtime validation without full reflection capabilities.
+     * The DSL should populate this automatically.
+     */
+    public val deviceContractFqName: String
+
+    // --- Behavior Logic (non-serializable) ---
+
+    /** A map of suspendable lambdas that define the read logic for properties. */
+    @InternalControlsApi
+    public val propertyReadLogic: Map<Name, suspend D.() -> Any?>
+
+    /** A map of suspendable lambdas that define the write logic for mutable properties. */
+    @InternalControlsApi
+    public val propertyWriteLogic: Map<Name, suspend D.(Any?) -> Unit>
+
+    /** A map of suspendable lambdas that define the execution logic for actions. */
+    @InternalControlsApi
+    public val actionExecutors: Map<Name, suspend D.(Meta?) -> Meta?>
+
+    /** A map of factory functions to create reactive states for derived properties. */
+    @InternalControlsApi
+    public val derivedStateFactories: Map<Name, HydratableDeviceState<D, *>>
 
     /**
      * Serializes the declarative parts of the blueprint into a [Meta] object.
      * This representation is suitable for storage, network transmission, and discovery.
-     * Non-serializable parts like the driver and logic lambdas are omitted.
+     * Non-serializable parts like the driver and behavior logic are omitted.
      */
     override fun toMeta(): Meta = BlueprintMeta(
         id = id,
         version = version,
+        deviceContractFqName = deviceContractFqName,
+        tags = tags,
         features = features,
         peerConnections = peerConnections,
         children = children,
         properties = properties.values.map { it.descriptor },
         actions = actions.values.map { it.descriptor },
+        streams = streams.values.map { it.descriptor },
         meta = meta,
         stateMigratorId = stateMigratorId
     ).toMeta()
@@ -155,19 +202,37 @@ public interface DeviceBlueprint<D : Device> : MetaRepr {
 
 /**
  * A simple data-holding implementation of [DeviceBlueprint].
+ * This class stores all parts of the blueprint, including the non-serializable behavior logic.
+ * It also separates the public API members from the non-public ones, which are intended for internal
+ * use by the device driver.
+ *
+ * @property protectedProperties A map of all protected, internal, and private property specifications.
+ * @property protectedActions A map of all protected, internal, and private action specifications.
+ * @property protectedStreams A map of all protected, internal, and private stream specifications.
  */
+@OptIn(InternalControlsApi::class)
 public data class SimpleDeviceBlueprint<D : Device>(
     override val id: BlueprintId,
     override val version: String = "0.1.0",
+    override val tags: Set<MemberTag> = emptySet(),
     override val features: Map<String, Feature>,
     override val peerConnections: Map<Name, PeerBlueprint<out PeerConnection>>,
     override val children: Map<Name, ChildComponentConfig>,
     override val properties: Map<Name, DevicePropertySpec<D, *>>,
     override val actions: Map<Name, DeviceActionSpec<D, *, *>>,
+    override val streams: Map<Name, DeviceStreamSpec<D>>,
     override val meta: Meta,
-    override val lifecycle: suspend BuildingStateMachine.(device: D, context: LifecycleContext<D>) -> Unit,
-    override val operationalFsm: (suspend BuildingStateMachine.(device: D, context: LifecycleContext<D>) -> Unit)?,
-    override val driver: DeviceDriver<D>,
-    override val logic: (suspend D.(DeviceFlows) -> Unit)?,
+    @Transient override val lifecycle: suspend BuildingStateMachine.(device: D, context: LifecycleContext<D>) -> Unit,
+    @Transient override val operationalFsm: (suspend BuildingStateMachine.(device: D, context: LifecycleContext<D>) -> Unit)?,
+    @Transient override val driver: DeviceDriver<D>,
+    @Transient override val logic: (suspend D.(DeviceFlows) -> Unit)?,
     override val stateMigratorId: String? = null,
+    override val deviceContractFqName: String,
+    @Transient override val propertyReadLogic: Map<Name, suspend D.() -> Any?>,
+    @Transient override val propertyWriteLogic: Map<Name, suspend D.(Any?) -> Unit>,
+    @Transient override val actionExecutors: Map<Name, suspend D.(Meta?) -> Meta?>,
+    @Transient override val derivedStateFactories: Map<Name, HydratableDeviceState<D, *>>,
+    internal val protectedProperties: Map<Name, DevicePropertySpec<D, *>> = emptyMap(),
+    internal val protectedActions: Map<Name, DeviceActionSpec<D, *, *>> = emptyMap(),
+    internal val protectedStreams: Map<Name, DeviceStreamSpec<D>> = emptyMap(),
 ) : DeviceBlueprint<D>

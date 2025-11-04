@@ -13,3 +13,6 @@ This module forms the foundational layer of the `controls-composite-kt` framewor
 - **Declarative Specifications**: Includes `DevicePropertySpec` and `DeviceActionSpec` for statically defining the capabilities of a device.
 - **Lifecycle Model**: Provides the formal `DeviceLifecycleState` and `DeviceLifecycleEvent` models, which are used by the KStateMachine-based lifecycle management.
 - **State Primitives**: Defines the reactive `DeviceState` and `MutableDeviceState` interfaces, which are the fundamental building blocks for device properties in the `controls-composite-dsl` module.
+- **Streaming Contracts**:
+    -   Defines the `StreamPort` contract for continuous, bidirectional binary data streams, built on `kotlinx-io`.
+    -   Includes `DeviceStreamSpec` for declaratively defining a device's streaming capabilities, making them a first-class citizen alongside properties and actions.

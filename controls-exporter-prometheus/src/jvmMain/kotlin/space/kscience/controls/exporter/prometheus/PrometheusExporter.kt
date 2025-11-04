@@ -41,7 +41,7 @@ public class PrometheusExporter(private val context: Context, private val meta: 
 
     private val job = SupervisorJob()
     private val scope = CoroutineScope(context.coroutineContext + job)
-    private val server: ApplicationEngine
+    private val server: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration>
 
     // --- Internal state for Prometheus-compatible values ---
     private val prometheusGauges = ConcurrentHashMap<MetricId, Double>()
@@ -58,6 +58,7 @@ public class PrometheusExporter(private val context: Context, private val meta: 
         val sum: Double,
         val count: Long,
         val buckets: List<Double>,
+//        TODO Property with 'Array' type in a 'data' class: it is recommended to override 'equals()' and 'hashCode()'
         val bucketCounts: LongArray,
     )
 

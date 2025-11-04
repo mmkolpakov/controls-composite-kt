@@ -6,8 +6,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.Serializable
+import space.kscience.controls.composite.model.InternalControlsApi
 import space.kscience.controls.composite.model.contracts.Device
 import space.kscience.dataforge.meta.Meta
+import space.kscience.dataforge.names.Name
 
 /**
  * A serializable container for a device's state snapshot, coupling the state data
@@ -81,6 +83,7 @@ public class StatefulDeviceLogic {
      * Clears the dirty flag only if the current state version matches the expected version.
      * @return `true` if the flag was cleared, `false` otherwise.
      */
+    @InternalControlsApi
     public fun clearDirtyFlag(expectedVersion: Long): Boolean {
         // Atomic compare-and-set operation
         val updated = _dirtyVersion.compareAndSet(expectedVersion, expectedVersion)
@@ -150,6 +153,7 @@ public interface StatefulDevice : Device {
      *
      * @return `true` if the flag was cleared, `false` otherwise (meaning the state has changed again).
      */
+    @OptIn(InternalControlsApi::class)
     public suspend fun clearDirtyFlag(expectedVersion: Long): Boolean = statefulLogic.clearDirtyFlag(expectedVersion)
 
     /**
@@ -160,4 +164,34 @@ public interface StatefulDevice : Device {
      * @param snapshot The [StateSnapshot] object containing the state to restore.
      */
     public suspend fun restore(snapshot: StateSnapshot)
+}
+
+/**
+ * An extension of [StatefulDevice] for devices that need to persist large binary data
+ * (or "blobs"), such as internal database files or configuration artifacts, which are not
+ * well-suited for storage within a `Meta` object.
+ *
+ * The runtime persistence layer should check if a device implements this interface.
+ * If it does, the runtime will call `snapshotBlobs` in addition to `snapshot` and
+ * pass the results to a `SnapshotStore` that can handle binary data.
+ */
+public interface StatefulDeviceWithBlobs : StatefulDevice {
+    /**
+     * Creates a snapshot of the device's binary state artifacts.
+     * This method is called by the persistence layer alongside [snapshot] when saving state.
+     *
+     * The key of the map is a logical name for the binary artifact (e.g., "database", "firmware_cache"),
+     * and the value is its raw byte content.
+     *
+     * @return A map of named binary data blobs, or `null` if there are no blobs to save.
+     */
+    public suspend fun snapshotBlobs(): Map<Name, ByteArray>? = null
+
+    /**
+     * Restores the device's state from binary artifacts.
+     * This method is called by the persistence layer alongside [restore] when loading state.
+     *
+     * @param blobs A map of named binary data blobs read from the snapshot store.
+     */
+    public suspend fun restoreBlobs(blobs: Map<Name, ByteArray>) {}
 }

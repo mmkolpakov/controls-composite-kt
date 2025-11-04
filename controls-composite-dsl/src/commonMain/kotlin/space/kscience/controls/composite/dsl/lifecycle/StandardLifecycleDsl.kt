@@ -127,6 +127,17 @@ public class StandardLifecycleBuilder<D : Device> internal constructor(
     public suspend fun <T> write(spec: MutableDevicePropertySpec<D, T>, value: T) {
         spec.write(device, value)
     }
+
+    /**
+     * A helper to request a PlantUML diagram of the lifecycle FSM. This is useful for debugging
+     * or logging the FSM structure from within its own logic.
+     */
+    public suspend fun exportLifecycleFsm(): String? = context.exportFsmDiagram(isLifeCycle = true)
+
+    /**
+     * A helper to request a PlantUML diagram of the operational FSM, if it exists.
+     */
+    public suspend fun exportOperationalFsm(): String? = context.exportFsmDiagram(isLifeCycle = false)
 }
 
 /**

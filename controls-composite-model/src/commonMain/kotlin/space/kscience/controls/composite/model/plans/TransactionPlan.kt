@@ -2,6 +2,7 @@ package space.kscience.controls.composite.model.plans
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import space.kscience.controls.composite.model.Address
 import space.kscience.controls.composite.model.RetryPolicy
 import space.kscience.controls.composite.model.TimeoutPolicy
@@ -10,6 +11,7 @@ import space.kscience.controls.composite.model.serialization.serializableToMeta
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.MetaRepr
 import space.kscience.dataforge.names.Name
+import kotlin.time.Duration
 import kotlin.time.Instant
 
 /**
@@ -66,7 +68,7 @@ public enum class CompensationOrder {
  * A serializable, type-safe representation of a single action or a composite block of actions within a transaction plan.
  * The runtime ([space.kscience.controls.composite.model.services.TransactionCoordinator]) is responsible for interpreting and executing these specifications.
  *
- * @property idempotencyKey An optional unique key to make this action idempotent. The runtime should track executed keys
+ * @property key An optional unique key to make this action idempotent. The runtime should track executed keys
  *                          within the scope of a transaction to prevent duplicate operations on retry or replay.
  *                          The key's uniqueness guarantee is the responsibility of the plan creator.
  * @property compensation An optional compensating plan (Saga pattern) to be executed on rollback if this action
@@ -78,7 +80,7 @@ public enum class CompensationOrder {
  */
 @Serializable
 public sealed interface ActionSpec : MetaRepr {
-    public val idempotencyKey: String?
+    public val key: String?
     public val compensation: TransactionPlan?
     public val compensationPolicy: CompensationPolicy
     public val timeout: TimeoutPolicy?
@@ -91,13 +93,13 @@ public data class ParallelActionSpec(
     val actions: List<ActionSpec>,
     val failureStrategy: ParallelFailureStrategy = ParallelFailureStrategy.FAIL_FAST,
     val compensationOrder: CompensationOrder = CompensationOrder.SEQUENTIAL_REVERSE,
-    override val idempotencyKey: String? = null,
+    override val key: String? = null,
     override val compensation: TransactionPlan? = null,
     override val compensationPolicy: CompensationPolicy = CompensationPolicy.ABORT,
     override val timeout: TimeoutPolicy? = null,
     override val retry: RetryPolicy? = null,
 ) : ActionSpec {
-    override fun toMeta(): Meta = serializableToMeta(serializer(), this)
+    override fun toMeta(): Meta = serializableToMeta(ActionSpec.serializer(), this)
 }
 
 @Serializable
@@ -106,52 +108,52 @@ public data class AttachActionSpec(
     val deviceAddress: Address,
     val blueprintId: BlueprintId,
     val config: Meta = Meta.EMPTY,
-    override val idempotencyKey: String? = null,
+    override val key: String? = null,
     override val compensation: TransactionPlan? = null,
     override val compensationPolicy: CompensationPolicy = CompensationPolicy.ABORT,
     override val timeout: TimeoutPolicy? = null,
     override val retry: RetryPolicy? = null,
 ) : ActionSpec {
-    override fun toMeta(): Meta = serializableToMeta(serializer(), this)
+    override fun toMeta(): Meta = serializableToMeta(ActionSpec.serializer(), this)
 }
 
 @Serializable
 @SerialName("detach")
 public data class DetachActionSpec(
     val deviceAddress: Address,
-    override val idempotencyKey: String? = null,
+    override val key: String? = null,
     override val compensation: TransactionPlan? = null,
     override val compensationPolicy: CompensationPolicy = CompensationPolicy.ABORT,
     override val timeout: TimeoutPolicy? = null,
     override val retry: RetryPolicy? = null,
 ) : ActionSpec {
-    override fun toMeta(): Meta = serializableToMeta(serializer(), this)
+    override fun toMeta(): Meta = serializableToMeta(ActionSpec.serializer(), this)
 }
 
 @Serializable
 @SerialName("start")
 public data class StartActionSpec(
     val deviceAddress: Address,
-    override val idempotencyKey: String? = null,
+    override val key: String? = null,
     override val compensation: TransactionPlan? = null,
     override val compensationPolicy: CompensationPolicy = CompensationPolicy.ABORT,
     override val timeout: TimeoutPolicy? = null,
     override val retry: RetryPolicy? = null,
 ) : ActionSpec {
-    override fun toMeta(): Meta = serializableToMeta(serializer(), this)
+    override fun toMeta(): Meta = serializableToMeta(ActionSpec.serializer(), this)
 }
 
 @Serializable
 @SerialName("stop")
 public data class StopActionSpec(
     val deviceAddress: Address,
-    override val idempotencyKey: String? = null,
+    override val key: String? = null,
     override val compensation: TransactionPlan? = null,
     override val compensationPolicy: CompensationPolicy = CompensationPolicy.ABORT,
     override val timeout: TimeoutPolicy? = null,
     override val retry: RetryPolicy? = null,
 ) : ActionSpec {
-    override fun toMeta(): Meta = serializableToMeta(serializer(), this)
+    override fun toMeta(): Meta = serializableToMeta(ActionSpec.serializer(), this)
 }
 
 @Serializable
@@ -160,26 +162,205 @@ public data class WritePropertyActionSpec(
     val deviceAddress: Address,
     val propertyName: Name,
     val value: Meta,
-    override val idempotencyKey: String? = null,
+    override val key: String? = null,
     override val compensation: TransactionPlan? = null,
     override val compensationPolicy: CompensationPolicy = CompensationPolicy.ABORT,
     override val timeout: TimeoutPolicy? = null,
     override val retry: RetryPolicy? = null,
 ) : ActionSpec {
-    override fun toMeta(): Meta = serializableToMeta(serializer(), this)
+    override fun toMeta(): Meta = serializableToMeta(ActionSpec.serializer(), this)
 }
 
 @Serializable
 @SerialName("sequence")
 public data class SequenceActionSpec(
     val actions: List<ActionSpec>,
-    override val idempotencyKey: String? = null,
+    override val key: String? = null,
     override val compensation: TransactionPlan? = null,
     override val compensationPolicy: CompensationPolicy = CompensationPolicy.ABORT,
     override val timeout: TimeoutPolicy? = null,
     override val retry: RetryPolicy? = null,
 ) : ActionSpec {
-    override fun toMeta(): Meta = serializableToMeta(serializer(), this)
+    override fun toMeta(): Meta = serializableToMeta(ActionSpec.serializer(), this)
+}
+
+/**
+ * An action that introduces a delay in the execution of a plan.
+ * This action does not have a meaningful compensation, timeout, or retry policy.
+ */
+@Serializable
+@SerialName("delay")
+public data class DelayActionSpec(
+    val duration: Duration,
+) : ActionSpec {
+    @Transient
+    override val key: String? = null
+
+    @Transient
+    override val compensation: TransactionPlan? = null
+
+    @Transient
+    override val compensationPolicy: CompensationPolicy = CompensationPolicy.ABORT
+
+    @Transient
+    override val timeout: TimeoutPolicy? = null
+
+    @Transient
+    override val retry: RetryPolicy? = null
+
+    override fun toMeta(): Meta = serializableToMeta(ActionSpec.serializer(), this)
+}
+
+/**
+ * An action that pauses plan execution until a specific boolean property (a predicate)
+ * on a device becomes `true`.
+ *
+ * @property deviceAddress The network-wide address of the device to monitor.
+ * @property predicateName The name of the boolean property (must be of kind `PREDICATE`).
+ * @property awaitTimeout An optional maximum duration to wait for the predicate to become true.
+ *                      If the timeout is exceeded, the action fails, triggering a rollback.
+ */
+@Serializable
+@SerialName("awaitPredicate")
+public data class AwaitPredicateActionSpec(
+    val deviceAddress: Address,
+    val predicateName: Name,
+    val awaitTimeout: Duration? = null,
+    override val key: String? = null,
+    override val compensation: TransactionPlan? = null,
+    override val compensationPolicy: CompensationPolicy = CompensationPolicy.ABORT,
+    override val timeout: TimeoutPolicy? = null,
+    override val retry: RetryPolicy? = null,
+) : ActionSpec {
+    override fun toMeta(): Meta = serializableToMeta(ActionSpec.serializer(), this)
+}
+
+/**
+ * An action that pauses plan execution until an external signal is received from an operator or another system.
+ *
+ * @property signalId A unique identifier for the expected signal. The runtime uses this to correlate the waiting plan
+ *                    with an incoming signal.
+ * @property description An optional human-readable message to be displayed to an operator, explaining what is expected.
+ * @property signalTimeout An optional maximum duration to wait for the signal. If no signal is received within this
+ *                time, the action fails, and the plan is rolled back.
+ */
+@Serializable
+@SerialName("awaitSignal")
+public data class AwaitSignalActionSpec(
+    val signalId: String,
+    val description: String? = null,
+    val signalTimeout: Duration? = null,
+    override val key: String? = null,
+    override val compensation: TransactionPlan? = null,
+    override val compensationPolicy: CompensationPolicy = CompensationPolicy.ABORT,
+    override val timeout: TimeoutPolicy? = null,
+    override val retry: RetryPolicy? = null,
+) : ActionSpec {
+    override fun toMeta(): Meta = serializableToMeta(ActionSpec.serializer(), this)
+}
+
+/**
+ * A serializable representation of a predicate for a conditional action.
+ * @property address The address of the device on which to evaluate the predicate.
+ * @property propertyName The name of the boolean property to check.
+ * @property expectedValue The value the property is expected to have for the condition to be true.
+ */
+@Serializable
+public data class PredicateSpec(val address: Address, val propertyName: Name, val expectedValue: Boolean = true)
+
+/**
+ * A conditional action that executes one of two branches (`thenPlan` or `elsePlan`) based on the evaluation
+ * of a predicate.
+ *
+ * @property predicate The [PredicateSpec] describing the condition to evaluate.
+ * @property thenPlan The [TransactionPlan] to execute if the predicate is true.
+ * @property elsePlan An optional [TransactionPlan] to execute if the predicate is false.
+ */
+@Serializable
+@SerialName("condition")
+public data class ConditionalActionSpec(
+    val predicate: PredicateSpec,
+    val thenPlan: TransactionPlan,
+    val elsePlan: TransactionPlan? = null,
+    override val key: String? = null,
+    override val compensation: TransactionPlan? = null,
+    override val compensationPolicy: CompensationPolicy = CompensationPolicy.ABORT,
+    override val timeout: TimeoutPolicy? = null,
+    override val retry: RetryPolicy? = null,
+) : ActionSpec {
+    override fun toMeta(): Meta = serializableToMeta(ActionSpec.serializer(), this)
+}
+
+/**
+ * An action that invokes another action on a specified device.
+ * This is the primary mechanism for orchestrating device behaviors within a plan.
+ *
+ * @property deviceAddress The network-wide address of the target device.
+ * @property actionName The name of the action to invoke on the target device.
+ * @property input An optional [Meta] object representing the input arguments for the action.
+ * @property outputKey An optional key to store the result of this action in the plan's execution context.
+ *                     If provided, the result can be referenced by subsequent actions.
+ */
+@Serializable
+@SerialName("invoke")
+public data class InvokeActionSpec(
+    val deviceAddress: Address,
+    val actionName: Name,
+    val input: Meta? = null,
+    val outputKey: Name? = null,
+    override val key: String? = null,
+    override val compensation: TransactionPlan? = null,
+    override val compensationPolicy: CompensationPolicy = CompensationPolicy.ABORT,
+    override val timeout: TimeoutPolicy? = null,
+    override val retry: RetryPolicy? = null,
+) : ActionSpec {
+    override fun toMeta(): Meta = serializableToMeta(ActionSpec.serializer(), this)
+}
+
+
+/**
+ * An action that iterates over a collection of items (previously stored in the plan's execution context)
+ * and executes a sub-plan for each item.
+ *
+ * @property iterableName The name under which the collection of items is stored in the `PlanExecutionContext`.
+ * @property loopVariableName The name of the variable that will hold the current item within the sub-plan's scope.
+ * @property body The [TransactionPlan] to be executed for each item in the collection.
+ */
+@Serializable
+@SerialName("loop")
+public data class LoopActionSpec(
+    val iterableName: Name,
+    val loopVariableName: String,
+    val body: TransactionPlan,
+    override val key: String? = null,
+    override val compensation: TransactionPlan? = null,
+    override val compensationPolicy: CompensationPolicy = CompensationPolicy.ABORT,
+    override val timeout: TimeoutPolicy? = null,
+    override val retry: RetryPolicy? = null,
+) : ActionSpec {
+    override fun toMeta(): Meta = serializableToMeta(ActionSpec.serializer(), this)
+}
+
+/**
+ * An action that executes a `dataforge-data` task.
+ *
+ * @property taskBlueprintId The unique ID of the `TaskBlueprint` to be executed.
+ * @property input The [Meta] input for the task.
+ * @property outputKey The key under which the task's result (`DataTree<*>`) will be stored in the `PlanExecutionContext`.
+ */
+@Serializable
+@SerialName("runTask")
+public data class RunWorkspaceTaskSpec(
+    val taskBlueprintId: String,
+    val input: Meta,
+    val outputKey: Name,
+    override val key: String? = null,
+    override val compensation: TransactionPlan? = null,
+    override val compensationPolicy: CompensationPolicy = CompensationPolicy.ABORT,
+    override val timeout: TimeoutPolicy? = null,
+    override val retry: RetryPolicy? = null,
+) : ActionSpec {
+    override fun toMeta(): Meta = serializableToMeta(ActionSpec.serializer(), this)
 }
 
 
@@ -196,7 +377,7 @@ public data class SequenceActionSpec(
 @Serializable
 public data class TransactionPlan(
     val rootAction: ActionSpec,
-    val deadline: Instant? = null
+    val deadline: Instant? = null,
 ) : MetaRepr {
     override fun toMeta(): Meta = rootAction.toMeta()
 }

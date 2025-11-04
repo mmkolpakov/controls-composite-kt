@@ -1,12 +1,15 @@
 package space.kscience.controls.composite.dsl.properties
 
 import space.kscience.controls.composite.dsl.DeviceSpecification
+import space.kscience.controls.composite.dsl.StatePropertyDelegate
 import space.kscience.controls.composite.model.contracts.Device
 import space.kscience.controls.composite.model.contracts.runtime.CompositeDeviceContext
 import space.kscience.controls.composite.model.contracts.runtime.StatefulDelegateElement
 import space.kscience.controls.composite.model.contracts.runtime.VirtualMutableDeviceState
 import space.kscience.controls.composite.model.contracts.runtime.onChange
+import space.kscience.controls.composite.model.features.StatefulFeature
 import space.kscience.controls.composite.model.meta.MutableDevicePropertySpec
+import space.kscience.controls.composite.model.meta.PropertyKind
 import space.kscience.controls.composite.model.state.MutableDeviceState
 import space.kscience.controls.composite.model.state.StatefulDevice
 import space.kscience.controls.composite.model.state.value
@@ -14,7 +17,6 @@ import space.kscience.dataforge.meta.MetaConverter
 import space.kscience.dataforge.names.parseAsName
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
-import kotlin.reflect.KProperty
 
 /**
  * Creates a delegate for a mutable, logical property that serves as both the public API
@@ -22,8 +24,9 @@ import kotlin.reflect.KProperty
  * and an internal, stateful, reactive value.
  *
  * The property is automatically registered for persistence by default (by setting `persistent = true`
- * in its descriptor). The runtime implementation relies on this property to correctly snapshot and restore the device's state.
- * It provides a lock-free, thread-safe, instance-specific state.
+ * in its descriptor) and is assigned the [PropertyKind.LOGICAL]. The runtime implementation relies
+ * on this property to correctly snapshot and restore the device's state. It provides a lock-free,
+ * thread-safe, instance-specific state.
  *
  * This function uses a nested [PropertyDelegateProvider] structure to separate build-time configuration
  * from runtime state provision:
@@ -43,14 +46,18 @@ public inline fun <reified T, D> DeviceSpecification<D>.stateProperty(
     converter: MetaConverter<T>,
     initialValue: T,
     noinline descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {},
-): PropertyDelegateProvider<DeviceSpecification<D>, ReadOnlyProperty<DeviceSpecification<D>, PropertyDelegateProvider<Any?, ReadOnlyProperty<D, MutableDeviceState<T>>>>> where D : Device, D : CompositeDeviceContext, D : StatefulDevice {
+): StatePropertyDelegate<D, T> where D : Device, D : CompositeDeviceContext, D : StatefulDevice {
     return PropertyDelegateProvider { thisRef, property ->
+
+        thisRef.registerFeature(StatefulFeature())
+
         lateinit var spec: MutableDevicePropertySpec<D, T>
 
         // Eagerly register the public-facing property specification at build-time.
         val publicPropertyProvider = thisRef.mutableProperty(
             converter = converter,
             descriptorBuilder = {
+                this.kind = PropertyKind.LOGICAL
                 persistent = true // Stateful properties are persistent by default.
                 descriptorBuilder()
             },

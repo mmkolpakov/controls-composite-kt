@@ -5,6 +5,7 @@ import kotlinx.coroutines.GlobalScope.coroutineContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.Serializable
 import space.kscience.controls.composite.dsl.actions.metaAction
 import space.kscience.controls.composite.dsl.actions.plan
 import space.kscience.controls.composite.dsl.actions.taskAction
@@ -36,10 +37,10 @@ private interface TestStatefulDevice : TestDevice, StatefulDevice, CompositeDevi
 private interface KitchenSinkDevice : TestStatefulDevice, TestPlanExecutorDevice, TestTaskExecutorDevice
 
 @OptIn(InternalControlsApi::class)
-private class TestDeviceImpl(
+internal open class TestDeviceImpl(
     override val context: Context,
     override val name: Name,
-    override val meta: Meta,
+    override val meta: ObservableMeta,
     override val coroutineContext: CoroutineContext,
 ) : KitchenSinkDevice {
     override val lifecycleState = MutableStateFlow(DeviceLifecycleState.Stopped)
@@ -68,6 +69,7 @@ private class TestDeviceImpl(
     override suspend fun executeTask(taskName: Name, input: Meta?, context: ExecutionContext): Meta? = null
 }
 
+@Serializable
 private enum class TestEnum { ONE, TWO }
 
 private class ChildDeviceSpec : DeviceSpecification<TestDevice>() {
@@ -81,6 +83,7 @@ private class ChildDeviceSpec : DeviceSpecification<TestDevice>() {
     }
 }
 
+//all passed
 class DslTest {
 
     @Test
@@ -89,7 +92,7 @@ class DslTest {
         val parentSpec = object : DeviceSpecification<TestDevice>() {
             override val id = "test.parent"
             val parentProperty by mutableDoubleProperty(read = { 0.0 }, write = { _ -> })
-            private val childBlueprint = compositeDevice(childSpec, Global)
+            private val childBlueprint = compositeDeviceUnchecked(childSpec, Global)
 
             override fun CompositeSpecBuilder<TestDevice>.configure() {
                 driver { ctx, meta -> TestDeviceImpl(ctx, "parent".asName(), meta, coroutineContext) }
@@ -109,7 +112,7 @@ class DslTest {
             }
         }
 
-        val blueprint = compositeDevice(parentSpec, Global)
+        val blueprint = compositeDeviceUnchecked(parentSpec, Global)
         assertEquals("test.parent", blueprint.id.value)
         assertTrue(blueprint.properties.containsKey("parentProperty".asName()))
 
@@ -134,11 +137,11 @@ class DslTest {
             val theName by doubleProperty { 0.0 }
             override fun CompositeSpecBuilder<TestDevice>.configure() {
                 driver { _, meta -> TestDeviceImpl(Global, "collision".asName(), meta, coroutineContext) }
-                child("theName".asName(), compositeDevice(ChildDeviceSpec(), Global))
+                child("theName".asName(), compositeDeviceUnchecked(ChildDeviceSpec(), Global))
             }
         }
         assertFailsWith<IllegalArgumentException> {
-            compositeDevice(specWithCollision, Global)
+            compositeDeviceUnchecked(specWithCollision, Global)
         }
     }
 
@@ -150,14 +153,14 @@ class DslTest {
                 val fakePeer = SimplePeerBlueprint<PeerConnection>("fake.peer", StaticAddressSource(emptyList()), FailoverStrategy.ORDERED) { _, _ -> error("Should not be called") }
                 remoteChild(
                     name = "remoteChild".asName(),
-                    blueprint = compositeDevice(ChildDeviceSpec(), Global),
-                    address = Address("remoteHub", "remoteDevice".asName()),
+                    blueprint = compositeDeviceUnchecked(ChildDeviceSpec(), Global),
+                    remoteDeviceName = "remoteDevice".asName(),
                     via = fakePeer
                 )
             }
         }
         assertFailsWith<IllegalStateException>("Peer connection blueprint 'fake.peer' is not registered in this spec. It must be declared as a property before being used.") {
-            compositeDevice(spec, Global)
+            compositeDeviceUnchecked(spec, Global)
         }
     }
 
@@ -176,7 +179,7 @@ class DslTest {
             val planAction by plan { write(mutableProp, Address("hub", "device".asName()), 123) }
             val taskAction by taskAction<String, Int, _>("com.example.myTask")
             val metaAction by metaAction { it }
-            private val childBlueprint = compositeDevice(ChildDeviceSpec(), Global)
+            private val childBlueprint = compositeDeviceUnchecked(ChildDeviceSpec(), Global)
 
             override fun CompositeSpecBuilder<KitchenSinkDevice>.configure() {
                 driver { ctx, meta -> TestDeviceImpl(ctx, "kitchenSink".asName(), meta, coroutineContext) }
@@ -185,16 +188,25 @@ class DslTest {
 
                 child("child1".asName(), childBlueprint)
                 children(childBlueprint, listOf("child2".asName(), "child3".asName()))
-                remoteChild("remoteChild".asName(), childBlueprint, Address("remoteHub", "remoteDevice".asName()), via = peer)
+                remoteChild(
+                    name = "remoteChild".asName(),
+                    blueprint = childBlueprint,
+                    remoteDeviceName = "remoteDevice".asName(),
+                    via = peer
+                )
 
                 operationalFsm(setOf("IDLE", "RUNNING")) { _, _ -> }
                 logic { }
             }
         }
-        val blueprint = compositeDevice(sinkSpec, Global)
+        val blueprint = compositeDeviceUnchecked(sinkSpec, Global)
 
         assertEquals(5, blueprint.properties.size)
-        assertEquals(blueprint.properties["persistentState".asName()]?.descriptor?.persistent, true)
         assertEquals(3, blueprint.actions.size)
+        assertEquals(
+            true,
+            blueprint.properties["persistentState".asName()]?.descriptor?.persistent,
+            "State property should be marked as persistent by default"
+        )
     }
 }

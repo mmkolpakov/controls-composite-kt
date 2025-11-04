@@ -8,6 +8,7 @@ import ru.nsk.kstatemachine.statemachine.StateMachine
 import space.kscience.controls.composite.model.contracts.Device
 import space.kscience.controls.composite.model.contracts.DeviceBlueprint
 import space.kscience.controls.composite.model.contracts.DeviceDriver
+import kotlin.time.Duration
 
 /**
  * Provides a type-safe context for defining the lifecycle FSM within a [DeviceBlueprint].
@@ -71,4 +72,33 @@ public interface LifecycleContext<D : Device> {
      * This allows lifecycle states to react to operational state changes.
      */
     public fun operationalFsmState(): StateFlow<IState>?
+
+    /**
+     * Exports a diagram of the specified FSM to a PlantUML string representation.
+     * This is intended for introspection and debugging and requires a runtime implementation.
+     *
+     * @param isLifeCycle `true` to export the lifecycle FSM, `false` for the operational FSM.
+     * @return A PlantUML diagram string, or `null` if the requested FSM does not exist.
+     */
+    public suspend fun exportFsmDiagram(isLifeCycle: Boolean): String?
+
+    /**
+     * Instructs the runtime to start a periodic timer associated with this device.
+     * The timer will post [TimerTickEvent]s to the device's lifecycle FSM. The runtime is responsible
+     * for managing the timer's lifecycle, ensuring it is active only when the device is.
+     *
+     * This method is idempotent; calling it multiple times with the same name will not create multiple timers.
+     *
+     * @param name A unique name for the timer within the device's scope.
+     * @param tick The interval between ticks.
+     * @param initialDelay An optional delay before the first tick.
+     */
+    public fun startTimer(name: String, tick: Duration, initialDelay: Duration = Duration.ZERO)
+
+    /**
+     * Instructs the runtime to stop and remove a previously started timer.
+     *
+     * @param name The unique name of the timer to stop.
+     */
+    public fun stopTimer(name: String)
 }

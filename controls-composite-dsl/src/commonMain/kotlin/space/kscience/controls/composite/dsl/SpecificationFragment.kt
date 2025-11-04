@@ -7,51 +7,72 @@ import space.kscience.controls.composite.model.contracts.Device
  * collection of properties, actions, or other configurations that can be applied to multiple
  * [DeviceSpecification]s or [CompositeSpecBuilder]s, promoting code reuse and modularity.
  *
- * The type parameter `D` is invariant. This ensures strict type safety: a fragment for `MotionDevice`
- * can only be applied to builders or specifications for `MotionDevice` or its subtypes.
- *
- * ### Best Practices for Usage
- *
- * It is recommended to define fragments that operate on the [CompositeSpecBuilder]. This provides the most
- * flexibility, as these fragments can be used within both `DeviceSpecification.configure` blocks and
- * `deviceBlueprint { ... }` DSL blocks.
- *
- * **Example of a builder-based fragment:**
- * ```kotlin
- * // Define a reusable fragment for motion control using the builder context.
- * val MotionControlFragment = SpecificationFragment<MotionDevice> {
- *     // Use DSL extensions on CompositeSpecBuilder
- *     doubleProperty("position") { ... }
- *     unitAction("moveTo") { ... }
- * }
- *
- * // Apply the fragment in a specific device specification
- * object MyMotorSpec : DeviceSpecification<MyMotor>() {
- *     override fun CompositeSpecBuilder<MyMotor>.configure() {
- *         driver { ... }
- *         include(MotionControlFragment) // Re-uses all properties and actions
- *     }
- * }
- *
- * // Or apply it in a direct blueprint definition
- * val myOtherMotor = deviceBlueprint<MyMotor>("my.other.motor", context) {
- *      driver { ... }
- *      include(MotionControlFragment)
- * }
- * ```
- *
- * @param D The device contract type that this fragment applies to.
+ * The type parameter `D` is contravariant (`in`). This ensures strict type safety in a flexible way:
+ * a fragment defined for a general contract (e.g., `Device`) can be applied to a builder for a more
+ * specific contract (e.g., `MySpecificDevice`), but not vice versa.
  */
-public fun interface SpecificationFragment<D : Device> {
+public fun interface SpecificationFragment<in D : Device> {
     /**
      * Applies the fragment's configuration to the given [CompositeSpecBuilder].
+     * @param builder The builder instance to which the fragment's logic should be applied.
      */
-    public fun apply(spec: CompositeSpecBuilder<D>)
+    public fun apply(builder: CompositeSpecBuilder<out D>)
 }
 
 /**
  * A DSL method within `CompositeSpecBuilder` to include a [SpecificationFragment].
+ * This function calls the fragment's `apply` method, passing the current builder instance
+ * as the context.
  */
 public fun <D : Device> CompositeSpecBuilder<D>.include(fragment: SpecificationFragment<D>) {
     fragment.apply(this)
+}
+
+/**
+ * Combines two fragments into a single one. When the new, composite fragment is applied,
+ * the left operand is applied first, followed by the right operand. This order is important
+ * for configurations that can be overwritten, such as `meta` blocks.
+ */
+public operator fun <D : Device> SpecificationFragment<D>.plus(
+    other: SpecificationFragment<D>,
+): SpecificationFragment<D> = SpecificationFragment { builder ->
+    this@plus.apply(builder)
+    other.apply(builder)
+}
+
+/**
+ * A factory function to create a [SpecificationFragment] with a type-safe DSL receiver.
+ * This function is the primary entry point for creating fragments.
+ *
+ * It helps the compiler's type inference, allowing to omit the generic parameter
+ * in most cases.
+ *
+ * ### Usage
+ *
+ * **1. Common case (for any Device):**
+ * The type parameter `<Device>` is inferred automatically.
+ * ```kotlin
+ * val motionFragment = specificationFragment {
+ *     // 'this' is a CompositeSpecBuilder<Device>
+ *     doubleProperty("position") { ... }
+ * }
+ * ```
+ *
+ * **2. Specific case (for a specific device contract):**
+ * When assigning to a typed variable, the compiler correctly infers the specific type.
+ * ```kotlin
+ * val motorFragment: SpecificationFragment<MyMotorDevice> = specificationFragment {
+ *     // 'this' is a CompositeSpecBuilder<MyMotorDevice>
+ * }
+ * ```
+ *
+ * @param D The device contract type. Inferred in most cases.
+ * @param block The DSL block where the fragment is defined. The receiver (`this`) is `CompositeSpecBuilder<D>`.
+ * @return A new [SpecificationFragment] instance.
+ */
+public fun <D : Device> specificationFragment(
+    block: CompositeSpecBuilder<D>.() -> Unit
+): SpecificationFragment<D> = SpecificationFragment { builder ->
+    @Suppress("UNCHECKED_CAST")
+    (builder as CompositeSpecBuilder<D>).block()
 }
