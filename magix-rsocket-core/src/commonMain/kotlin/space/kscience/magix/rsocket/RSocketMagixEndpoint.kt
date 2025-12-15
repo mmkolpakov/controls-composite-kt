@@ -24,7 +24,7 @@ import kotlin.coroutines.CoroutineContext
 
 /**
  * An implementation of [MagixEndpoint] that uses a connected RSocket instance as the transport layer.
- * This endpoint uses the Request-Stream model for subscriptions and Fire-and-Forget for broadcasting.
+ * This endpoint uses the Request-Stream old for subscriptions and Fire-and-Forget for broadcasting.
  *
  * @param coroutineContext The context for the Flow operations and internal jobs.
  * @param rsocketProvider A suspendable factory function to obtain a connected RSocket instance.

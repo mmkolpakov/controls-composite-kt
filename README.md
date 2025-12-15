@@ -22,33 +22,33 @@ The framework's philosophy is centered around separating a device's "what" (its 
 
 ## Modules
 
-### [controls-composite-model](controls-composite-model)
+### [controls-model](controls-model)
 > Pure, platform-agnostic data models, contracts, and serializable message formats that define the core of the system.
 >
 > **Maturity**: EXPERIMENTAL
 
-### [controls-composite-dsl](controls-composite-dsl)
+### [controls-dsl](controls-dsl)
 > A type-safe Kotlin DSL for building composite device specifications (`DeviceBlueprint`). This is the primary user-facing API for defining devices.
 >
 > **Maturity**: PROTOTYPE
 
-### [controls-composite-metrics](controls-composite-metrics)
+### [controls-metrics](controls-metrics)
 > A cross-platform metrics API and a default AtomicFU-based implementation for `Counter`, `Gauge`, and `Histogram`.
 >
 > **Maturity**: EXPERIMENTAL
 
-### [controls-composite-persistence](controls-composite-persistence)
+### [controls-persistence](controls-persistence)
 > A persistence layer for saving and restoring device states, with multiplatform `SnapshotStore` implementations (file-based for JVM/Native, localStorage for JS/Wasm).
 >
 > **Maturity**: EXPERIMENTAL
 
-### [controls-composite-ports](controls-composite-ports)
+### [controls-ports](controls-ports)
 > A multiplatform low-level IO `Port` abstraction for raw byte-level communication, serving as a foundation for hardware drivers.
 >
 > **Maturity**: PROTOTYPE
 
 ### [controls-exporter-prometheus](controls-exporter-prometheus)
-> A KMP-native Prometheus exporter for metrics collected via the `controls-composite-metrics` module.
+> A KMP-native Prometheus exporter for metrics collected via the `controls-metrics` module.
 >
 > **Maturity**: PROTOTYPE
 
@@ -93,11 +93,11 @@ The framework's philosophy is centered around separating a device's "what" (its 
 
 -   **[KStateMachine](https://github.com/KStateMachine/kstatemachine):** A powerful, type-safe library for creating Finite State Machines (FSMs). It is the engine behind the formal lifecycle (`Attaching`, `Running`, `Failed`) and operational state management within devices, providing robustness and predictability to device behavior.
 
--   **[Kotlinx AtomicFU](https://github.com/Kotlin/kotlinx-atomicfu):** Used in the `controls-composite-metrics` to provide performant, lock-free, multiplatform atomic operations. This is crucial for high-throughput components like the `AtomicMetricCollector` and internal state management.
+-   **[Kotlinx AtomicFU](https://github.com/Kotlin/kotlinx-atomicfu):** Used in the `controls-metrics` to provide performant, lock-free, multiplatform atomic operations. This is crucial for high-throughput components like the `AtomicMetricCollector` and internal state management.
 
 ### I/O, Networking, and Distributed Communication
 
--   **[Okio](https://square.github.io/okio/):** A modern, multiplatform I/O library that provides an efficient and easy-to-use abstraction over byte streams. It is the foundation for the `controls-composite-persistence` module's file-based `SnapshotStore`.
+-   **[Okio](https://square.github.io/okio/):** A modern, multiplatform I/O library that provides an efficient and easy-to-use abstraction over byte streams. It is the foundation for the `controls-persistence` module's file-based `SnapshotStore`.
 
 -   **[Ktor](https://ktor.io/):** Used in the `controls-exporter-prometheus` module to run a lightweight, non-blocking HTTP server for exposing the `/metrics` endpoint. Its multiplatform nature makes it a natural fit for the project.
 
@@ -106,4 +106,3 @@ The framework's philosophy is centered around separating a device's "what" (its 
 -   **[Kotlinx Coroutines Test](https://github.com/Kotlin/kotlinx.coroutines/tree/master/kotlinx-coroutines-test):** Provides tools for testing coroutine-based code, including virtual time control (`runTest`), which is essential for reliably testing time-dependent logic and simulations.
 
 -   **[Kotest](https://kotest.io/) / [JUnit](https://junit.org/junit5/):** (While not explicitly listed, one of these is typically used) Standard frameworks for structuring and running tests across all platforms.
-

@@ -19,7 +19,7 @@ kscience {
     wasmJs { browser() }
 
     commonMain {
-        api(projects.controlsCompositeMetrics)
+        api(projects.controlsMetrics)
         implementation(libs.kotlinx.atomicfu)
     }
 

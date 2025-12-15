@@ -4,7 +4,7 @@
 
 ## Description
 
-This module provides a robust, multiplatform Prometheus exporter for metrics collected via the `controls-composite-metrics` API. It allows you to easily expose the internal state and performance indicators of your composite devices to a Prometheus monitoring system.
+This module provides a robust, multiplatform Prometheus exporter for metrics collected via the `controls-metrics` API. It allows you to easily expose the internal state and performance indicators of your composite devices to a Prometheus monitoring system.
 
 The exporter runs a lightweight Ktor-based HTTP server that exposes a standard `/metrics` endpoint, which Prometheus can scrape (pull).
 

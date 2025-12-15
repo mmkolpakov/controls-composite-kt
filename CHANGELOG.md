@@ -25,33 +25,33 @@ Initial release of the `controls-composite-kt` framework. This version represent
 
 ### Added
 
--   **Core Model (`controls-composite-model`)**:
+-   **Core Model (`controls-model`)**:
     -   Introduced `DeviceBlueprint`: A declarative, serializable, and versioned model for defining a device's complete structure, behavior, and features, separating the specification from the runtime implementation.
     -   Formalized `Device` as a runtime contract with distinct `PropertyDevice` and `ActionDevice` capabilities.
     -   Established a standardized, serializable `DeviceMessage` sealed hierarchy for all system communication, including property changes, lifecycle events, and errors.
     -   Defined `DevicePropertySpec` and `DeviceActionSpec` for static, type-safe description of a device's public API.
     -   Introduced `DeviceState<T>` and `MutableDeviceState<T>`: A reactive, observable state model containing a `StateValue<T>` which includes the value, a high-precision timestamp, and a `Quality` enum (`OK`, `STALE`, `INVALID`, `ERROR`).
 
--   **Domain-Specific Language (`controls-composite-dsl`)**:
+-   **Domain-Specific Language (`controls-dsl`)**:
     -   Created a type-safe Kotlin DSL for building `DeviceBlueprint` instances (`deviceBlueprint { ... }`) and reusable `DeviceSpecification` classes.
     -   Implemented delegated properties for effortless declaration of properties (`property`, `mutableProperty`, `stateProperty`, `derived`) and actions (`action`, `unitAction`).
     -   Added `child` and `children` DSL for declarative composition of devices, including `bindings` blocks for reactive property connections (`bindsTo`).
     -   Introduced `standardLifecycle` and `lifecycle` blocks for defining a device's lifecycle as a formal Finite State Machine (FSM) using KStateMachine.
     -   Added `plan { ... }` DSL for creating complex, multistep, transactional `TransactionPlan`s with support for compensating actions (Saga pattern).
 
--   **State Management and Persistence (`controls-composite-persistence`)**:
+-   **State Management and Persistence (`controls-persistence`)**:
     -   Defined the `StatefulDevice` contract for devices that support state snapshotting and restoration.
     -   Introduced the `SnapshotStore` interface for persistence backends.
     -   Provided multiplatform implementations: `FileSnapshotStore` (JVM/Native), `LocalStorageSnapshotStore` (JS/WasmJs), and `InMemorySnapshotStore` (common).
     -   Added a `PersistencePlugin` for easy integration and configuration.
 
--   **Metrics and Monitoring (`controls-composite-metrics` & `controls-exporter-prometheus`)**:
+-   **Metrics and Monitoring (`controls-metrics` & `controls-exporter-prometheus`)**:
     -   Created the `MetricCollector` API for instrumenting code with `Counter`, `Gauge`, and `Histogram` metrics.
     -   Provided `AtomicMetricCollector` as a high-performance, in-memory implementation.
     -   Introduced the `MetricExporter` API and `PrometheusExporterFactory` for pluggable monitoring backends.
     -   Implemented a JVM-native Prometheus exporter that serves metrics via a non-blocking Ktor server.
 
--   **Low-Level IO (`controls-composite-ports`)**:
+-   **Low-Level IO (`controls-ports`)**:
     -   Created a multiplatform `Port` and `SynchronousPort` API for raw byte-level communication, abstracting over transports like TCP or Serial.
     -   Added a `PortManager` plugin for discovering and creating `Port` instances from configuration.
 
@@ -79,8 +79,8 @@ Initial release of the `controls-composite-kt` framework. This version represent
 -   **Non-Functional Requirements in Model**:
     -   Added declarative resource locking (`ResourceLockSpec`) and caching policies (`CachePolicy`) to property and action descriptors.
 -   **New Modules**:
-    -   `controls-composite-protocol-api`: Defines the `ProtocolAdapter` contract to separate protocol logic from transport.
-    -   `controls-composite-ktor`: Provides Ktor-based implementations for `Port` and `PeerConnection`.
-    -   `controls-composite-magix`: Provides `MessageBroker` and signaling services based on the Magix message bus.
-    -   `controls-composite-simulation`: Provides a virtual time engine for deterministic testing and simulation.
-    -   `controls-composite-persistence-log`: A high-performance, SQLite-based implementation of `AuditLogService` using SQLDelight.
+    -   `controls-protocol-api`: Defines the `ProtocolAdapter` contract to separate protocol logic from transport.
+    -   `controls-ktor`: Provides Ktor-based implementations for `Port` and `PeerConnection`.
+    -   `controls-magix`: Provides `MessageBroker` and signaling services based on the Magix message bus.
+    -   `controls-simulation`: Provides a virtual time engine for deterministic testing and simulation.
+    -   `controls-persistence-log`: A high-performance, SQLite-based implementation of `AuditLogService` using SQLDelight.

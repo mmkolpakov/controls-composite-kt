@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * A JVM-specific implementation of a Prometheus exporter that correctly handles the Prometheus data model.
+ * A JVM-specific implementation of a Prometheus exporter that correctly handles the Prometheus data old.
  *
  * This exporter operates in Pull Mode by running a lightweight Ktor/Netty server that exposes a `/metrics` endpoint.
  * To ensure correctness and performance, it maintains its own internal state:
