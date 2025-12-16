@@ -2,10 +2,10 @@ package space.kscience.controls.composite.old.services
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
-import space.kscience.controls.core.Address
+import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.composite.old.ExecutionContext
 import space.kscience.controls.composite.old.SerializableDeviceFailure
-import space.kscience.controls.composite.old.contracts.BlueprintId
+import space.kscience.controls.core.identifiers.BlueprintId
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.Plugin
 import space.kscience.dataforge.context.PluginFactory

@@ -1,4 +1,4 @@
-package space.kscience.controls.core
+package space.kscience.controls.core.data
 
 import kotlinx.serialization.Serializable
 

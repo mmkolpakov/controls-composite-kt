@@ -20,7 +20,9 @@ import space.kscience.controls.composite.old.meta.DevicePropertySpec
 import space.kscience.controls.composite.old.state.MutableDeviceState
 import space.kscience.controls.composite.old.state.StatefulDevice
 import space.kscience.controls.composite.old.state.StatefulDeviceLogic
-import space.kscience.controls.core.Address
+import space.kscience.controls.core.addressing.Address
+import space.kscience.controls.core.descriptors.ActionDescriptor
+import space.kscience.controls.core.descriptors.PropertyDescriptor
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.Global
 import space.kscience.dataforge.meta.*
@@ -46,8 +48,8 @@ internal open class TestDeviceImpl(
 ) : KitchenSinkDevice {
     override val lifecycleState = MutableStateFlow(DeviceLifecycleState.Stopped)
     override val operationalState = null
-    override val propertyDescriptors = emptyList<space.kscience.controls.composite.old.meta.PropertyDescriptor>()
-    override val actionDescriptors = emptyList<space.kscience.controls.composite.old.meta.ActionDescriptor>()
+    override val propertyDescriptors = emptyList<PropertyDescriptor>()
+    override val actionDescriptors = emptyList<ActionDescriptor>()
     override val messageFlow by lazy { MutableSharedFlow<DeviceMessage>() }
     override val clock = kotlin.time.Clock.System
     override fun getChildDevice(name: Name): Device = error("Not for test")

@@ -1,11 +1,9 @@
 package space.kscience.controls.composite.old
 
 import kotlinx.serialization.Serializable
-import space.kscience.controls.core.Address
-import space.kscience.controls.core.CorrelationId
+import space.kscience.controls.core.addressing.Address
+import space.kscience.controls.core.identifiers.CorrelationId
 import space.kscience.dataforge.meta.Meta
-import kotlin.coroutines.CoroutineContext
-import kotlin.jvm.JvmInline
 import kotlin.random.Random
 
 /**
@@ -42,14 +40,6 @@ public object SystemPrincipal : Principal {
     override val roles: Set<String> = setOf("system")
     override val attributes: Meta = Meta.EMPTY
 }
-
-/**
- * Represents a permission required to execute an action.
- * @param id A unique identifier for the permission, e.g., "device.control.motor".
- */
-@JvmInline
-@Serializable
-public value class Permission(public val id: String)
 
 /**
  * A context for a single execution flow (a command plan or a query), carrying cross-cutting concerns

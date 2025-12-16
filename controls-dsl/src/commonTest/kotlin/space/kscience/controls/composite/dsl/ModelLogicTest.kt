@@ -1,10 +1,10 @@
 package space.kscience.controls.composite.dsl
 
-import space.kscience.controls.core.Address
+import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.composite.old.state.Quality
 import space.kscience.controls.composite.old.state.StateValue
-import space.kscience.controls.core.toAddress
-import space.kscience.controls.core.toAddressOrNull
+import space.kscience.controls.core.addressing.toAddress
+import space.kscience.controls.core.addressing.toAddressOrNull
 import space.kscience.dataforge.names.asName
 import space.kscience.dataforge.names.parseAsName
 import kotlin.test.Test

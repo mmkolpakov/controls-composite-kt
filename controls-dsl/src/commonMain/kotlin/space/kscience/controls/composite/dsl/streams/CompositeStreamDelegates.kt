@@ -3,13 +3,13 @@ package space.kscience.controls.composite.dsl.streams
 import kotlinx.serialization.serializer
 import space.kscience.controls.composite.dsl.CompositeSpecDsl
 import space.kscience.controls.composite.dsl.DeviceSpecification
-import space.kscience.controls.composite.old.Permission
 import space.kscience.controls.composite.old.contracts.Device
-import space.kscience.controls.composite.old.contracts.QoS
+import space.kscience.controls.core.spec.QoS
 import space.kscience.controls.composite.old.contracts.StreamPort
 import space.kscience.controls.composite.old.meta.DeviceStreamSpec
-import space.kscience.controls.composite.old.meta.StreamDescriptor
-import space.kscience.controls.composite.old.meta.StreamDirection
+import space.kscience.controls.core.descriptors.StreamDescriptor
+import space.kscience.controls.core.spec.StreamDirection
+import space.kscience.controls.core.identifiers.Permission
 import space.kscience.dataforge.names.Name
 import space.kscience.dataforge.names.parseAsName
 import kotlin.properties.PropertyDelegateProvider
@@ -77,7 +77,11 @@ public inline fun <reified T, D : Device> DeviceSpecification<D>.stream(
             permissions = dslBuilder.permissions,
             suggestedRateHz = dslBuilder.suggestedRateHz,
             direction = dslBuilder.direction,
-            deliveryHint = dslBuilder.deliveryHint
+            deliveryHint = dslBuilder.deliveryHint,
+            readPermissions = TODO(),
+            writePermissions = TODO(),
+            tags = TODO(),
+            bindings = TODO()
         )
 
         val spec = object : DeviceStreamSpec<D> {

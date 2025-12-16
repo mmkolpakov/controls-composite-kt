@@ -13,6 +13,8 @@ import space.kscience.controls.composite.old.lifecycle.DeviceLifecycleState
 import space.kscience.controls.composite.old.lifecycle.ManagedComponent
 import space.kscience.controls.composite.old.messages.DeviceMessage
 import space.kscience.controls.composite.old.meta.*
+import space.kscience.controls.core.descriptors.ActionDescriptor
+import space.kscience.controls.core.descriptors.PropertyDescriptor
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.ObservableMeta
 import space.kscience.dataforge.names.Name

@@ -5,13 +5,13 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import ru.nsk.kstatemachine.event.Event
 import space.kscience.controls.composite.old.*
-import space.kscience.controls.composite.old.contracts.toBlueprintId
 import space.kscience.controls.composite.old.features.*
 import space.kscience.controls.composite.old.messages.*
 import space.kscience.controls.composite.old.plans.*
 import space.kscience.controls.composite.old.serialization.controlsJson
-import space.kscience.controls.core.Address
+import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.core.faults.ValidationFault
+import space.kscience.controls.core.identifiers.toBlueprintId
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.get
 import space.kscience.dataforge.meta.string

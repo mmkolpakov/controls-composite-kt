@@ -2,10 +2,10 @@ package space.kscience.controls.composite.ktor.peer
 
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import space.kscience.controls.core.Address
+import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.composite.old.ExecutionContext
 import space.kscience.controls.composite.old.contracts.PeerConnection
-import space.kscience.controls.composite.old.contracts.QoS
+import space.kscience.controls.core.spec.QoS
 import space.kscience.dataforge.context.AbstractPlugin
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.PluginFactory

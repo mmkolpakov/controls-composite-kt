@@ -5,10 +5,20 @@ package space.kscience.controls.composite.dsl.properties
 import kotlinx.serialization.serializer
 import ru.nsk.kstatemachine.event.Event
 import space.kscience.controls.composite.dsl.CompositeSpecDsl
-import space.kscience.controls.composite.old.*
 import space.kscience.controls.composite.old.meta.*
-import space.kscience.controls.composite.old.validation.ValidationRuleSpec
+import space.kscience.controls.core.spec.CachePolicy
+import space.kscience.controls.core.spec.CacheScope
 import space.kscience.controls.core.faults.DeviceFault
+import space.kscience.controls.core.spec.ResourceLockSpec
+import space.kscience.controls.core.spec.LockType
+import space.kscience.controls.core.identifiers.Permission
+import space.kscience.controls.core.descriptors.ActionDescriptor
+import space.kscience.controls.core.descriptors.PropertyDescriptor
+import space.kscience.controls.core.meta.MemberTag
+import space.kscience.controls.core.meta.AliasTag
+import space.kscience.controls.core.meta.AdapterBinding
+import space.kscience.controls.core.descriptors.PropertyKind
+import space.kscience.controls.core.validation.ValidationRuleDescriptor
 import space.kscience.dataforge.meta.*
 import space.kscience.dataforge.meta.descriptors.MetaDescriptor
 import space.kscience.dataforge.meta.descriptors.MetaDescriptorBuilder
@@ -59,7 +69,7 @@ public class PermissionBuilder {
 }
 
 /**
- * A mutable builder for creating [PropertyDescriptor] instances in a DSL.
+ * A mutable builder for creating [space.kscience.controls.core.descriptors.PropertyDescriptor] instances in a DSL.
  */
 @CompositeSpecDsl
 public class PropertyDescriptorBuilder(public val name: Name) {
@@ -95,7 +105,7 @@ public class PropertyDescriptorBuilder(public val name: Name) {
      * Storage for serializable validation rules.
      * This list is populated by the `mutableProperty` delegate via the `validation` block.
      */
-    public val validationRules: MutableList<ValidationRuleSpec> = mutableListOf()
+    public val validationRules: MutableList<ValidationRuleDescriptor> = mutableListOf()
 
     /**
      * A [MetaDescriptor] defining the structure, type, and constraints of the property's value.
@@ -324,7 +334,7 @@ public class PropertyDescriptorBuilder(public val name: Name) {
     }
 
     /**
-     * Builds the final, immutable [PropertyDescriptor]. This method is public to be accessible from public inline functions.
+     * Builds the final, immutable [space.kscience.controls.core.descriptors.PropertyDescriptor]. This method is public to be accessible from public inline functions.
      */
     public fun build(mutable: Boolean, valueTypeName: String): PropertyDescriptor {
         val finalKind = kind ?: error(
@@ -361,7 +371,7 @@ public class PropertyDescriptorBuilder(public val name: Name) {
 }
 
 /**
- * A mutable builder for creating [ActionDescriptor] instances in a DSL.
+ * A mutable builder for creating [space.kscience.controls.core.descriptors.ActionDescriptor] instances in a DSL.
  */
 @CompositeSpecDsl
 public class ActionDescriptorBuilder(public val name: Name) {
@@ -673,7 +683,7 @@ public class ActionDescriptorBuilder(public val name: Name) {
     }
 
     /**
-     * Builds the final, immutable [ActionDescriptor]. This method is public to be accessible from public inline functions.
+     * Builds the final, immutable [space.kscience.controls.core.descriptors.ActionDescriptor]. This method is public to be accessible from public inline functions.
      */
     @OptIn(DFExperimental::class)
     public fun build(): ActionDescriptor = ActionDescriptor(

@@ -14,6 +14,7 @@ import space.kscience.controls.composite.old.features.TaskExecutorFeature
 import space.kscience.controls.composite.old.meta.*
 import space.kscience.controls.composite.old.plans.TransactionPlan
 import space.kscience.controls.composite.old.serialization.serializable
+import space.kscience.controls.core.descriptors.ActionDescriptor
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.MetaConverter
 import space.kscience.dataforge.meta.MetaConverter.Companion.meta

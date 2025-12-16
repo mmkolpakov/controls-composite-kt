@@ -4,7 +4,7 @@ import com.benasher44.uuid.uuid4
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withTimeout
-import space.kscience.controls.core.Address
+import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.composite.old.ExecutionContext
 import space.kscience.controls.composite.old.messages.BinaryDataRequest
 import space.kscience.controls.composite.old.messages.BinaryReadyNotification

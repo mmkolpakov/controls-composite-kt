@@ -3,8 +3,8 @@ package space.kscience.controls.core.events
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import space.kscience.controls.core.Address
-import space.kscience.controls.core.CorrelationId
+import space.kscience.controls.core.addressing.Address
+import space.kscience.controls.core.identifiers.CorrelationId
 import space.kscience.controls.core.faults.DeviceFault
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.names.Name

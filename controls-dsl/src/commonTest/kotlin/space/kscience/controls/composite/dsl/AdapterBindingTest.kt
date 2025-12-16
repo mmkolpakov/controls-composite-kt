@@ -6,9 +6,9 @@ import kotlinx.serialization.modules.subclass
 import space.kscience.controls.composite.dsl.properties.PropertyDescriptorBuilder
 import space.kscience.controls.composite.dsl.properties.doubleProperty
 import space.kscience.controls.composite.old.contracts.Device
-import space.kscience.controls.composite.old.meta.AdapterBinding
-import space.kscience.controls.composite.old.meta.ModbusTestBinding
-import space.kscience.controls.composite.old.meta.PropertyDescriptor
+import space.kscience.controls.core.meta.AdapterBinding
+import space.kscience.controls.core.meta.ModbusTestBinding
+import space.kscience.controls.core.descriptors.PropertyDescriptor
 import space.kscience.controls.composite.old.serialization.ControlsCompositeSerializersModule
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.names.asName

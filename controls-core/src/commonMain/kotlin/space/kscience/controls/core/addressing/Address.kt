@@ -1,4 +1,4 @@
-package space.kscience.controls.core
+package space.kscience.controls.core.addressing
 
 import kotlinx.serialization.Serializable
 import space.kscience.dataforge.names.Name

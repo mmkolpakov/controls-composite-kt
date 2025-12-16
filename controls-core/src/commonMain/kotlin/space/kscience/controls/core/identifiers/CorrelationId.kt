@@ -1,4 +1,4 @@
-package space.kscience.controls.core
+package space.kscience.controls.core.identifiers
 
 import kotlinx.serialization.Serializable
 import kotlin.coroutines.CoroutineContext

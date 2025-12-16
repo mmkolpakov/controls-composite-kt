@@ -12,7 +12,12 @@ import space.kscience.controls.composite.old.contracts.runtime.HydratableDeviceS
 import space.kscience.controls.composite.old.features.Feature
 import space.kscience.controls.composite.old.lifecycle.LifecycleContext
 import space.kscience.controls.composite.old.meta.*
-import space.kscience.controls.composite.old.serialization.serializableToMeta
+import space.kscience.controls.core.identifiers.BlueprintId
+import space.kscience.controls.core.descriptors.ActionDescriptor
+import space.kscience.controls.core.descriptors.PropertyDescriptor
+import space.kscience.controls.core.descriptors.StreamDescriptor
+import space.kscience.controls.core.meta.MemberTag
+import space.kscience.controls.core.serialization.serializableToMeta
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.MetaRepr
 import space.kscience.dataforge.misc.DfType

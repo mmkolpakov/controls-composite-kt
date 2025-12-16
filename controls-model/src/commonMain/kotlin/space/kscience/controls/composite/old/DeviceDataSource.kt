@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import space.kscience.controls.composite.old.contracts.Device
 import space.kscience.controls.composite.old.messages.PropertyChangedMessage
-import space.kscience.controls.composite.old.meta.PropertyDescriptor
+import space.kscience.controls.core.descriptors.PropertyDescriptor
 import space.kscience.dataforge.data.Data
 import space.kscience.dataforge.data.DataTree
 import space.kscience.dataforge.meta.Meta

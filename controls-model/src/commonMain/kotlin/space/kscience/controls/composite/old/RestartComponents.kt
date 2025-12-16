@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import space.kscience.controls.composite.old.serialization.SchemeAsMetaSerializer
 import space.kscience.controls.composite.old.serialization.serializable
-import space.kscience.controls.composite.old.serialization.serializableToMeta
+import space.kscience.controls.core.serialization.serializableToMeta
 import space.kscience.dataforge.meta.*
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds

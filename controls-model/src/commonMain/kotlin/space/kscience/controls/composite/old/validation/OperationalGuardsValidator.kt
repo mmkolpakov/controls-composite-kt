@@ -7,7 +7,7 @@ import space.kscience.controls.composite.old.features.GuardSpec
 import space.kscience.controls.composite.old.features.OperationalGuardsFeature
 import space.kscience.controls.composite.old.features.TimedPredicateGuardSpec
 import space.kscience.controls.composite.old.features.ValueChangeGuardSpec
-import space.kscience.controls.composite.old.meta.PropertyKind
+import space.kscience.controls.core.descriptors.PropertyKind
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.meta.Meta
 

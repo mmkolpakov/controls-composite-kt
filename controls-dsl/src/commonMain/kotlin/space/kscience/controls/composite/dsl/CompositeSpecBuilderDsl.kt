@@ -15,9 +15,9 @@ import space.kscience.controls.composite.old.meta.DeviceActionSpec
 import space.kscience.controls.composite.old.meta.DevicePropertySpec
 import space.kscience.controls.composite.old.meta.DeviceStreamSpec
 import space.kscience.controls.composite.old.meta.MutableDevicePropertySpec
-import space.kscience.controls.composite.old.meta.PropertyDescriptor
-import space.kscience.controls.composite.old.meta.PropertyKind
-import space.kscience.controls.composite.old.meta.StreamDescriptor
+import space.kscience.controls.core.descriptors.PropertyDescriptor
+import space.kscience.controls.core.descriptors.PropertyKind
+import space.kscience.controls.core.descriptors.StreamDescriptor
 import space.kscience.controls.composite.old.meta.unit
 import space.kscience.dataforge.meta.*
 import space.kscience.dataforge.misc.DFExperimental
@@ -291,7 +291,14 @@ public inline fun <reified T, D : Device> CompositeSpecBuilder<D>.stream(
         name = name,
         description = dslBuilder.description,
         dataTypeFqName = fqName,
-        permissions = dslBuilder.permissions
+        permissions = dslBuilder.permissions,
+        suggestedRateHz = TODO(),
+        direction = TODO(),
+        deliveryHint = TODO(),
+        readPermissions = TODO(),
+        writePermissions = TODO(),
+        tags = TODO(),
+        bindings = TODO()
     )
 
     val spec = object : DeviceStreamSpec<D> {

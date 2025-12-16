@@ -1,9 +1,10 @@
 package space.kscience.controls.composite.old.contracts
 
-import space.kscience.controls.core.Address
+import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.composite.old.DeviceMigrator
 import space.kscience.controls.composite.old.ExecutionContext
 import space.kscience.controls.composite.old.SystemPrincipal
+import space.kscience.controls.core.identifiers.BlueprintId
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.names.Name
 

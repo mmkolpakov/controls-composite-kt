@@ -3,11 +3,11 @@ package space.kscience.controls.composite.old.plans
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import space.kscience.controls.core.Address
+import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.composite.old.RetryPolicy
 import space.kscience.controls.composite.old.TimeoutPolicy
-import space.kscience.controls.composite.old.contracts.BlueprintId
-import space.kscience.controls.composite.old.serialization.serializableToMeta
+import space.kscience.controls.core.identifiers.BlueprintId
+import space.kscience.controls.core.serialization.serializableToMeta
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.MetaRepr
 import space.kscience.dataforge.names.Name

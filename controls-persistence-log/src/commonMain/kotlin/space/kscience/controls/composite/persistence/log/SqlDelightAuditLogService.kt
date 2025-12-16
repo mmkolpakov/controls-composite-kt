@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.flowOn
 import space.kscience.controls.composite.old.messages.DeviceMessage
 import space.kscience.controls.composite.old.services.AuditLogQuery
 import space.kscience.controls.composite.old.services.AuditLogService
-import space.kscience.controls.core.CorrelationId
+import space.kscience.controls.core.identifiers.CorrelationId
 import space.kscience.dataforge.context.AbstractPlugin
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.PluginTag

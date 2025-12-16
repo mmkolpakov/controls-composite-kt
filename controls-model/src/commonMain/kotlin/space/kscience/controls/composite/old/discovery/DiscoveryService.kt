@@ -2,7 +2,7 @@ package space.kscience.controls.composite.old.discovery
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
-import space.kscience.controls.core.Address
+import space.kscience.controls.core.addressing.Address
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.Plugin
 import space.kscience.dataforge.context.PluginFactory

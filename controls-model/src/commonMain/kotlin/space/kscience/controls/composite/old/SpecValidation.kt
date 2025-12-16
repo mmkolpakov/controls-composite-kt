@@ -1,10 +1,10 @@
 package space.kscience.controls.composite.old
 
-import space.kscience.controls.composite.old.contracts.BlueprintId
+import space.kscience.controls.core.identifiers.BlueprintId
 import space.kscience.controls.composite.old.contracts.DeviceBlueprint
 import space.kscience.controls.composite.old.contracts.PlanExecutorDevice
 import space.kscience.controls.composite.old.contracts.TaskExecutorDevice
-import space.kscience.controls.composite.old.meta.PropertyKind
+import space.kscience.controls.core.descriptors.PropertyKind
 import space.kscience.controls.composite.old.state.StatefulDevice
 import space.kscience.dataforge.meta.get
 import space.kscience.dataforge.names.Name

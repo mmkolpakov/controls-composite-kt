@@ -1,7 +1,7 @@
-package space.kscience.controls.composite.old
+package space.kscience.controls.core.spec
 
 import kotlinx.serialization.Serializable
-import space.kscience.controls.composite.old.serialization.serializableToMeta
+import space.kscience.controls.core.serialization.serializableToMeta
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.MetaRepr
 import space.kscience.dataforge.names.Name
@@ -36,7 +36,7 @@ public enum class CacheScope {
 
 /**
  * A declarative policy that describes how the result of an idempotent action should be cached.
- * When an [space.kscience.controls.composite.old.meta.ActionDescriptor] includes this policy,
+ * When an [ActionDescriptor] includes this policy,
  * the runtime is expected to cache the action's result according to these rules.
  *
  * @property ttl The Time-To-Live for a cached entry. After this duration has passed since the entry

@@ -7,14 +7,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
-import space.kscience.controls.core.Address
+import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.composite.old.ExecutionContext
 import space.kscience.controls.composite.old.InternalControlsApi
 import space.kscience.controls.composite.old.asDataTree
 import space.kscience.controls.composite.old.contracts.Device
 import space.kscience.controls.composite.old.messages.PropertyChangedMessage
-import space.kscience.controls.composite.old.meta.PropertyDescriptor
-import space.kscience.controls.composite.old.meta.PropertyKind
+import space.kscience.controls.core.descriptors.PropertyDescriptor
+import space.kscience.controls.core.descriptors.PropertyKind
 import space.kscience.dataforge.context.Global
 import space.kscience.dataforge.data.Data
 import space.kscience.dataforge.data.await

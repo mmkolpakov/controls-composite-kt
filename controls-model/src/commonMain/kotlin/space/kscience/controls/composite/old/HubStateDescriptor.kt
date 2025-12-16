@@ -1,10 +1,10 @@
 package space.kscience.controls.composite.old
 
 import kotlinx.serialization.Serializable
-import space.kscience.controls.composite.old.contracts.BlueprintId
+import space.kscience.controls.core.identifiers.BlueprintId
 import space.kscience.controls.composite.old.lifecycle.DeviceLifecycleState
 import space.kscience.controls.composite.old.serialization.serializableMetaConverter
-import space.kscience.controls.composite.old.serialization.serializableToMeta
+import space.kscience.controls.core.serialization.serializableToMeta
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.MetaConverter
 import space.kscience.dataforge.meta.MetaRepr

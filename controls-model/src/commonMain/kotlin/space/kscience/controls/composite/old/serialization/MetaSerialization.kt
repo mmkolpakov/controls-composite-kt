@@ -32,21 +32,6 @@ public val controlsJson: Json by lazy {
 }
 
 /**
- * Converts a `@Serializable` object to a [Meta] representation using the centrally configured [controlsJson] bridge.
- * This is the idiomatic and recommended way to implement the [MetaRepr.toMeta] method for any serializable class
- * within this framework. It ensures that serialization logic is defined in a single place (via annotations) and
- * is consistently applied.
- *
- * @param serializer The explicit [KSerializer] for type [T].
- * @param obj The object to be converted.
- * @return The [Meta] representation of the object.
- */
-public fun <T> serializableToMeta(serializer: KSerializer<T>, obj: T): Meta {
-    val jsonElement = controlsJson.encodeToJsonElement(serializer, obj)
-    return jsonElement.toMeta()
-}
-
-/**
  * A generic factory for [MetaConverter] that leverages `kotlinx.serialization` for any `@Serializable` class.
  * It uses the centrally configured [controlsJson] instance to handle polymorphic types correctly.
  * This is the primary tool for bridging the strongly-typed serializable old with the dynamic Meta old.

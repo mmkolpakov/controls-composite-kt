@@ -2,7 +2,7 @@ package space.kscience.controls.composite.old.validation
 
 import space.kscience.controls.composite.old.ValidationError
 import space.kscience.controls.composite.old.contracts.DeviceBlueprint
-import space.kscience.controls.composite.old.meta.PropertyKind
+import space.kscience.controls.core.descriptors.PropertyKind
 
 /**
  * Performs core validation checks on a blueprint that are not tied to a specific feature.

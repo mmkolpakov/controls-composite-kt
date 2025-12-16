@@ -2,12 +2,12 @@ package space.kscience.controls.composite.old.messages
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import space.kscience.controls.core.Address
+import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.composite.old.SerializableDeviceFailure
-import space.kscience.controls.composite.old.contracts.BlueprintId
-import space.kscience.controls.composite.old.meta.ActionDescriptor
-import space.kscience.controls.composite.old.meta.PropertyDescriptor
-import space.kscience.controls.core.CorrelationId
+import space.kscience.controls.core.identifiers.BlueprintId
+import space.kscience.controls.core.descriptors.ActionDescriptor
+import space.kscience.controls.core.descriptors.PropertyDescriptor
+import space.kscience.controls.core.identifiers.CorrelationId
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.names.Name
 import kotlin.time.Instant

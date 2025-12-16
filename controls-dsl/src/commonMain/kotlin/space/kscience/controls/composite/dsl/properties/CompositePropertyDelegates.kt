@@ -5,8 +5,8 @@ import space.kscience.controls.composite.dsl.DeviceSpecification
 import space.kscience.controls.composite.old.contracts.Device
 import space.kscience.controls.composite.old.meta.DevicePropertySpec
 import space.kscience.controls.composite.old.meta.MutableDevicePropertySpec
-import space.kscience.controls.composite.old.meta.PropertyDescriptor
-import space.kscience.controls.composite.old.meta.PropertyKind
+import space.kscience.controls.core.descriptors.PropertyDescriptor
+import space.kscience.controls.core.descriptors.PropertyKind
 import space.kscience.dataforge.meta.*
 import space.kscience.dataforge.names.Name
 import space.kscience.dataforge.names.parseAsName
@@ -60,7 +60,7 @@ internal inline fun <D : Device, reified T> createPropertyDelegateProvider(
         val dslBuilder = PropertyDescriptorBuilder(propertyName).apply {
             this.kind = kind
             // Add serializable validation rules to the descriptor builder
-            validationBuilder?.specs?.let { this.validationRules.addAll(it) }
+            validationBuilder?.descriptors?.let { this.validationRules.addAll(it) }
             descriptorBuilder()
         }
         val descriptor = dslBuilder.build(

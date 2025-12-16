@@ -9,11 +9,7 @@ import space.kscience.controls.composite.old.contracts.DiscoveredAddressSource
 import space.kscience.controls.composite.old.contracts.StaticAddressSource
 import space.kscience.controls.composite.old.features.*
 import space.kscience.controls.composite.old.messages.*
-import space.kscience.controls.composite.old.meta.AdapterBinding
-import space.kscience.controls.composite.old.meta.MemberTag
-import space.kscience.controls.composite.old.meta.ProfileTag
 import space.kscience.controls.composite.old.plans.*
-import space.kscience.controls.composite.old.validation.*
 import space.kscience.controls.core.controlsCoreSerializersModule
 
 /**
@@ -91,21 +87,5 @@ public val ControlsCompositeSerializersModule: SerializersModule = SerializersMo
         subclass(IntrospectionFeature::class)
         subclass(RemoteMirrorFeature::class)
         subclass(OperationalGuardsFeature::class)
-    }
-
-    // Registration of serializable validation rules
-    polymorphic(ValidationRuleSpec::class) {
-        subclass(RangeRuleSpec.serializer())
-        subclass(RegexRuleSpec::class)
-        subclass(MinLengthRuleSpec::class)
-        subclass(CustomPredicateRuleSpec::class)
-    }
-
-    polymorphic(MemberTag::class) {
-        subclass(ProfileTag::class)
-    }
-
-    polymorphic(AdapterBinding::class) {
-        // This block is left empty. Subclasses must be registered by modules that define them.
     }
 }

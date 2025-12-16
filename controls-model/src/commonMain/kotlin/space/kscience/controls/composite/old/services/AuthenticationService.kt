@@ -1,8 +1,8 @@
 package space.kscience.controls.composite.old.services
 
 import space.kscience.controls.composite.old.DeviceSecurityException
-import space.kscience.controls.composite.old.Permission
 import space.kscience.controls.composite.old.Principal
+import space.kscience.controls.core.identifiers.Permission
 import space.kscience.dataforge.context.*
 import space.kscience.dataforge.meta.Meta
 

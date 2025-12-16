@@ -3,9 +3,9 @@ package space.kscience.controls.composite.dsl.properties
 import space.kscience.controls.composite.dsl.DeviceSpecification
 import space.kscience.controls.composite.old.contracts.Device
 import space.kscience.controls.composite.old.meta.DevicePropertySpec
-import space.kscience.controls.composite.old.meta.PropertyDescriptor
+import space.kscience.controls.core.descriptors.PropertyDescriptor
 import space.kscience.controls.composite.old.contracts.runtime.CompositeDeviceContext
-import space.kscience.controls.composite.old.meta.PropertyKind
+import space.kscience.controls.core.descriptors.PropertyKind
 import space.kscience.controls.composite.old.state.DeviceState
 import space.kscience.dataforge.meta.MetaConverter
 import space.kscience.dataforge.names.Name
