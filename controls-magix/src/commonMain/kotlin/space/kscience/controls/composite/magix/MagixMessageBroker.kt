@@ -22,8 +22,8 @@ import space.kscience.magix.api.*
 public class MagixMessageBroker(
     private val coroutineScope: CoroutineScope,
     private val endpoint: MagixEndpoint,
-    private val localHubId: String,
-    private val originTarget: String
+    private val localHubId: Name,
+    private val originTarget: Name
 ) : MessageBroker {
 
     public companion object {
@@ -88,7 +88,7 @@ public class MagixMessageBroker(
                     DeviceMessage.serializer(),
                     message.payload
                 )
-                val topic = deviceMessage.sourceDevice?.deviceName ?: Name.EMPTY
+                val topic = deviceMessage.sourceDevice?.device ?: Name.EMPTY
                 publish(topic, deviceMessage)
             }
         }.launchIn(this)

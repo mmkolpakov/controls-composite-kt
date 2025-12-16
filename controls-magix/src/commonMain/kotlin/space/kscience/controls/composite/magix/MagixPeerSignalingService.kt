@@ -4,7 +4,7 @@ import com.benasher44.uuid.uuid4
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withTimeout
-import space.kscience.controls.composite.old.Address
+import space.kscience.controls.core.Address
 import space.kscience.controls.composite.old.ExecutionContext
 import space.kscience.controls.composite.old.messages.BinaryDataRequest
 import space.kscience.controls.composite.old.messages.BinaryReadyNotification
@@ -12,6 +12,7 @@ import space.kscience.controls.composite.old.services.PeerSignalingService
 import space.kscience.dataforge.context.AbstractPlugin
 import space.kscience.dataforge.context.PluginTag
 import space.kscience.dataforge.io.Envelope
+import space.kscience.dataforge.names.Name
 import space.kscience.dataforge.names.parseAsName
 import space.kscience.magix.api.MagixEndpoint
 import space.kscience.magix.api.send
@@ -28,7 +29,7 @@ import kotlin.time.Duration
  */
 public class MagixPeerSignalingService(
     private val endpoint: MagixEndpoint,
-    private val localHubId: String,
+    private val localHubId: Name,
 ): PeerSignalingService, AbstractPlugin() {
     override val tag: PluginTag get() = PeerSignalingService.tag
 
@@ -52,7 +53,7 @@ public class MagixPeerSignalingService(
             format = MagixMessageBroker.deviceMessageFormat,
             payload = requestMessage,
             source = localHubId,
-            target = address.hubId
+            target = address.route
         )
 
         return withTimeout(timeout) {
@@ -83,7 +84,7 @@ public class MagixPeerSignalingService(
             format = MagixMessageBroker.deviceMessageFormat,
             payload = notification,
             source = localHubId,
-            target = targetAddress?.hubId
+            target = targetAddress?.route
         )
     }
 }

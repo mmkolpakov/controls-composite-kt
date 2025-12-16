@@ -4,6 +4,7 @@ import space.kscience.controls.composite.dsl.properties.doubleProperty
 import space.kscience.controls.composite.dsl.properties.mutableDoubleProperty
 import space.kscience.controls.composite.old.*
 import space.kscience.controls.composite.old.contracts.Device
+import space.kscience.controls.core.Address
 import space.kscience.dataforge.context.Global
 import space.kscience.dataforge.meta.*
 import space.kscience.dataforge.names.asName
@@ -114,7 +115,7 @@ class CompositionDslTest {
             override val id = "test.device"
             override fun CompositeSpecBuilder<Device>.configure() {
                 driver { _, _ -> error("Not for runtime") }
-                val remotePeer by peer({ _, _ -> error("Not for runtime") }, Address("remoteHub", "peer".asName()))
+                val remotePeer by peer({ _, _ -> error("Not for runtime") }, Address("remoteHub", "peer"))
                 remoteChild(
                     name = "remoteProxy".asName(),
                     blueprint = childBlueprint,
@@ -140,7 +141,7 @@ class CompositionDslTest {
             override val id = "test.device"
             override fun CompositeSpecBuilder<Device>.configure() {
                 driver { _, _ -> error("Not for runtime") }
-                val myPeer by peer({ _, _ -> error("Not for runtime") }, Address("remoteHub", "peer".asName()))
+                val myPeer by peer({ _, _ -> error("Not for runtime") }, Address("remoteHub", "peer"))
             }
         }
         val blueprint = compositeDeviceUnchecked(spec, Global)

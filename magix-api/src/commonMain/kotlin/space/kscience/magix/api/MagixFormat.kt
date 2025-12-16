@@ -47,8 +47,8 @@ public data class MagixFormat<T>(
  */
 public fun <T> MagixEndpoint.subscribe(
     format: MagixFormat<T>,
-    originFilter: Collection<String>? = null,
-    targetFilter: Collection<String?>? = null,
+    originFilter: Collection<Name>? = null,
+    targetFilter: Collection<Name?>? = null,
     topicPattern: Name? = null,
 ): Flow<Pair<MagixMessage, T>> = subscribe(
     MagixMessageFilter(format = format.formats, source = originFilter, target = targetFilter, topicPattern = topicPattern)
@@ -73,8 +73,8 @@ public fun <T> MagixEndpoint.subscribe(
 public suspend fun <T> MagixEndpoint.send(
     format: MagixFormat<T>,
     payload: T,
-    source: String,
-    target: String? = null,
+    source: Name,
+    target: Name? = null,
     topic: Name? = null,
     id: String? = null,
     parentId: String? = null,

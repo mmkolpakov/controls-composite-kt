@@ -1,6 +1,6 @@
 package space.kscience.controls.composite.old.services
 
-import space.kscience.controls.composite.old.Address
+import space.kscience.controls.core.Address
 import space.kscience.controls.composite.old.ExecutionContext
 import space.kscience.controls.composite.old.messages.BinaryReadyNotification
 import space.kscience.dataforge.context.Context

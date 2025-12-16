@@ -1,6 +1,6 @@
 package space.kscience.controls.composite.old.contracts
 
-import space.kscience.controls.composite.old.Address
+import space.kscience.controls.core.Address
 import space.kscience.controls.composite.old.DeviceMigrator
 import space.kscience.controls.composite.old.ExecutionContext
 import space.kscience.controls.composite.old.SystemPrincipal

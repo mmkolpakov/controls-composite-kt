@@ -1,7 +1,7 @@
 package space.kscience.controls.composite.old.analytics
 
 import kotlinx.serialization.Serializable
-import space.kscience.controls.composite.old.Address
+import space.kscience.controls.core.Address
 import space.kscience.controls.composite.old.contracts.BlueprintId
 import space.kscience.controls.composite.old.contracts.toBlueprintId
 import space.kscience.dataforge.names.Name

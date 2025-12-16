@@ -20,8 +20,8 @@ import space.kscience.dataforge.names.matches
 @Serializable
 public data class MagixMessageFilter(
     val format: Collection<String>? = null,
-    val source: Collection<String>? = null,
-    val target: Collection<String?>? = null,
+    val source: Collection<Name>? = null,
+    val target: Collection<Name?>? = null,
     val topicPattern: Name? = null,
 ) {
 

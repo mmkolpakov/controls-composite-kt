@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
-import space.kscience.controls.composite.old.Address
+import space.kscience.controls.core.Address
 import space.kscience.controls.composite.old.ExecutionContext
 import space.kscience.controls.composite.old.InternalControlsApi
 import space.kscience.controls.composite.old.asDataTree
@@ -130,7 +130,7 @@ class DeviceDataSourceTest {
             PropertyChangedMessage(
                 property = "b.c",
                 value = Meta("newValue"),
-                sourceDevice = Address("hub", "dataSourceDevice".asName()),
+                sourceDevice = Address("hub", "dataSourceDevice"),
                 time = Clock.System.now()
             )
         )

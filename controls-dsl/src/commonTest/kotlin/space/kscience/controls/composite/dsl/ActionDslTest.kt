@@ -5,7 +5,7 @@ import space.kscience.controls.composite.dsl.actions.metaAction
 import space.kscience.controls.composite.dsl.actions.plan
 import space.kscience.controls.composite.dsl.actions.taskAction
 import space.kscience.controls.composite.dsl.actions.unitAction
-import space.kscience.controls.composite.old.Address
+import space.kscience.controls.core.Address
 import space.kscience.controls.composite.old.contracts.Device
 import space.kscience.controls.composite.old.contracts.PlanExecutorDevice
 import space.kscience.controls.composite.old.contracts.TaskExecutorDevice
@@ -75,7 +75,7 @@ class ActionDslTest {
         val spec = object : DeviceSpecification<TestPlanExecutorDeviceForDsl>() {
             override val id = "test.device"
             val myPlan by plan {
-                start(Address("myHub", "myDevice".asName()))
+                start(Address("myHub", "myDevice"))
             }
             override fun CompositeSpecBuilder<TestPlanExecutorDeviceForDsl>.configure() {
                 driver { _, _ -> error("Not for runtime") }

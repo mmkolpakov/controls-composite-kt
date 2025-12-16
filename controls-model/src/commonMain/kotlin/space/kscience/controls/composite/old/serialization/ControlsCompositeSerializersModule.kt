@@ -14,6 +14,7 @@ import space.kscience.controls.composite.old.meta.MemberTag
 import space.kscience.controls.composite.old.meta.ProfileTag
 import space.kscience.controls.composite.old.plans.*
 import space.kscience.controls.composite.old.validation.*
+import space.kscience.controls.core.controlsCoreSerializersModule
 
 /**
  * A shared [SerializersModule] for the controls-composite models.
@@ -37,21 +38,7 @@ public val ControlsCompositeSerializersModule: SerializersModule = SerializersMo
         subclass(DeviceDetachedMessage::class)
     }
 
-    polymorphic(ExecutionEvent::class) {
-        subclass(ActionDispatched::class)
-        subclass(ActionStarted::class)
-        subclass(ActionCompleted::class)
-        subclass(CacheHit::class)
-        subclass(CacheMiss::class)
-        subclass(FaultReported::class)
-    }
-
-    polymorphic(DeviceFault::class) {
-        subclass(ValidationFault::class)
-        subclass(PreconditionFault::class)
-        subclass(ResourceBusyFault::class)
-        subclass(TimeoutFault::class)
-    }
+    include(controlsCoreSerializersModule)
 
     polymorphic(PropertyBinding::class) {
         subclass(ConstPropertyBinding::class)

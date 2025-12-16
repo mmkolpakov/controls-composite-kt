@@ -10,6 +10,8 @@ import space.kscience.controls.composite.old.features.*
 import space.kscience.controls.composite.old.messages.*
 import space.kscience.controls.composite.old.plans.*
 import space.kscience.controls.composite.old.serialization.controlsJson
+import space.kscience.controls.core.Address
+import space.kscience.controls.core.faults.ValidationFault
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.get
 import space.kscience.dataforge.meta.string
@@ -38,15 +40,15 @@ class SerializationTest {
     @Test
     fun testDeviceMessageSerialization() {
         val messages = listOf(
-            PropertyChangedMessage(Clock.System.now(), "testProp", Meta(123), Address("hub", "device".asName())),
-            DescriptionMessage(Clock.System.now(), Meta.EMPTY, emptyList(), emptyList(), Address("hub", "device".asName()), requestId = "rq-1"),
-            LifecycleStateChangedMessage(Clock.System.now(), "Stopped", "Running", Address("hub", "device".asName())),
-            DeviceErrorMessage(Clock.System.now(), SerializableDeviceFailure("TestError", "A test error occurred"), Address("hub", "device".asName()), requestId = null),
-            PredicateChangedMessage(Clock.System.now(), "isReady", true, Address("hub", "device".asName())),
-            BinaryReadyNotification(Clock.System.now(), "content-123", Meta.EMPTY, Address("hub", "device".asName())),
-            BinaryDataRequest(Clock.System.now(), "content-123", Address("hub", "requester".asName()), Address("hub", "provider".asName()), "rq-2"),
-            DeviceAttachedMessage(Clock.System.now(), "child".asName(), "com.example.child".toBlueprintId(), Address("hub", "parent".asName())),
-            DeviceDetachedMessage(Clock.System.now(), "child".asName(), Address("hub", "parent".asName()))
+            PropertyChangedMessage(Clock.System.now(), "testProp", Meta(123), Address("hub", "device")),
+            DescriptionMessage(Clock.System.now(), Meta.EMPTY, emptyList(), emptyList(), Address("hub", "device"), requestId = "rq-1"),
+            LifecycleStateChangedMessage(Clock.System.now(), "Stopped", "Running", Address("hub", "device")),
+            DeviceErrorMessage(Clock.System.now(), SerializableDeviceFailure("TestError", "A test error occurred"), Address("hub", "device"), requestId = null),
+            PredicateChangedMessage(Clock.System.now(), "isReady", true, Address("hub", "device")),
+            BinaryReadyNotification(Clock.System.now(), "content-123", Meta.EMPTY, Address("hub", "device")),
+            BinaryDataRequest(Clock.System.now(), "content-123", Address("hub", "requester"), Address("hub", "provider"), "rq-2"),
+            DeviceAttachedMessage(Clock.System.now(), "child".asName(), "com.example.child".toBlueprintId(), Address("hub", "parent")),
+            DeviceDetachedMessage(Clock.System.now(), "child".asName(), Address("hub", "parent"))
         )
 
         messages.forEach { original ->
@@ -62,7 +64,7 @@ class SerializationTest {
      */
     @Test
     fun testActionSpecSerialization() {
-        val testAddress = Address("hub", "device".asName())
+        val testAddress = Address("hub", "device")
         val specs = listOf(
             AttachActionSpec(testAddress, "com.example.device".toBlueprintId()),
             DetachActionSpec(testAddress),

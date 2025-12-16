@@ -2,12 +2,12 @@ package space.kscience.controls.composite.old.messages
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import space.kscience.controls.composite.old.Address
-import space.kscience.controls.composite.old.CorrelationId
+import space.kscience.controls.core.Address
 import space.kscience.controls.composite.old.SerializableDeviceFailure
 import space.kscience.controls.composite.old.contracts.BlueprintId
 import space.kscience.controls.composite.old.meta.ActionDescriptor
 import space.kscience.controls.composite.old.meta.PropertyDescriptor
+import space.kscience.controls.core.CorrelationId
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.names.Name
 import kotlin.time.Instant
@@ -69,7 +69,7 @@ public data class PropertyChangedMessage(
     override val correlationId: CorrelationId? = null,
 ) : DeviceMessage {
     override fun changeSource(block: (Name) -> Name): PropertyChangedMessage =
-        copy(sourceDevice = sourceDevice.copy(deviceName = block(sourceDevice.deviceName)))
+        copy(sourceDevice = sourceDevice.copy(device = block(sourceDevice.device)))
 }
 
 /**
@@ -94,7 +94,7 @@ public data class DescriptionMessage(
     override val correlationId: CorrelationId? = null,
 ) : ResponseMessage {
     override fun changeSource(block: (Name) -> Name): DescriptionMessage =
-        copy(sourceDevice = sourceDevice.copy(deviceName = block(sourceDevice.deviceName)))
+        copy(sourceDevice = sourceDevice.copy(device = block(sourceDevice.device)))
 }
 
 /**
@@ -116,7 +116,7 @@ public data class LifecycleStateChangedMessage(
     override val correlationId: CorrelationId? = null,
 ) : DeviceMessage {
     override fun changeSource(block: (Name) -> Name): LifecycleStateChangedMessage =
-        copy(sourceDevice = sourceDevice.copy(deviceName = block(sourceDevice.deviceName)))
+        copy(sourceDevice = sourceDevice.copy(device = block(sourceDevice.device)))
 }
 
 /**
@@ -136,7 +136,7 @@ public data class DeviceErrorMessage(
     override val correlationId: CorrelationId? = null,
 ) : DeviceMessage {
     override fun changeSource(block: (Name) -> Name): DeviceErrorMessage =
-        copy(sourceDevice = sourceDevice.copy(deviceName = block(sourceDevice.deviceName)))
+        copy(sourceDevice = sourceDevice.copy(device = block(sourceDevice.device)))
 }
 
 /**
@@ -160,7 +160,7 @@ public data class PredicateChangedMessage(
     override val correlationId: CorrelationId? = null,
 ) : DeviceMessage {
     override fun changeSource(block: (Name) -> Name): PredicateChangedMessage =
-        copy(sourceDevice = sourceDevice.copy(deviceName = block(sourceDevice.deviceName)))
+        copy(sourceDevice = sourceDevice.copy(device = block(sourceDevice.device)))
 }
 
 
@@ -184,7 +184,7 @@ public data class BinaryReadyNotification(
     override val correlationId: CorrelationId? = null,
 ) : DeviceMessage {
     override fun changeSource(block: (Name) -> Name): BinaryReadyNotification =
-        copy(sourceDevice = sourceDevice.copy(deviceName = block(sourceDevice.deviceName)))
+        copy(sourceDevice = sourceDevice.copy(device = block(sourceDevice.device)))
 }
 
 /**
@@ -205,7 +205,7 @@ public data class BinaryDataRequest(
     override val correlationId: CorrelationId? = null,
 ) : RequestMessage {
     override fun changeSource(block: (Name) -> Name): BinaryDataRequest =
-        copy(sourceDevice = sourceDevice?.copy(deviceName = block(sourceDevice.deviceName)))
+        copy(sourceDevice = sourceDevice?.copy(device = block(sourceDevice.device)))
 }
 
 /**
@@ -228,7 +228,7 @@ public data class DeviceAttachedMessage(
     override val correlationId: CorrelationId? = null,
 ) : DeviceMessage {
     override fun changeSource(block: (Name) -> Name): DeviceAttachedMessage =
-        copy(sourceDevice = sourceDevice.copy(deviceName = block(sourceDevice.deviceName)))
+        copy(sourceDevice = sourceDevice.copy(device = block(sourceDevice.device)))
 }
 
 /**
@@ -249,5 +249,5 @@ public data class DeviceDetachedMessage(
     override val correlationId: CorrelationId? = null,
 ) : DeviceMessage {
     override fun changeSource(block: (Name) -> Name): DeviceDetachedMessage =
-        copy(sourceDevice = sourceDevice.copy(deviceName = block(sourceDevice.deviceName)))
+        copy(sourceDevice = sourceDevice.copy(device = block(sourceDevice.device)))
 }

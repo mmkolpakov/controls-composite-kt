@@ -1,24 +1,13 @@
 package space.kscience.controls.composite.old.services
 
 import space.kscience.controls.composite.old.ExecutionContext
+import space.kscience.controls.core.TransportAddress
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.Plugin
 import space.kscience.dataforge.context.PluginFactory
 import space.kscience.dataforge.context.PluginTag
 import space.kscience.dataforge.meta.Meta
-
-/**
- * A sealed interface representing the physical address details for a specific transport protocol.
- * This allows for type-safe handling of different connection parameters.
- */
-public sealed interface TransportAddress
-
-/**
- * Represents the physical address for a TCP-based connection.
- * @property host The hostname or IP address.
- * @property port The TCP port number.
- */
-public data class TcpAddress(val host: String, val port: Int) : TransportAddress
+import space.kscience.dataforge.names.Name
 
 /**
  * A contract for a service that resolves a logical hub identifier (`hubId`) into a physical [TransportAddress].
@@ -29,13 +18,11 @@ public interface AddressResolver : Plugin {
     override val tag: PluginTag get() = Companion.tag
 
     /**
-     * Resolves a logical `hubId` into a physical [TransportAddress].
+     * Resolves a logical route (hub identifier hierarchy) into a physical [TransportAddress].
      *
-     * @param hubId The logical identifier of the hub to resolve.
-     * @param context The [ExecutionContext] of the operation, providing additional context like security principal.
-     * @return The resolved [TransportAddress], or `null` if the address cannot be found.
+     * @param route The hierarchical identifier of the target hub/node.
      */
-    public suspend fun resolve(hubId: String, context: ExecutionContext): TransportAddress?
+    public suspend fun resolve(route: Name): TransportAddress?
 
     public companion object : PluginFactory<AddressResolver> {
         override val tag: PluginTag = PluginTag("device.address.resolver", group = PluginTag.DATAFORGE_GROUP)

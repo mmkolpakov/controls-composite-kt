@@ -1,7 +1,7 @@
 package space.kscience.controls.composite.persistence.log
 
 import app.cash.sqldelight.ColumnAdapter
-import space.kscience.controls.composite.old.CorrelationId
+import space.kscience.controls.core.CorrelationId
 import kotlin.time.Instant
 
 /**

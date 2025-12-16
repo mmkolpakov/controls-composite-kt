@@ -20,6 +20,7 @@ import space.kscience.controls.composite.old.meta.DevicePropertySpec
 import space.kscience.controls.composite.old.state.MutableDeviceState
 import space.kscience.controls.composite.old.state.StatefulDevice
 import space.kscience.controls.composite.old.state.StatefulDeviceLogic
+import space.kscience.controls.core.Address
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.Global
 import space.kscience.dataforge.meta.*
@@ -176,7 +177,7 @@ class DslTest {
             val mutableProp by mutableIntProperty(read = { 2 }, write = {})
             val lateBound by lateBoundProperty(MetaConverter.double, 0.0)
 
-            val planAction by plan { write(mutableProp, Address("hub", "device".asName()), 123) }
+            val planAction by plan { write(mutableProp, Address("hub", "device"), 123) }
             val taskAction by taskAction<String, Int, _>("com.example.myTask")
             val metaAction by metaAction { it }
             private val childBlueprint = compositeDeviceUnchecked(ChildDeviceSpec(), Global)
@@ -184,7 +185,7 @@ class DslTest {
             override fun CompositeSpecBuilder<KitchenSinkDevice>.configure() {
                 driver { ctx, meta -> TestDeviceImpl(ctx, "kitchenSink".asName(), meta, coroutineContext) }
 
-                val peer by peer({ _, _ -> error("not called") }, Address("hub", "peer".asName()))
+                val peer by peer({ _, _ -> error("not called") }, Address("hub", "peer"))
 
                 child("child1".asName(), childBlueprint)
                 children(childBlueprint, listOf("child2".asName(), "child3".asName()))

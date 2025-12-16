@@ -1,7 +1,7 @@
 package space.kscience.controls.composite.old.contracts
 
 import kotlinx.coroutines.flow.StateFlow
-import space.kscience.controls.composite.old.Address
+import space.kscience.controls.core.Address
 import space.kscience.controls.composite.old.ExecutionContext
 import space.kscience.dataforge.io.Envelope
 import kotlin.time.Duration

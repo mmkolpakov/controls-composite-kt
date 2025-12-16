@@ -1,6 +1,7 @@
 package space.kscience.controls.composite.old
 
 import kotlinx.serialization.Serializable
+import space.kscience.controls.core.faults.DeviceFault
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.names.Name
 

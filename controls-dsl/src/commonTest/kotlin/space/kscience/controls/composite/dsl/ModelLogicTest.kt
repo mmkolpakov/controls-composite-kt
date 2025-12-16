@@ -1,10 +1,10 @@
 package space.kscience.controls.composite.dsl
 
-import space.kscience.controls.composite.old.Address
+import space.kscience.controls.core.Address
 import space.kscience.controls.composite.old.state.Quality
 import space.kscience.controls.composite.old.state.StateValue
-import space.kscience.controls.composite.old.toAddress
-import space.kscience.controls.composite.old.toAddressOrNull
+import space.kscience.controls.core.toAddress
+import space.kscience.controls.core.toAddressOrNull
 import space.kscience.dataforge.names.asName
 import space.kscience.dataforge.names.parseAsName
 import kotlin.test.Test
@@ -27,8 +27,8 @@ class ModelLogicTest {
     fun testAddressParsing() {
         val validStr = "myHub::myDevice.group[0]"
         val address = Address.parse(validStr)
-        assertEquals("myHub", address.hubId)
-        assertEquals("myDevice.group[0]".parseAsName(), address.deviceName)
+        assertEquals("myHub".asName(), address.route)
+        assertEquals("myDevice.group[0]".parseAsName(), address.device)
         assertEquals("myHub::myDevice.group[0]", address.toString())
 
         assertEquals(address, validStr.toAddress())
@@ -44,10 +44,10 @@ class ModelLogicTest {
      */
     @Test
     fun testAddressChildResolution() {
-        val parentAddress = Address("myHub", "parent".asName())
+        val parentAddress = Address("myHub".asName(), "parent".asName())
         val childAddress = parentAddress.resolveChild("child[a]".asName())
-        assertEquals("myHub", childAddress.hubId)
-        assertEquals("parent.child\\[a\\]", childAddress.deviceName.toString())
+        assertEquals("myHub".asName(), childAddress.route)
+        assertEquals("parent.child\\[a\\]", childAddress.device.toString())
     }
 
     /**

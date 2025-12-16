@@ -5,7 +5,9 @@ import space.kscience.dataforge.context.*
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.get
 import space.kscience.dataforge.meta.string
+import space.kscience.dataforge.names.Name
 import space.kscience.dataforge.names.asName
+import space.kscience.dataforge.names.parseAsName
 import space.kscience.magix.api.MagixEndpoint
 import space.kscience.magix.api.MagixEndpointFactory
 
@@ -69,14 +71,14 @@ public class MagixBrokerPlugin(meta: Meta) : AbstractPlugin(meta) {
      * @param originTarget The Magix target for broadcast messages, defaulting to the hubId.
      * @return A configured instance of [MagixMessageBroker].
      */
-    public fun broker(originTarget: String = this.hubId): MessageBroker =
-        MagixMessageBroker(context, getEndpoint(), hubId, originTarget)
+    public fun broker(originTarget: Name = this.hubId.parseAsName()): MessageBroker =
+        MagixMessageBroker(context, getEndpoint(), hubId.parseAsName(), originTarget)
 
     /**
      * Creates a new [MagixPeerSignalingService] instance for P2P signaling.
      * @return A configured instance of [MagixPeerSignalingService].
      */
-    public fun createPeerSignalingService(): MagixPeerSignalingService = MagixPeerSignalingService(getEndpoint(), hubId)
+    public fun createPeerSignalingService(): MagixPeerSignalingService = MagixPeerSignalingService(getEndpoint(), hubId.parseAsName())
 
     /**
      * Detaches the plugin and closes the underlying Magix endpoint if it has been initialized.

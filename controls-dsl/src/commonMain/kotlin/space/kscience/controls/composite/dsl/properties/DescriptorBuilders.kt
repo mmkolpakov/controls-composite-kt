@@ -8,6 +8,7 @@ import space.kscience.controls.composite.dsl.CompositeSpecDsl
 import space.kscience.controls.composite.old.*
 import space.kscience.controls.composite.old.meta.*
 import space.kscience.controls.composite.old.validation.ValidationRuleSpec
+import space.kscience.controls.core.faults.DeviceFault
 import space.kscience.dataforge.meta.*
 import space.kscience.dataforge.meta.descriptors.MetaDescriptor
 import space.kscience.dataforge.meta.descriptors.MetaDescriptorBuilder

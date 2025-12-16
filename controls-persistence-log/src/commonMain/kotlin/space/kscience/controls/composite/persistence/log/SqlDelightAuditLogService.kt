@@ -11,17 +11,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOn
-import space.kscience.controls.composite.old.CorrelationId
 import space.kscience.controls.composite.old.messages.DeviceMessage
 import space.kscience.controls.composite.old.services.AuditLogQuery
 import space.kscience.controls.composite.old.services.AuditLogService
+import space.kscience.controls.core.CorrelationId
 import space.kscience.dataforge.context.AbstractPlugin
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.PluginTag
 import space.kscience.dataforge.meta.Meta
-import space.kscience.dataforge.meta.get
 import space.kscience.dataforge.meta.string
-import kotlin.time.Instant
 
 public class SqlDelightAuditLogService(
     context: Context,
@@ -46,10 +44,10 @@ public class SqlDelightAuditLogService(
     override suspend fun record(message: DeviceMessage) {
         db.appDatabaseQueries.insert_audit_log(
             timestamp = message.time,
-            source_device_hub = message.sourceDevice?.hubId ?: "UNKNOWN",
-            source_device_name = message.sourceDevice?.deviceName?.toString() ?: "UNKNOWN",
-            target_device_hub = message.targetDevice?.hubId,
-            target_device_name = message.targetDevice?.deviceName?.toString(),
+            source_device_hub = message.sourceDevice?.route?.toString() ?: "UNKNOWN",
+            source_device_name = message.sourceDevice?.device?.toString() ?: "UNKNOWN",
+            target_device_hub = message.targetDevice?.route?.toString() ?: "UNKNOWN",
+            target_device_name = message.targetDevice?.device?.toString() ?: "UNKNOWN",
             message_type = message::class.simpleName ?: "UNKNOWN",
             correlation_id = message.correlationId,
             payload = message,

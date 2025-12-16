@@ -11,7 +11,7 @@ import space.kscience.controls.composite.dsl.guards.guards
 import space.kscience.controls.composite.dsl.guards.post
 import space.kscience.controls.composite.dsl.properties.booleanProperty
 import space.kscience.controls.composite.dsl.properties.predicate
-import space.kscience.controls.composite.old.Address
+import space.kscience.controls.core.Address
 import space.kscience.controls.composite.old.InternalControlsApi
 import space.kscience.controls.composite.old.ValidationError
 import space.kscience.controls.composite.old.contracts.*
@@ -149,7 +149,7 @@ class ValidationTest {
             override val id = "validation.mirror.valid"
             override fun CompositeSpecBuilder<Device>.configure() {
                 driver { _, _ -> error("not for runtime") }
-                val peer by peer({ _, _ -> error("not called") }, Address("remoteHub", "peer".asName()))
+                val peer by peer({ _, _ -> error("not called") }, Address("remoteHub".asName(), "peer".asName()))
                 remoteChild("remote".asName(), remoteBlueprint, "remote".asName(), via = peer)
                 mirrors {
                     mirror("remote".asName(), remoteTempProperty, "local_temp".asName(), MetaConverter.double)

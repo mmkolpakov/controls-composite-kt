@@ -2,7 +2,7 @@ package space.kscience.controls.composite.dsl.actions
 
 import space.kscience.controls.composite.dsl.children.AttachmentConfiguration
 import space.kscience.controls.composite.dsl.children.deviceAttachment
-import space.kscience.controls.composite.old.Address
+import space.kscience.controls.core.Address
 import space.kscience.controls.composite.old.RestartStrategy
 import space.kscience.controls.composite.old.RetryPolicy
 import space.kscience.controls.composite.old.TimeoutPolicy

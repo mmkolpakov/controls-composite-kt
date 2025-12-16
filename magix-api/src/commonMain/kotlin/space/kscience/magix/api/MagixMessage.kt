@@ -22,8 +22,8 @@ import space.kscience.dataforge.names.Name
 public data class MagixMessage(
     val format: String,
     val payload: JsonElement,
-    val sourceEndpoint: String,
-    val targetEndpoint: String? = null,
+    val sourceEndpoint: Name,
+    val targetEndpoint: Name? = null,
     val topic: Name? = null,
     val id: String? = null,
     val parentId: String? = null,

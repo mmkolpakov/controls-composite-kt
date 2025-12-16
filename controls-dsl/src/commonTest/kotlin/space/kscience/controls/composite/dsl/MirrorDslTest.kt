@@ -4,7 +4,7 @@ import kotlinx.serialization.serializer
 import space.kscience.controls.composite.dsl.children.mirror
 import space.kscience.controls.composite.dsl.children.mirrors
 import space.kscience.controls.composite.dsl.properties.doubleProperty
-import space.kscience.controls.composite.old.Address
+import space.kscience.controls.core.Address
 import space.kscience.controls.composite.old.contracts.Device
 import space.kscience.controls.composite.old.features.RemoteMirrorFeature
 import space.kscience.controls.composite.old.meta.PropertyKind
@@ -43,7 +43,7 @@ class MirrorDslTest {
             override val id = "test.device"
             override fun CompositeSpecBuilder<Device>.configure() {
                 driver { _, _ -> error("Not for runtime") }
-                val remotePeer by peer({ _, _ -> error("Not for runtime") }, Address("remoteHub", "peer".asName()))
+                val remotePeer by peer({ _, _ -> error("Not for runtime") }, Address("remoteHub", "peer"))
                 remoteChild("remote".asName(), remoteBlueprint, "remoteDevice".asName(), remotePeer)
                 mirrors {
                     mirror("remote".asName(), remoteSpec.remoteValue, "localValue".asName(), MetaConverter.double)
@@ -73,7 +73,7 @@ class MirrorDslTest {
             override val id = "test.device"
             override fun CompositeSpecBuilder<Device>.configure() {
                 driver { _, _ -> error("Not for runtime") }
-                val remotePeer by peer({ _, _ -> error("Not for runtime") }, Address("remoteHub", "peer".asName()))
+                val remotePeer by peer({ _, _ -> error("Not for runtime") }, Address("remoteHub", "peer"))
                 remoteChild("remote".asName(), remoteBlueprint, "remoteDevice".asName(), remotePeer)
                 mirrors {
                     mirror("remote".asName(), remoteSpec.remoteValue, "localValue".asName(), MetaConverter.double)

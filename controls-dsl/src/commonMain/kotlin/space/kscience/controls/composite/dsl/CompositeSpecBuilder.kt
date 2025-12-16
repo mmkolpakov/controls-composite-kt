@@ -19,6 +19,7 @@ import space.kscience.controls.composite.old.meta.DeviceActionSpec
 import space.kscience.controls.composite.old.meta.DevicePropertySpec
 import space.kscience.controls.composite.old.meta.DeviceStreamSpec
 import space.kscience.controls.composite.old.meta.MemberTag
+import space.kscience.controls.core.Address
 import space.kscience.controls.composite.dsl.lifecycle.DriverLogicFragment
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.ContextAware

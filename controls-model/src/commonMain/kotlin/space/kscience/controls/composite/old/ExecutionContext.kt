@@ -1,6 +1,8 @@
 package space.kscience.controls.composite.old
 
 import kotlinx.serialization.Serializable
+import space.kscience.controls.core.Address
+import space.kscience.controls.core.CorrelationId
 import space.kscience.dataforge.meta.Meta
 import kotlin.coroutines.CoroutineContext
 import kotlin.jvm.JvmInline
@@ -48,20 +50,6 @@ public object SystemPrincipal : Principal {
 @JvmInline
 @Serializable
 public value class Permission(public val id: String)
-
-/**
- * A type-safe, serializable CoroutineContext element to carry a unique correlation ID for tracing a request
- * through different components and asynchronous boundaries.
- *
- * @property id The string value of the correlation identifier.
- */
-@JvmInline
-@Serializable
-public value class CorrelationId(public val id: String) : CoroutineContext.Element {
-    override val key: CoroutineContext.Key<*> get() = Key
-    public companion object Key : CoroutineContext.Key<CorrelationId>
-    override fun toString(): String = id
-}
 
 /**
  * A context for a single execution flow (a command plan or a query), carrying cross-cutting concerns

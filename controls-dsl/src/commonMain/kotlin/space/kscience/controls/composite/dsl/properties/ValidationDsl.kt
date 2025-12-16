@@ -2,12 +2,12 @@ package space.kscience.controls.composite.dsl.properties
 
 import space.kscience.controls.composite.dsl.CompositeSpecDsl
 import space.kscience.controls.composite.old.DeviceFaultException
-import space.kscience.controls.composite.old.ValidationFault
 import space.kscience.controls.composite.old.contracts.Device
 import space.kscience.controls.composite.old.validation.MinLengthRuleSpec
 import space.kscience.controls.composite.old.validation.RangeRuleSpec
 import space.kscience.controls.composite.old.validation.RegexRuleSpec
 import space.kscience.controls.composite.old.validation.ValidationRuleSpec
+import space.kscience.controls.core.faults.ValidationFault
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.Value
 

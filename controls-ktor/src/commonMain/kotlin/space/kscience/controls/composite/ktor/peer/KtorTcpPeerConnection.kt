@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.io.readByteArray
-import space.kscience.controls.composite.old.Address
+import space.kscience.controls.core.Address
 import space.kscience.controls.composite.old.ExecutionContext
 import space.kscience.controls.composite.old.contracts.PeerConnection
 import space.kscience.controls.composite.old.contracts.PeerConnectionException
@@ -17,7 +17,7 @@ import space.kscience.controls.composite.old.contracts.QoS
 import space.kscience.controls.composite.old.lifecycle.DeviceLifecycleState
 import space.kscience.controls.composite.old.lifecycle.ManagedComponent
 import space.kscience.controls.composite.old.services.AddressResolver
-import space.kscience.controls.composite.old.services.TcpAddress
+import space.kscience.controls.core.TcpAddress
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.error
 import space.kscience.dataforge.context.info
@@ -145,7 +145,7 @@ public class KtorTcpPeerConnection(
     ) {
         if (!isConnected.value) throw PeerConnectionException("Peer connection is not active.")
 
-        val transportAddress = addressResolver?.resolve(address.hubId, context)
+        val transportAddress = addressResolver?.resolve(address.route)
             ?: throw PeerConnectionException("AddressResolver not found in context or failed to resolve hubId '$address.hubId'.")
 
         val tcpAddress = (transportAddress as? TcpAddress)
