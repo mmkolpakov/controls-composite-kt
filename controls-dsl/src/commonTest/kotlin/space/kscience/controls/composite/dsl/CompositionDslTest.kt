@@ -3,7 +3,7 @@ package space.kscience.controls.composite.dsl
 import space.kscience.controls.composite.dsl.properties.doubleProperty
 import space.kscience.controls.composite.dsl.properties.mutableDoubleProperty
 import space.kscience.controls.composite.old.*
-import space.kscience.controls.composite.old.contracts.Device
+import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.core.addressing.Address
 import space.kscience.dataforge.context.Global
 import space.kscience.dataforge.meta.*

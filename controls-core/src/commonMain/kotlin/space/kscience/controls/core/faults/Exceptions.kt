@@ -1,4 +1,4 @@
-package space.kscience.controls.composite.old
+package space.kscience.controls.core.faults
 
 import kotlinx.serialization.Serializable
 import space.kscience.controls.core.faults.DeviceFault
@@ -7,7 +7,7 @@ import space.kscience.dataforge.names.Name
 
 /**
  * A base, multiplatform-safe exception for security-related errors within the controls-composite framework.
- * This exception is thrown by services like [space.kscience.controls.composite.old.services.AuthorizationService]
+ * This exception is thrown by services like [AuthorizationService]
  * when a [Principal] lacks the required [Permission].
  *
  * It inherits from [CompositeHubException] to ensure it is handled consistently with other framework-specific
@@ -80,7 +80,7 @@ public open class CompositeHubException(message: String, cause: Throwable? = nul
  * @param cause An optional underlying exception, though typically not needed for business faults.
  */
 public class DeviceFaultException(public val fault: DeviceFault, cause: Throwable? = null) :
-    CompositeHubException("A predictable business fault occurred: ${fault::class.simpleName}", cause) {
+    space.kscience.controls.core.faults.CompositeHubException("A predictable business fault occurred: ${fault::class.simpleName}", cause) {
     /**
      * Overrides the base implementation to correctly populate the `fault` field in the
      * resulting [SerializableDeviceFailure].

@@ -4,8 +4,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.serialization.PolymorphicSerializer
 import space.kscience.controls.composite.old.contracts.MessageBroker
-import space.kscience.controls.composite.old.messages.DeviceMessage
+import space.kscience.controls.core.messages.DeviceMessage
 import space.kscience.dataforge.misc.DFExperimental
 import space.kscience.dataforge.names.Name
 import space.kscience.magix.api.*
@@ -31,7 +32,7 @@ public class MagixMessageBroker(
          * A MagixFormat specifically for serializing and deserializing [DeviceMessage] instances.
          */
         public val deviceMessageFormat: MagixFormat<DeviceMessage> = MagixFormat(
-            DeviceMessage.serializer(),
+            PolymorphicSerializer(DeviceMessage::class),
             setOf("controls-kt")
         )
     }
@@ -84,12 +85,13 @@ public class MagixMessageBroker(
         targetEndpoint.subscribe(backwardFilter).onEach { message ->
             // Only process messages with the correct format
             if (deviceMessageFormat.formats.contains(message.format)) {
-                val deviceMessage = MagixEndpoint.magixJson.decodeFromJsonElement(
-                    DeviceMessage.serializer(),
-                    message.payload
-                )
-                val topic = deviceMessage.sourceDevice?.device ?: Name.EMPTY
-                publish(topic, deviceMessage)
+//                TODO refactor, remove magixJson
+//                val deviceMessage = MagixEndpoint.magixJson.decodeFromJsonElement(
+//                    PolymorphicSerializer(DeviceMessage::class),
+//                    message.payload
+//                )
+//                val topic = deviceMessage.sourceDevice?.device ?: Name.EMPTY
+//                publish(topic, deviceMessage)
             }
         }.launchIn(this)
     }

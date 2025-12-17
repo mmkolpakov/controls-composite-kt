@@ -6,7 +6,7 @@ import kotlinx.serialization.serializer
 import space.kscience.controls.composite.dsl.ActionDelegateProvider
 import space.kscience.controls.composite.dsl.DeviceSpecification
 import space.kscience.controls.composite.dsl.properties.ActionDescriptorBuilder
-import space.kscience.controls.composite.old.contracts.Device
+import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.composite.old.contracts.PlanExecutorDevice
 import space.kscience.controls.composite.old.contracts.TaskExecutorDevice
 import space.kscience.controls.composite.old.features.PlanExecutorFeature

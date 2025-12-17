@@ -22,6 +22,8 @@ import space.kscience.controls.core.meta.MemberTag
 import space.kscience.controls.core.identifiers.BlueprintId
 import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.composite.dsl.lifecycle.DriverLogicFragment
+import space.kscience.controls.core.InternalControlsApi
+import space.kscience.controls.core.contracts.Device
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.ContextAware
 import space.kscience.dataforge.context.logger

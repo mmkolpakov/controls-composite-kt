@@ -4,8 +4,8 @@ import space.kscience.controls.composite.dsl.children.ChildConfigBuilder
 import space.kscience.controls.composite.dsl.children.MirrorBuilder
 import space.kscience.controls.composite.dsl.guards.GuardsBuilder
 import space.kscience.controls.composite.old.contracts.runtime.HydratableDeviceState
-import space.kscience.controls.composite.old.InternalControlsApi
-import space.kscience.controls.composite.old.contracts.Device
+import space.kscience.controls.core.InternalControlsApi
+import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.composite.old.contracts.DeviceBlueprint
 import space.kscience.controls.composite.old.features.Feature
 import space.kscience.controls.composite.old.meta.DeviceActionSpec

@@ -1,4 +1,4 @@
-package space.kscience.controls.composite.old
+package space.kscience.controls.core
 
 /**
  * Marks declarations that are internal to the controls-composite framework.

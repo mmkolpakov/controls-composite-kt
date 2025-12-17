@@ -39,17 +39,6 @@ public interface MagixEndpoint : AutoCloseable {
         public const val DEFAULT_MAGIX_RAW_PORT: Int = 7778
         public const val DEFAULT_MAGIX_ZMQ_PUB_PORT: Int = 7781
         public const val DEFAULT_MAGIX_ZMQ_PULL_PORT: Int = 7782
-
-        /**
-         * A shared, lazily-initialized [Json] instance for all Magix-related serialization.
-         * It is configured to ignore unknown keys to be forward-compatible.
-         */
-        public val magixJson: Json by lazy {
-            Json {
-                ignoreUnknownKeys = true
-                encodeDefaults = false
-            }
-        }
     }
 }
 

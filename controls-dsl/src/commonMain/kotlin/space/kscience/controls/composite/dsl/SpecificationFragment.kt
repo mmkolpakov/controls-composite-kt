@@ -1,6 +1,6 @@
 package space.kscience.controls.composite.dsl
 
-import space.kscience.controls.composite.old.contracts.Device
+import space.kscience.controls.core.contracts.Device
 
 /**
  * A reusable fragment of a device specification. This `fun interface` allows defining a

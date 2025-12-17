@@ -1,6 +1,7 @@
 package space.kscience.controls.composite.old.contracts
 
-import space.kscience.controls.composite.old.ExecutionContext
+import space.kscience.controls.core.context.ExecutionContext
+import space.kscience.controls.core.contracts.Device
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.Plugin
 import space.kscience.dataforge.context.PluginFactory

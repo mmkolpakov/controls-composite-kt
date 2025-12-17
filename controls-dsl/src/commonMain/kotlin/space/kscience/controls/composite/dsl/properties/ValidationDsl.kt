@@ -1,8 +1,8 @@
 package space.kscience.controls.composite.dsl.properties
 
 import space.kscience.controls.composite.dsl.CompositeSpecDsl
-import space.kscience.controls.composite.old.DeviceFaultException
-import space.kscience.controls.composite.old.contracts.Device
+import space.kscience.controls.core.faults.DeviceFaultException
+import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.core.faults.ValidationFault
 import space.kscience.controls.core.validation.MinLengthRuleDescriptor
 import space.kscience.controls.core.validation.RangeRuleDescriptor

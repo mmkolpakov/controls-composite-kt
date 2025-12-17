@@ -10,8 +10,13 @@ import space.kscience.controls.composite.old.messages.*
 import space.kscience.controls.composite.old.plans.*
 import space.kscience.controls.composite.old.serialization.controlsJson
 import space.kscience.controls.core.addressing.Address
+import space.kscience.controls.core.faults.SerializableDeviceFailure
 import space.kscience.controls.core.faults.ValidationFault
 import space.kscience.controls.core.identifiers.toBlueprintId
+import space.kscience.controls.core.messages.DescriptionMessage
+import space.kscience.controls.core.messages.DeviceErrorMessage
+import space.kscience.controls.core.messages.DeviceMessage
+import space.kscience.controls.core.messages.PropertyChangedMessage
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.get
 import space.kscience.dataforge.meta.string
@@ -34,16 +39,29 @@ class SerializationTest {
     private object TestEvent : Event
 
     /**
-     * Verifies that all subtypes of [DeviceMessage] are correctly serialized and deserialized.
+     * Verifies that all subtypes of [space.kscience.controls.core.messages.DeviceMessage] are correctly serialized and deserialized.
      * This is critical for the message bus and any communication layer.
      */
     @Test
     fun testDeviceMessageSerialization() {
         val messages = listOf(
             PropertyChangedMessage(Clock.System.now(), "testProp", Meta(123), Address("hub", "device")),
-            DescriptionMessage(Clock.System.now(), Meta.EMPTY, emptyList(), emptyList(), Address("hub", "device"), requestId = "rq-1"),
+            DescriptionMessage(
+                Clock.System.now(),
+                Meta.EMPTY,
+                emptyList(),
+                emptyList(),
+                Address("hub", "device"),
+                requestId = "rq-1"
+            ),
             LifecycleStateChangedMessage(Clock.System.now(), "Stopped", "Running", Address("hub", "device")),
-            DeviceErrorMessage(Clock.System.now(), SerializableDeviceFailure("TestError", "A test error occurred"), Address("hub", "device"), requestId = null),
+            DeviceErrorMessage(
+                Clock.System.now(),
+                SerializableDeviceFailure(
+                    "TestError",
+                    "A test error occurred"
+                ), Address("hub", "device"), requestId = null
+            ),
             PredicateChangedMessage(Clock.System.now(), "isReady", true, Address("hub", "device")),
             BinaryReadyNotification(Clock.System.now(), "content-123", Meta.EMPTY, Address("hub", "device")),
             BinaryDataRequest(Clock.System.now(), "content-123", Address("hub", "requester"), Address("hub", "provider"), "rq-2"),
@@ -52,8 +70,8 @@ class SerializationTest {
         )
 
         messages.forEach { original ->
-            val json = controlsJson.encodeToString(DeviceMessage.serializer(), original)
-            val restored = controlsJson.decodeFromString(DeviceMessage.serializer(), json)
+            val json = controlsJson.encodeToString(PolymorphicSerializer(DeviceMessage::class), original)
+            val restored = controlsJson.decodeFromString(PolymorphicSerializer(DeviceMessage::class), json)
             assertEquals(original, restored, "Failed to serialize/deserialize ${original::class.simpleName}")
         }
     }
@@ -158,15 +176,19 @@ class SerializationTest {
     }
 
     /**
-     * Verifies that [SerializableDeviceFailure] correctly serializes a nested [DeviceFault].
+     * Verifies that [space.kscience.controls.core.faults.SerializableDeviceFailure] correctly serializes a nested [DeviceFault].
      */
     @Test
     fun testDeviceFaultSerialization() {
         val fault = ValidationFault(Meta{"field" put "name"})
-        val failure = SerializableDeviceFailure("MyError", "Validation failed", fault = fault)
+        val failure = SerializableDeviceFailure(
+            "MyError",
+            "Validation failed",
+            fault = fault
+        )
 
         val json = controlsJson.encodeToString(failure)
-        val restored = controlsJson.decodeFromString<SerializableDeviceFailure>(json)
+        val restored = controlsJson.decodeFromString<space.kscience.controls.core.faults.SerializableDeviceFailure>(json)
 
         assertEquals(failure, restored)
 

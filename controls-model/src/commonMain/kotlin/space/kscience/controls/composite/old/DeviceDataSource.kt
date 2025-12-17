@@ -5,8 +5,11 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
-import space.kscience.controls.composite.old.contracts.Device
-import space.kscience.controls.composite.old.messages.PropertyChangedMessage
+import space.kscience.controls.core.contracts.Device
+import space.kscience.controls.core.InternalControlsApi
+import space.kscience.controls.core.context.ExecutionContext
+import space.kscience.controls.core.context.SystemPrincipal
+import space.kscience.controls.core.messages.PropertyChangedMessage
 import space.kscience.controls.core.descriptors.PropertyDescriptor
 import space.kscience.dataforge.data.Data
 import space.kscience.dataforge.data.DataTree

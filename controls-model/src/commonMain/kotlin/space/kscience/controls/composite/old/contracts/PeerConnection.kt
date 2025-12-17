@@ -2,7 +2,7 @@ package space.kscience.controls.composite.old.contracts
 
 import kotlinx.coroutines.flow.StateFlow
 import space.kscience.controls.core.addressing.Address
-import space.kscience.controls.composite.old.ExecutionContext
+import space.kscience.controls.core.context.ExecutionContext
 import space.kscience.controls.core.spec.QoS
 import space.kscience.dataforge.io.Envelope
 import kotlin.time.Duration

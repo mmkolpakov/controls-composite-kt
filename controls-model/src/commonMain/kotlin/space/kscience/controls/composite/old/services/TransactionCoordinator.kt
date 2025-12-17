@@ -1,7 +1,7 @@
 package space.kscience.controls.composite.old.services
 
-import space.kscience.controls.composite.old.ExecutionContext
-import space.kscience.controls.composite.old.SerializableDeviceFailure
+import space.kscience.controls.core.context.ExecutionContext
+import space.kscience.controls.core.faults.SerializableDeviceFailure
 import space.kscience.controls.composite.old.plans.TransactionPlan
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.Plugin

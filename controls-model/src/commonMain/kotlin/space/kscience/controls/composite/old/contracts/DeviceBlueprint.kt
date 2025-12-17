@@ -6,12 +6,13 @@ import kotlinx.serialization.Transient
 import ru.nsk.kstatemachine.statemachine.BuildingStateMachine
 import space.kscience.controls.composite.old.ChildComponentConfig
 import space.kscience.controls.composite.old.DeviceMigrator
-import space.kscience.controls.composite.old.InternalControlsApi
+import space.kscience.controls.core.InternalControlsApi
 import space.kscience.controls.composite.old.contracts.runtime.DeviceFlows
 import space.kscience.controls.composite.old.contracts.runtime.HydratableDeviceState
 import space.kscience.controls.composite.old.features.Feature
 import space.kscience.controls.composite.old.lifecycle.LifecycleContext
 import space.kscience.controls.composite.old.meta.*
+import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.core.identifiers.BlueprintId
 import space.kscience.controls.core.descriptors.ActionDescriptor
 import space.kscience.controls.core.descriptors.PropertyDescriptor

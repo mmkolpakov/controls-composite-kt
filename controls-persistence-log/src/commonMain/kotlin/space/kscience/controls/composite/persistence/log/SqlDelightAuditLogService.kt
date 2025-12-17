@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOn
-import space.kscience.controls.composite.old.messages.DeviceMessage
+import space.kscience.controls.core.messages.DeviceMessage
 import space.kscience.controls.composite.old.services.AuditLogQuery
 import space.kscience.controls.composite.old.services.AuditLogService
 import space.kscience.controls.core.identifiers.CorrelationId

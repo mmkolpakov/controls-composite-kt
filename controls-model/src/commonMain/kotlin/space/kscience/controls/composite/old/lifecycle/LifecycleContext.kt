@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.StateFlow
 import ru.nsk.kstatemachine.event.Event
 import ru.nsk.kstatemachine.state.IState
 import ru.nsk.kstatemachine.statemachine.StateMachine
-import space.kscience.controls.composite.old.contracts.Device
+import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.composite.old.contracts.DeviceBlueprint
 import space.kscience.controls.composite.old.contracts.DeviceDriver
 import kotlin.time.Duration

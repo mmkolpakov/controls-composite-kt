@@ -4,11 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 import space.kscience.dataforge.names.Name
-import space.kscience.dataforge.names.matches
-import space.kscience.magix.api.MagixEndpoint.Companion.magixJson
 
 /**
  * A type-safe wrapper that associates a payload type [T] with its [KSerializer] and a set of
@@ -53,8 +49,9 @@ public fun <T> MagixEndpoint.subscribe(
 ): Flow<Pair<MagixMessage, T>> = subscribe(
     MagixMessageFilter(format = format.formats, source = originFilter, target = targetFilter, topicPattern = topicPattern)
 ).map { message ->
-    val value: T = magixJson.decodeFromJsonElement(format.serializer, message.payload)
-    message to value
+//    val value: T = magixJson.decodeFromJsonElement(format.serializer, message.payload)
+//    message to value
+    TODO("magixJson is deprecated")
 }
 
 /**
@@ -80,15 +77,16 @@ public suspend fun <T> MagixEndpoint.send(
     parentId: String? = null,
     user: JsonElement? = null,
 ) {
-    val message = MagixMessage(
-        format = format.defaultFormat,
-        payload = magixJson.encodeToJsonElement(format.serializer, payload),
-        sourceEndpoint = source,
-        targetEndpoint = target,
-        topic = topic,
-        id = id,
-        parentId = parentId,
-        user = user
-    )
-    send(message)
+//    val message = MagixMessage(
+//        format = format.defaultFormat,
+//        payload = magixJson.encodeToJsonElement(format.serializer, payload),
+//        sourceEndpoint = source,
+//        targetEndpoint = target,
+//        topic = topic,
+//        id = id,
+//        parentId = parentId,
+//        user = user
+//    )
+//    send(message)
+    TODO("magixJson is deprecated")
 }

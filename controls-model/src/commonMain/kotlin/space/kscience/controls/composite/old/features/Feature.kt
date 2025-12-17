@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 import space.kscience.controls.composite.old.RestartPolicy
 import space.kscience.controls.composite.old.contracts.*
 import space.kscience.controls.composite.old.state.StatefulDevice
+import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.core.serialization.serializableToMeta
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.MetaRepr
@@ -22,7 +23,7 @@ import space.kscience.dataforge.meta.descriptors.MetaDescriptor
 public interface Feature : MetaRepr {
     /**
      * A fully qualified name of the capability interface this feature describes.
-     * For example, `space.kscience.controls.composite.old.contracts.Device`.
+     * For example, `space.kscience.controls.core.contracts.Device`.
      */
     public val capability: String
 }

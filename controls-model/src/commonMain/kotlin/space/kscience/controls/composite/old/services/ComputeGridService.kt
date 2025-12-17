@@ -3,8 +3,8 @@ package space.kscience.controls.composite.old.services
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
 import space.kscience.controls.core.addressing.Address
-import space.kscience.controls.composite.old.ExecutionContext
-import space.kscience.controls.composite.old.SerializableDeviceFailure
+import space.kscience.controls.core.context.ExecutionContext
+import space.kscience.controls.core.faults.SerializableDeviceFailure
 import space.kscience.controls.core.identifiers.BlueprintId
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.Plugin
@@ -15,7 +15,7 @@ import space.kscience.dataforge.names.Name
 
 /**
  * A serializable, self-contained specification for a computational task to be executed on a compute grid.
- * This object is sent by a client (e.g., a CompositeDeviceHub) to the ComputeGridService.
+ * This object is sent by a client (e.g., a DeviceHub) to the ComputeGridService.
  *
  * @param I The input type of the task.
  * @param O The output type of the task.

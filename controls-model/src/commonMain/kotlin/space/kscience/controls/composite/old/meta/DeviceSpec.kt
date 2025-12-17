@@ -1,7 +1,7 @@
 package space.kscience.controls.composite.old.meta
 
 import ru.nsk.kstatemachine.statemachine.StateMachineDslMarker
-import space.kscience.controls.composite.old.contracts.Device
+import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.composite.old.contracts.StreamPort
 import space.kscience.controls.core.descriptors.ActionDescriptor
 import space.kscience.controls.core.descriptors.PropertyDescriptor

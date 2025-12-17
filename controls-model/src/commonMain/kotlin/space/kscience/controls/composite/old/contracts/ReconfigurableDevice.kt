@@ -1,5 +1,6 @@
 package space.kscience.controls.composite.old.contracts
 
+import space.kscience.controls.core.contracts.Device
 import space.kscience.dataforge.meta.Meta
 
 /**

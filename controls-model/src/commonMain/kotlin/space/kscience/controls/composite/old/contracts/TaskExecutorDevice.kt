@@ -1,7 +1,8 @@
 package space.kscience.controls.composite.old.contracts
 
-import space.kscience.controls.composite.old.ExecutionContext
-import space.kscience.controls.composite.old.SystemPrincipal
+import space.kscience.controls.core.context.ExecutionContext
+import space.kscience.controls.core.context.SystemPrincipal
+import space.kscience.controls.core.contracts.Device
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.names.Name
 
@@ -31,7 +32,7 @@ public interface TaskExecutorDevice : Device {
      * @param input An optional [Meta] object containing input parameters for the task.
      * @param context The execution context for this operation.
      * @return An optional [Meta] object representing the result of the task.
-     * @throws space.kscience.controls.composite.old.DeviceActionException if the task is not supported or fails.
+     * @throws space.kscience.controls.core.faults.DeviceActionException if the task is not supported or fails.
      */
     public suspend fun executeTask(
         taskName: Name,

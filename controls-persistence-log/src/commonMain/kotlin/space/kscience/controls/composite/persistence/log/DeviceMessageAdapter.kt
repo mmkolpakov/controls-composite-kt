@@ -1,7 +1,8 @@
 package space.kscience.controls.composite.persistence.log
 
 import app.cash.sqldelight.ColumnAdapter
-import space.kscience.controls.composite.old.messages.DeviceMessage
+import kotlinx.serialization.PolymorphicSerializer
+import space.kscience.controls.core.messages.DeviceMessage
 import space.kscience.controls.composite.old.serialization.controlsJson
 
 /**
@@ -11,10 +12,10 @@ import space.kscience.controls.composite.old.serialization.controlsJson
  */
 internal object DeviceMessageAdapter : ColumnAdapter<DeviceMessage, String> {
     override fun decode(databaseValue: String): DeviceMessage {
-        return controlsJson.decodeFromString(DeviceMessage.serializer(), databaseValue)
+        return controlsJson.decodeFromString(PolymorphicSerializer(DeviceMessage::class), databaseValue)
     }
 
     override fun encode(value: DeviceMessage): String {
-        return controlsJson.encodeToString(DeviceMessage.serializer(), value)
+        return controlsJson.encodeToString(PolymorphicSerializer(DeviceMessage::class), value)
     }
 }

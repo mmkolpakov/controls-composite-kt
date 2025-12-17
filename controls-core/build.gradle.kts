@@ -15,6 +15,7 @@ kscience {
     useSerialization()
 
     commonMain {
+        api(libs.dataforge.context)
         api(libs.dataforge.meta)
         api(libs.kotlinx.io.core)
         api(libs.kotlinx.datetime)

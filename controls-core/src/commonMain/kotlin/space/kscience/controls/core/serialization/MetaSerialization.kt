@@ -6,10 +6,12 @@ import space.kscience.controls.core.controlsCoreSerializersModule
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.toMeta
 
-internal val coreJson: Json by lazy {
+public val coreJson: Json by lazy {
     Json {
         serializersModule = controlsCoreSerializersModule
         ignoreUnknownKeys = true
+        encodeDefaults = true
+        prettyPrint = true
     }
 }
 

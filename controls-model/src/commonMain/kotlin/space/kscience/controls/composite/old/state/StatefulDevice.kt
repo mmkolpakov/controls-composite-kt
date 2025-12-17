@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.Serializable
-import space.kscience.controls.composite.old.InternalControlsApi
-import space.kscience.controls.composite.old.contracts.Device
+import space.kscience.controls.core.InternalControlsApi
+import space.kscience.controls.core.contracts.Device
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.names.Name
 

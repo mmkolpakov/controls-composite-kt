@@ -19,6 +19,7 @@ import space.kscience.controls.core.descriptors.PropertyDescriptor
 import space.kscience.controls.core.descriptors.PropertyKind
 import space.kscience.controls.core.descriptors.StreamDescriptor
 import space.kscience.controls.composite.old.meta.unit
+import space.kscience.controls.core.contracts.Device
 import space.kscience.dataforge.meta.*
 import space.kscience.dataforge.misc.DFExperimental
 import space.kscience.dataforge.names.Name

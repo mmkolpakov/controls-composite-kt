@@ -1,7 +1,7 @@
 package space.kscience.controls.composite.dsl.properties
 
 import space.kscience.controls.composite.dsl.DeviceSpecification
-import space.kscience.controls.composite.old.contracts.Device
+import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.composite.old.meta.DevicePropertySpec
 import space.kscience.controls.core.descriptors.PropertyKind
 import space.kscience.dataforge.meta.MetaConverter

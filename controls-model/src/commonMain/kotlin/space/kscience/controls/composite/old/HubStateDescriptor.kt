@@ -2,7 +2,7 @@ package space.kscience.controls.composite.old
 
 import kotlinx.serialization.Serializable
 import space.kscience.controls.core.identifiers.BlueprintId
-import space.kscience.controls.composite.old.lifecycle.DeviceLifecycleState
+import space.kscience.controls.core.lifecycle.DeviceLifecycleState
 import space.kscience.controls.composite.old.serialization.serializableMetaConverter
 import space.kscience.controls.core.serialization.serializableToMeta
 import space.kscience.dataforge.meta.Meta
@@ -25,7 +25,7 @@ public data class DeviceStateDescriptor(
 )
 
 /**
- * A declarative, serializable old representing the desired state of an entire `CompositeDeviceHub`.
+ * A declarative, serializable old representing the desired state of an entire `DeviceHub`.
  * This descriptor is the cornerstone of the GitOps/declarative management pattern. A runtime component
  * (like a `SelfHealingHub`) can use this descriptor as the source of truth and continuously work to
  * bring the actual state of the hub into convergence with this desired state.

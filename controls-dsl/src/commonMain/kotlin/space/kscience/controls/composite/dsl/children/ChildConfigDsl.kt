@@ -2,7 +2,7 @@ package space.kscience.controls.composite.dsl.children
 
 import space.kscience.controls.composite.dsl.CompositeSpecDsl
 import space.kscience.controls.composite.old.*
-import space.kscience.controls.composite.old.contracts.Device
+import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.composite.old.lifecycle.DeviceLifecycleConfig
 import space.kscience.controls.composite.old.meta.DevicePropertySpec
 import space.kscience.controls.composite.old.meta.MutableDevicePropertySpec

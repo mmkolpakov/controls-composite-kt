@@ -50,25 +50,27 @@ public class RSocketMagixEndpoint private constructor(
         ?: error("RSocketMagixEndpoint is not connected. Call `connect()` before using.")
 
     override fun subscribe(filter: MagixMessageFilter): Flow<MagixMessage> {
-        val filterPayload = MagixEndpoint.magixJson.encodeToString(MagixMessageFilter.serializer(), filter)
-        val request = buildPayload {
-            data(filterPayload)
-        }
-        return requireRSocket().requestStream(request).map { payload ->
-            payload.use {
-                MagixEndpoint.magixJson.decodeFromString(
-                    MagixMessage.serializer(),
-                    it.data.readString()
-                )
-            }
-        }.filter(filter).flowOn(coroutineContext) // Ensure flow processing happens on the correct dispatcher.
+//        val filterPayload = MagixEndpoint.magixJson.encodeToString(MagixMessageFilter.serializer(), filter)
+//        val request = buildPayload {
+//            data(filterPayload)
+//        }
+//        return requireRSocket().requestStream(request).map { payload ->
+//            payload.use {
+//                MagixEndpoint.magixJson.decodeFromString(
+//                    MagixMessage.serializer(),
+//                    it.data.readString()
+//                )
+//            }
+//        }.filter(filter).flowOn(coroutineContext) // Ensure flow processing happens on the correct dispatcher.
+        TODO("magixJson is deprecated")
     }
 
     override suspend fun broadcast(message: MagixMessage) {
-        val payload = buildPayload {
-            data(MagixEndpoint.magixJson.encodeToString(MagixMessage.serializer(), message))
-        }
-        requireRSocket().fireAndForget(payload)
+//        val payload = buildPayload {
+//            data(MagixEndpoint.magixJson.encodeToString(MagixMessage.serializer(), message))
+//        }
+//        requireRSocket().fireAndForget(payload)
+        TODO("magixJson is deprecated")
     }
 
     override fun close() {

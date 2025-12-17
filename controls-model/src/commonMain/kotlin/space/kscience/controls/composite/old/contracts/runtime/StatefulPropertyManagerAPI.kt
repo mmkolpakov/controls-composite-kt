@@ -1,7 +1,7 @@
 package space.kscience.controls.composite.old.contracts.runtime
 
 import kotlinx.coroutines.channels.Channel
-import space.kscience.controls.composite.old.contracts.Device
+import space.kscience.controls.core.contracts.Device
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.Plugin
 import space.kscience.dataforge.context.PluginFactory

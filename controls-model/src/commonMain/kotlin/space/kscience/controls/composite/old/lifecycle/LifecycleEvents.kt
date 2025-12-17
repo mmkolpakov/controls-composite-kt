@@ -2,44 +2,12 @@ package space.kscience.controls.composite.old.lifecycle
 
 import kotlinx.serialization.Serializable
 import ru.nsk.kstatemachine.event.Event
-import space.kscience.controls.composite.old.SerializableDeviceFailure
+import space.kscience.controls.core.faults.SerializableDeviceFailure
 import kotlin.time.Duration
 
 /**
- * Defines the standard vocabulary of states for a device's lifecycle state machine.
- * This enum represents the *names* of the lifecycle states. The actual state machine
- * implementation (e.g., using KStateMachine) will create state objects corresponding
- * to these enum entries. This approach decouples the old from the FSM library.
- */
-public enum class DeviceLifecycleState {
-    /** The device blueprint is known, but no instance has been created or attached yet. */
-    Detached,
-
-    /** The device instance is being created, and its children are being recursively attached. */
-    Attaching,
-
-    /** The device is fully attached and initialized but not running. It is ready to be started. */
-    Stopped,
-
-    /** The device is executing its start sequence, including all pre-start logic. */
-    Starting,
-
-    /** The device is fully operational and running. */
-    Running,
-
-    /** The device is executing its stop sequence. */
-    Stopping,
-
-    /** The device has encountered an unrecoverable error and is not operational. It may be restarted or reset. */
-    Failed,
-
-    /** The device instance is being removed from the hub, and its resources are being released. */
-    Detaching
-}
-
-/**
  * Defines the standard vocabulary of events that drive the device's lifecycle state machine.
- * These events correspond to commands issued by a [space.kscience.controls.composite.old.contracts.CompositeDeviceHub].
+ * These events correspond to commands issued by a [space.kscience.controls.core.contracts.DeviceHub].
  */
 public sealed interface DeviceLifecycleEvent : Event {
     /** A command to instantiate and attach the device to the hub. */
@@ -54,7 +22,7 @@ public sealed interface DeviceLifecycleEvent : Event {
     @Serializable
     public data object Stop : DeviceLifecycleEvent
 
-    /** A command to reset the device from a [DeviceLifecycleState.Failed] state back to [DeviceLifecycleState.Stopped]. */
+    /** A command to reset the device from a [space.kscience.controls.core.lifecycle.DeviceLifecycleState.Failed] state back to [space.kscience.controls.core.lifecycle.DeviceLifecycleState.Stopped]. */
     @Serializable
     public data object Reset : DeviceLifecycleEvent
 

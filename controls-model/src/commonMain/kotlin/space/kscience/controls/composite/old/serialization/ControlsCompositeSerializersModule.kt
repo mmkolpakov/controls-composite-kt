@@ -11,11 +11,15 @@ import space.kscience.controls.composite.old.features.*
 import space.kscience.controls.composite.old.messages.*
 import space.kscience.controls.composite.old.plans.*
 import space.kscience.controls.core.controlsCoreSerializersModule
+import space.kscience.controls.core.messages.DescriptionMessage
+import space.kscience.controls.core.messages.DeviceErrorMessage
+import space.kscience.controls.core.messages.DeviceMessage
+import space.kscience.controls.core.messages.PropertyChangedMessage
 
 /**
  * A shared [SerializersModule] for the controls-composite models.
  * It provides the necessary polymorphic serialization rules for sealed interfaces
- * like [DeviceMessage], [ActionSpec], [PropertyBinding], and [ChildComponentConfig].
+ * like [space.kscience.controls.core.messages.DeviceMessage], [ActionSpec], [PropertyBinding], and [ChildComponentConfig].
  *
  * This module should be included in any `kotlinx.serialization` `Json` or `Cbor`
  * instance that needs to serialize or deserialize the composite device old.
@@ -23,10 +27,7 @@ import space.kscience.controls.core.controlsCoreSerializersModule
 public val ControlsCompositeSerializersModule: SerializersModule = SerializersModule {
 
     polymorphic(DeviceMessage::class) {
-        subclass(PropertyChangedMessage::class)
-        subclass(DescriptionMessage::class)
         subclass(LifecycleStateChangedMessage::class)
-        subclass(DeviceErrorMessage::class)
         subclass(PredicateChangedMessage::class)
         subclass(BinaryReadyNotification::class)
         subclass(BinaryDataRequest::class)

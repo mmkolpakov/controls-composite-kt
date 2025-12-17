@@ -3,7 +3,7 @@ package space.kscience.controls.composite.dsl.guards
 import kotlinx.serialization.serializer
 import ru.nsk.kstatemachine.event.Event
 import space.kscience.controls.composite.dsl.CompositeSpecBuilder
-import space.kscience.controls.composite.old.contracts.Device
+import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.composite.old.features.*
 import space.kscience.controls.composite.old.meta.DevicePropertySpec
 import space.kscience.controls.core.descriptors.PropertyKind

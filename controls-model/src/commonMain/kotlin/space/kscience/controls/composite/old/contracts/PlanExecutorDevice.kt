@@ -1,8 +1,9 @@
 package space.kscience.controls.composite.old.contracts
 
-import space.kscience.controls.composite.old.ExecutionContext
-import space.kscience.controls.composite.old.SystemPrincipal
+import space.kscience.controls.core.context.ExecutionContext
+import space.kscience.controls.core.context.SystemPrincipal
 import space.kscience.controls.composite.old.plans.TransactionPlan
+import space.kscience.controls.core.contracts.Device
 import space.kscience.dataforge.meta.Meta
 
 /**
@@ -31,7 +32,7 @@ public interface PlanExecutorDevice : Device {
      * @param plan The [TransactionPlan] to execute.
      * @param context The [ExecutionContext] for this operation, providing security and tracing.
      * @return An optional [Meta] object representing the result of the entire plan execution.
-     * @throws space.kscience.controls.composite.old.DeviceActionException if the plan execution fails.
+     * @throws space.kscience.controls.core.faults.DeviceActionException if the plan execution fails.
      */
     public suspend fun executePlan(
         plan: TransactionPlan,

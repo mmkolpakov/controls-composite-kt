@@ -1,4 +1,4 @@
-package space.kscience.controls.composite.old
+package space.kscience.controls.core.context
 
 import kotlinx.serialization.Serializable
 import space.kscience.controls.core.addressing.Address

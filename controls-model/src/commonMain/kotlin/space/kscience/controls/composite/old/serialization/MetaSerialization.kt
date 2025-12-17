@@ -5,6 +5,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.ClassDiscriminatorMode
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
+import space.kscience.controls.core.serialization.coreJson
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.MetaConverter
 import space.kscience.dataforge.meta.MetaRepr

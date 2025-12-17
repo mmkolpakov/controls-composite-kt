@@ -2,8 +2,8 @@ package space.kscience.controls.composite.dsl
 
 import kotlinx.serialization.Serializable
 import space.kscience.controls.composite.dsl.properties.*
-import space.kscience.controls.composite.old.InternalControlsApi
-import space.kscience.controls.composite.old.contracts.Device
+import space.kscience.controls.core.InternalControlsApi
+import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.composite.old.contracts.runtime.CompositeDeviceContext
 import space.kscience.controls.core.descriptors.PropertyKind
 import space.kscience.controls.composite.old.state.StatefulDevice

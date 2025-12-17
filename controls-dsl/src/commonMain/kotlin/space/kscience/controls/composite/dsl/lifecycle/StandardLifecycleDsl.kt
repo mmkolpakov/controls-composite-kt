@@ -9,12 +9,12 @@ import ru.nsk.kstatemachine.transition.TransitionParams
 import ru.nsk.kstatemachine.transition.onTriggered
 import space.kscience.controls.composite.dsl.CompositeSpecBuilder
 import space.kscience.controls.composite.dsl.CompositeSpecDsl
-import space.kscience.controls.composite.old.CompositeHubException
-import space.kscience.controls.composite.old.CompositeHubTransactionException
-import space.kscience.controls.composite.old.DeviceLifecycleException
-import space.kscience.controls.composite.old.contracts.Device
+import space.kscience.controls.core.faults.CompositeHubException
+import space.kscience.controls.core.faults.CompositeHubTransactionException
+import space.kscience.controls.core.faults.DeviceLifecycleException
+import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.composite.old.lifecycle.DeviceLifecycleEvent
-import space.kscience.controls.composite.old.lifecycle.DeviceLifecycleState
+import space.kscience.controls.core.lifecycle.DeviceLifecycleState
 import space.kscience.controls.composite.old.lifecycle.LifecycleContext
 import space.kscience.controls.composite.old.meta.DeviceActionSpec
 import space.kscience.controls.composite.old.meta.DevicePropertySpec

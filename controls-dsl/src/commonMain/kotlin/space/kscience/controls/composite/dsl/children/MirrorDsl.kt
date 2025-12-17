@@ -4,7 +4,7 @@ import kotlinx.serialization.serializer
 import space.kscience.controls.composite.dsl.CompositeSpecBuilder
 import space.kscience.controls.composite.dsl.properties.PropertyDescriptorBuilder
 import space.kscience.controls.composite.dsl.property
-import space.kscience.controls.composite.old.contracts.Device
+import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.composite.old.features.MirrorEntry
 import space.kscience.controls.composite.old.features.RemoteMirrorFeature
 import space.kscience.controls.composite.old.meta.DevicePropertySpec

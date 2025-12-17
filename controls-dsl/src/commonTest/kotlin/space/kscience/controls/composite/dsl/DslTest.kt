@@ -14,13 +14,16 @@ import space.kscience.controls.composite.old.*
 import space.kscience.controls.composite.old.contracts.*
 import space.kscience.controls.composite.old.contracts.runtime.CompositeDeviceContext
 import space.kscience.controls.composite.old.contracts.runtime.ConstructorElement
-import space.kscience.controls.composite.old.lifecycle.DeviceLifecycleState
-import space.kscience.controls.composite.old.messages.DeviceMessage
+import space.kscience.controls.core.lifecycle.DeviceLifecycleState
+import space.kscience.controls.core.messages.DeviceMessage
 import space.kscience.controls.composite.old.meta.DevicePropertySpec
 import space.kscience.controls.composite.old.state.MutableDeviceState
 import space.kscience.controls.composite.old.state.StatefulDevice
 import space.kscience.controls.composite.old.state.StatefulDeviceLogic
+import space.kscience.controls.core.InternalControlsApi
 import space.kscience.controls.core.addressing.Address
+import space.kscience.controls.core.context.ExecutionContext
+import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.core.descriptors.ActionDescriptor
 import space.kscience.controls.core.descriptors.PropertyDescriptor
 import space.kscience.dataforge.context.Context
@@ -47,7 +50,6 @@ internal open class TestDeviceImpl(
     override val coroutineContext: CoroutineContext,
 ) : KitchenSinkDevice {
     override val lifecycleState = MutableStateFlow(DeviceLifecycleState.Stopped)
-    override val operationalState = null
     override val propertyDescriptors = emptyList<PropertyDescriptor>()
     override val actionDescriptors = emptyList<ActionDescriptor>()
     override val messageFlow by lazy { MutableSharedFlow<DeviceMessage>() }

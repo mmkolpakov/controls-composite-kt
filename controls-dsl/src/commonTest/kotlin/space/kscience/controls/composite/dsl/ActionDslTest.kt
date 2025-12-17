@@ -6,7 +6,7 @@ import space.kscience.controls.composite.dsl.actions.plan
 import space.kscience.controls.composite.dsl.actions.taskAction
 import space.kscience.controls.composite.dsl.actions.unitAction
 import space.kscience.controls.core.addressing.Address
-import space.kscience.controls.composite.old.contracts.Device
+import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.composite.old.contracts.PlanExecutorDevice
 import space.kscience.controls.composite.old.contracts.TaskExecutorDevice
 import space.kscience.controls.composite.old.features.PlanExecutorFeature
