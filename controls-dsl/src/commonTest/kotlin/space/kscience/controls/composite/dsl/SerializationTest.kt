@@ -12,6 +12,7 @@ import space.kscience.controls.composite.old.serialization.controlsJson
 import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.core.faults.SerializableDeviceFailure
 import space.kscience.controls.core.faults.ValidationFault
+import space.kscience.controls.core.features.Feature
 import space.kscience.controls.core.identifiers.toBlueprintId
 import space.kscience.controls.core.messages.DescriptionMessage
 import space.kscience.controls.core.messages.DeviceErrorMessage
@@ -130,7 +131,7 @@ class SerializationTest {
     }
 
     /**
-     * Verifies that all standard [Feature] subtypes are correctly serialized.
+     * Verifies that all standard [space.kscience.controls.core.features.Feature] subtypes are correctly serialized.
      * This test is critical because Feature is an open polymorphic interface.
      */
     @Test

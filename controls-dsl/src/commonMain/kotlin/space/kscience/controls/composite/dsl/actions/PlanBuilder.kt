@@ -7,9 +7,9 @@ import space.kscience.controls.composite.old.RestartStrategy
 import space.kscience.controls.composite.old.RetryPolicy
 import space.kscience.controls.composite.old.TimeoutPolicy
 import space.kscience.controls.composite.old.contracts.DeviceBlueprint
-import space.kscience.controls.composite.old.meta.DeviceActionSpec
-import space.kscience.controls.composite.old.meta.DevicePropertySpec
-import space.kscience.controls.composite.old.meta.MutableDevicePropertySpec
+import space.kscience.controls.core.meta.DeviceActionSpec
+import space.kscience.controls.core.meta.DevicePropertySpec
+import space.kscience.controls.core.meta.MutableDevicePropertySpec
 import space.kscience.controls.core.descriptors.PropertyKind
 import space.kscience.controls.composite.old.plans.*
 import space.kscience.dataforge.meta.Meta

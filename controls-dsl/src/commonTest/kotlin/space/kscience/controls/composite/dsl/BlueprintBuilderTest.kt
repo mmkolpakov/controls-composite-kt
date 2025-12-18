@@ -77,7 +77,6 @@ class BlueprintBuilderTest {
 
         assertEquals("1.2.3", blueprint.version)
         assertEquals("myValue", blueprint.meta["myKey"].string)
-        assertNotNull(blueprint.logic)
     }
 
     /**

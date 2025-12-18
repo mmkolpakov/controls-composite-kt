@@ -4,7 +4,7 @@ import space.kscience.controls.composite.dsl.properties.predicate
 import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.composite.old.features.IntrospectionFeature
 import space.kscience.controls.composite.old.features.OperationalGuardsFeature
-import space.kscience.controls.composite.old.meta.DevicePropertySpec
+import space.kscience.controls.core.meta.DevicePropertySpec
 import space.kscience.dataforge.misc.DFExperimental
 import space.kscience.dataforge.names.asName
 

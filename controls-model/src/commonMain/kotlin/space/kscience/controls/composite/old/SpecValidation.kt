@@ -97,7 +97,9 @@ public fun DeviceBlueprint<*>.validateSelf(): List<ValidationError> {
     val errors = mutableListOf<ValidationError>()
 
     // Check for name collisions
-    val allNames = properties.keys + actions.keys + streams.keys + children.keys + peerConnections.keys
+    val allNames = properties.keys + actions.keys + streams.keys
+//    TODO("blueprint is simplified")
+//    + children.keys + peerConnections.keys
     if (allNames.size != allNames.toSet().size) {
         val duplicates = allNames.groupBy { it }.filter { it.value.size > 1 }.keys
         duplicates.forEach { errors.add(ValidationError.ConflictingName(it)) }

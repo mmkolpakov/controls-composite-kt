@@ -1,32 +1,18 @@
 package space.kscience.controls.composite.old.features
 
-import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import space.kscience.controls.composite.old.RestartPolicy
-import space.kscience.controls.composite.old.contracts.*
+import space.kscience.controls.composite.old.contracts.PeerConnection
+import space.kscience.controls.composite.old.contracts.PlanExecutorDevice
+import space.kscience.controls.composite.old.contracts.ReconfigurableDevice
+import space.kscience.controls.composite.old.contracts.TaskExecutorDevice
 import space.kscience.controls.composite.old.state.StatefulDevice
 import space.kscience.controls.core.contracts.Device
+import space.kscience.controls.core.features.Feature
 import space.kscience.controls.core.serialization.serializableToMeta
 import space.kscience.dataforge.meta.Meta
-import space.kscience.dataforge.meta.MetaRepr
 import space.kscience.dataforge.meta.descriptors.MetaDescriptor
-
-/**
- * A base interface for a Feature descriptor. A feature provides structured, serializable metadata
- * about a specific capability of a device.
- *
- * This is an open, non-sealed interface annotated with `@Polymorphic` to allow users of the library
- * to define their own custom features in separate modules, ensuring the framework is extensible.
- */
-@Polymorphic
-public interface Feature : MetaRepr {
-    /**
-     * A fully qualified name of the capability interface this feature describes.
-     * For example, `space.kscience.controls.core.contracts.Device`.
-     */
-    public val capability: String
-}
 
 /**
  * A feature describing the lifecycle management capabilities of a device.

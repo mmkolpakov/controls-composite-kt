@@ -3,7 +3,7 @@ package space.kscience.controls.composite.old.validation
 import space.kscience.controls.composite.old.ValidationError
 import space.kscience.controls.composite.old.contracts.DeviceBlueprint
 import space.kscience.controls.composite.old.discovery.BlueprintRegistry
-import space.kscience.controls.composite.old.features.Feature
+import space.kscience.controls.core.features.Feature
 import space.kscience.dataforge.context.Factory
 
 /**

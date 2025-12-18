@@ -11,6 +11,7 @@ import space.kscience.controls.composite.old.features.*
 import space.kscience.controls.composite.old.messages.*
 import space.kscience.controls.composite.old.plans.*
 import space.kscience.controls.core.controlsCoreSerializersModule
+import space.kscience.controls.core.features.Feature
 import space.kscience.controls.core.messages.DescriptionMessage
 import space.kscience.controls.core.messages.DeviceErrorMessage
 import space.kscience.controls.core.messages.DeviceMessage

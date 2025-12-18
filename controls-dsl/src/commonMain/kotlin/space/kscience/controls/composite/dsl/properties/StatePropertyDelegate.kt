@@ -8,7 +8,7 @@ import space.kscience.controls.composite.old.contracts.runtime.StatefulDelegateE
 import space.kscience.controls.composite.old.contracts.runtime.VirtualMutableDeviceState
 import space.kscience.controls.composite.old.contracts.runtime.onChange
 import space.kscience.controls.composite.old.features.StatefulFeature
-import space.kscience.controls.composite.old.meta.MutableDevicePropertySpec
+import space.kscience.controls.core.meta.MutableDevicePropertySpec
 import space.kscience.controls.core.descriptors.PropertyKind
 import space.kscience.controls.composite.old.state.MutableDeviceState
 import space.kscience.controls.composite.old.state.StatefulDevice

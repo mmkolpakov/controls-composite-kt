@@ -11,7 +11,7 @@ import kotlin.properties.ReadOnlyProperty
 
 /**
  * A specialized extension of DataForge's [MetaSpec] designed to declaratively define the output
- * structure of a [DeviceActionSpec]. It provides a mechanism for creating type-safe references ([MetaRef])
+ * structure of a [space.kscience.controls.core.meta.DeviceActionSpec]. It provides a mechanism for creating type-safe references ([MetaRef])
  * to the fields within an action's result [Meta].
  *
  * This class is the cornerstone for enabling type-safe data flow between steps in a [TransactionPlan].

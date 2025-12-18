@@ -7,10 +7,10 @@ import space.kscience.controls.composite.old.contracts.runtime.HydratableDeviceS
 import space.kscience.controls.core.InternalControlsApi
 import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.composite.old.contracts.DeviceBlueprint
-import space.kscience.controls.composite.old.features.Feature
-import space.kscience.controls.composite.old.meta.DeviceActionSpec
-import space.kscience.controls.composite.old.meta.DevicePropertySpec
-import space.kscience.controls.composite.old.meta.DeviceStreamSpec
+import space.kscience.controls.core.features.Feature
+import space.kscience.controls.core.meta.DeviceActionSpec
+import space.kscience.controls.core.meta.DevicePropertySpec
+import space.kscience.controls.core.meta.DeviceStreamSpec
 import space.kscience.dataforge.names.Name
 
 /**

@@ -1,8 +1,8 @@
 package space.kscience.controls.composite.old.contracts
 
-import space.kscience.controls.composite.old.meta.DeviceActionSpec
-import space.kscience.controls.composite.old.meta.DevicePropertySpec
-import space.kscience.controls.composite.old.meta.MutableDevicePropertySpec
+import space.kscience.controls.core.meta.DeviceActionSpec
+import space.kscience.controls.core.meta.DevicePropertySpec
+import space.kscience.controls.core.meta.MutableDevicePropertySpec
 import space.kscience.controls.core.InternalControlsApi
 import space.kscience.controls.core.contracts.Device
 

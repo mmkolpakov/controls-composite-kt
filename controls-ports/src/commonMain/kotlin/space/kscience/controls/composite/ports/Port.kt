@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
  *
  * A `Port` is a managed resource that must be explicitly opened before use and closed afterward.
  * The lifecycle of a port (opening, closing, and resource management) is the responsibility of its owner,
- * typically a [space.kscience.controls.composite.old.contracts.DeviceDriver], which should call
+ * typically a [space.kscience.controls.core.contracts.DeviceDriver], which should call
  * methods like `connect()` (for client ports) or `open()` (for server ports) within its `onStart` hook,
  * and `close()` within its `onStop` hook.
  *

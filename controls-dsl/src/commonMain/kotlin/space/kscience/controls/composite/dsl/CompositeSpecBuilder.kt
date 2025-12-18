@@ -8,22 +8,23 @@ import space.kscience.controls.composite.old.*
 import space.kscience.controls.composite.old.contracts.*
 import space.kscience.controls.composite.old.contracts.runtime.DeviceFlows
 import space.kscience.controls.composite.old.discovery.BlueprintRegistry
-import space.kscience.controls.composite.old.features.Feature
+import space.kscience.controls.core.features.Feature
 import space.kscience.controls.composite.old.features.LifecycleFeature
 import space.kscience.controls.composite.old.features.OperationalFsmFeature
 import space.kscience.controls.composite.old.features.OperationalGuardsFeature
 import space.kscience.controls.composite.old.features.TimedPredicateGuardSpec
 import space.kscience.controls.composite.old.features.ValueChangeGuardSpec
 import space.kscience.controls.composite.old.lifecycle.LifecycleContext
-import space.kscience.controls.composite.old.meta.DeviceActionSpec
-import space.kscience.controls.composite.old.meta.DevicePropertySpec
-import space.kscience.controls.composite.old.meta.DeviceStreamSpec
+import space.kscience.controls.core.meta.DeviceActionSpec
+import space.kscience.controls.core.meta.DevicePropertySpec
+import space.kscience.controls.core.meta.DeviceStreamSpec
 import space.kscience.controls.core.meta.MemberTag
 import space.kscience.controls.core.identifiers.BlueprintId
 import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.composite.dsl.lifecycle.DriverLogicFragment
 import space.kscience.controls.core.InternalControlsApi
 import space.kscience.controls.core.contracts.Device
+import space.kscience.controls.core.contracts.DeviceDriver
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.ContextAware
 import space.kscience.dataforge.context.logger
@@ -532,13 +533,13 @@ public class CompositeSpecBuilder<D : Device>(
         // Auto-add OperationalFsmFeature if an FSM is defined or guards are used.
         if (this._operationalFsm != null || _features.containsKey(OperationalGuardsFeature.CAPABILITY)) {
             // Get events from actions
-            val actionEventNames = (_actions.values + _protectedActions.values).flatMap {
-                listOfNotNull(
-                    it.operationalEventTypeName,
-                    it.operationalSuccessEventTypeName,
-                    it.operationalFailureEventTypeName
-                )
-            }.toSet()
+//            val actionEventNames = (_actions.values + _protectedActions.values).flatMap {
+//                listOfNotNull(
+//                    it.operationalEventTypeName,
+//                    it.operationalSuccessEventTypeName,
+//                    it.operationalFailureEventTypeName
+//                )
+//            }.toSet()
 
             // Get events from guards
             val guardEventNames =
@@ -554,7 +555,7 @@ public class CompositeSpecBuilder<D : Device>(
 
             val updatedFeature = OperationalFsmFeature(
                 states = this._operationalFsmStates + (existingFsmFeature?.states ?: emptySet()),
-                events = actionEventNames + guardEventNames + (existingFsmFeature?.events ?: emptySet())
+                events = guardEventNames + (existingFsmFeature?.events ?: emptySet())
             )
 
             feature(updatedFeature)

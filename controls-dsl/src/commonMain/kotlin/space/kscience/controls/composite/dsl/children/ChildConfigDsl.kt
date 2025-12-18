@@ -4,8 +4,8 @@ import space.kscience.controls.composite.dsl.CompositeSpecDsl
 import space.kscience.controls.composite.old.*
 import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.composite.old.lifecycle.DeviceLifecycleConfig
-import space.kscience.controls.composite.old.meta.DevicePropertySpec
-import space.kscience.controls.composite.old.meta.MutableDevicePropertySpec
+import space.kscience.controls.core.meta.DevicePropertySpec
+import space.kscience.controls.core.meta.MutableDevicePropertySpec
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.MutableMeta
 import kotlin.contracts.ExperimentalContracts

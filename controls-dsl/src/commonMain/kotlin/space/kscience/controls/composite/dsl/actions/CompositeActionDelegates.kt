@@ -15,6 +15,7 @@ import space.kscience.controls.composite.old.meta.*
 import space.kscience.controls.composite.old.plans.TransactionPlan
 import space.kscience.controls.composite.old.serialization.serializable
 import space.kscience.controls.core.descriptors.ActionDescriptor
+import space.kscience.controls.core.meta.DeviceActionSpec
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.MetaConverter
 import space.kscience.dataforge.meta.MetaConverter.Companion.meta
@@ -26,7 +27,7 @@ import kotlin.properties.ReadOnlyProperty
 
 /**
  * A centralized, internal factory for creating action delegate providers.
- * This function encapsulates the boilerplate for creating and registering a [DeviceActionSpec].
+ * This function encapsulates the boilerplate for creating and registering a [space.kscience.controls.core.meta.DeviceActionSpec].
  * It handles both inline logic (`execute` lambda) and external logic (`logicId`).
  */
 @PublishedApi
@@ -55,10 +56,6 @@ internal fun <D : Device, I, O> createActionDelegateProvider(
             override val descriptor: ActionDescriptor = descriptor
             override val inputConverter: MetaConverter<I> = inputConverter
             override val outputConverter: MetaConverter<O> = outputConverter
-            override val operationalEventTypeName: String? get() = descriptor.operationalEventTypeName
-            override val operationalSuccessEventTypeName: String? get() = descriptor.operationalSuccessEventTypeName
-            override val operationalFailureEventTypeName: String? get() = descriptor.operationalFailureEventTypeName
-
             override suspend fun execute(device: D, input: I): O? = when {
                 execute != null -> withContext(device.coroutineContext) { device.execute(input) }
                 logicId != null -> error(

@@ -10,13 +10,11 @@ import space.kscience.controls.core.identifiers.BlueprintId
 import space.kscience.controls.composite.old.contracts.DeviceBlueprint
 import space.kscience.controls.composite.old.discovery.BlueprintRegistry
 import space.kscience.controls.composite.old.discovery.blueprintRegistry
-import space.kscience.controls.composite.old.meta.MutableDevicePropertySpec
+import space.kscience.controls.core.meta.MutableDevicePropertySpec
 import space.kscience.controls.composite.old.validateSelf
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.meta.descriptors.validate
 import space.kscience.dataforge.names.Name
-import kotlin.collections.component1
-import kotlin.collections.component2
 
 /**
  * A utility object for validating [DeviceBlueprint] instances.
@@ -58,19 +56,20 @@ public object CompositeSpecValidator {
         }
 
         // 4. Child configurations and recursive validation
-        blueprint.children.forEach { (childName, childConfig) ->
-            val childBlueprint = registry.findById(childConfig.blueprintId)
-            if (childBlueprint == null) {
-                errors.add(ValidationError.BlueprintNotFound(childName, childConfig.blueprintId))
-            } else {
-                when (childConfig) {
-                    is LocalChildComponentConfig -> validateLocalChild(blueprint, childName, childConfig, childBlueprint, errors)
-                    is RemoteChildComponentConfig -> validateRemoteChild(blueprint, childName, childConfig, childBlueprint, errors)
-                }
-                // Recurse
-                errors.addAll(validateRecursively(childBlueprint, registry, context, newPath))
-            }
-        }
+//        TODO("blueprint is simplified")
+//        blueprint.children.forEach { (childName, childConfig) ->
+//            val childBlueprint = registry.findById(childConfig.blueprintId)
+//            if (childBlueprint == null) {
+//                errors.add(ValidationError.BlueprintNotFound(childName, childConfig.blueprintId))
+//            } else {
+//                when (childConfig) {
+//                    is LocalChildComponentConfig -> validateLocalChild(blueprint, childName, childConfig, childBlueprint, errors)
+//                    is RemoteChildComponentConfig -> validateRemoteChild(blueprint, childName, childConfig, childBlueprint, errors)
+//                }
+//                // Recurse
+//                errors.addAll(validateRecursively(childBlueprint, registry, context, newPath))
+//            }
+//        }
 
         return errors
     }
@@ -135,10 +134,11 @@ private fun validateRemoteChild(
     parentBlueprint: DeviceBlueprint<*>,
     childName: Name,
     childConfig: RemoteChildComponentConfig,
-    childBlueprint: DeviceBlueprint<*>, // already resolved
+    childBlueprint: DeviceBlueprint<*>,
     errors: MutableList<ValidationError>,
 ) {
-    if (!parentBlueprint.peerConnections.containsKey(childConfig.peerName)) {
-        errors.add(ValidationError.InvalidRemoteChild(childName, "Peer connection with name '${childConfig.peerName}' is not defined in the parent blueprint."))
-    }
+//    TODO("blueprint is simplified")
+//    if (!parentBlueprint.peerConnections.containsKey(childConfig.peerName)) {
+//        errors.add(ValidationError.InvalidRemoteChild(childName, "Peer connection with name '${childConfig.peerName}' is not defined in the parent blueprint."))
+//    }
 }

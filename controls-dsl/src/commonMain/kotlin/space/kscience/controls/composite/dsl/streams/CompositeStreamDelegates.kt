@@ -5,8 +5,8 @@ import space.kscience.controls.composite.dsl.CompositeSpecDsl
 import space.kscience.controls.composite.dsl.DeviceSpecification
 import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.core.spec.QoS
-import space.kscience.controls.composite.old.contracts.StreamPort
-import space.kscience.controls.composite.old.meta.DeviceStreamSpec
+import space.kscience.controls.core.contracts.StreamPort
+import space.kscience.controls.core.meta.DeviceStreamSpec
 import space.kscience.controls.core.descriptors.StreamDescriptor
 import space.kscience.controls.core.spec.StreamDirection
 import space.kscience.controls.core.identifiers.Permission

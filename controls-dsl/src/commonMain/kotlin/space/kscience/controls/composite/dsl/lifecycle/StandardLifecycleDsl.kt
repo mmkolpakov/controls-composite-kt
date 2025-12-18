@@ -16,9 +16,9 @@ import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.composite.old.lifecycle.DeviceLifecycleEvent
 import space.kscience.controls.core.lifecycle.DeviceLifecycleState
 import space.kscience.controls.composite.old.lifecycle.LifecycleContext
-import space.kscience.controls.composite.old.meta.DeviceActionSpec
-import space.kscience.controls.composite.old.meta.DevicePropertySpec
-import space.kscience.controls.composite.old.meta.MutableDevicePropertySpec
+import space.kscience.controls.core.meta.DeviceActionSpec
+import space.kscience.controls.core.meta.DevicePropertySpec
+import space.kscience.controls.core.meta.MutableDevicePropertySpec
 import space.kscience.dataforge.context.error
 import space.kscience.dataforge.context.logger
 import kotlin.contracts.ExperimentalContracts

@@ -1,6 +1,6 @@
 package space.kscience.controls.composite.old.validation
 
-import space.kscience.controls.composite.old.features.Feature
+import space.kscience.controls.core.features.Feature
 import space.kscience.dataforge.context.*
 import space.kscience.dataforge.meta.Meta
 

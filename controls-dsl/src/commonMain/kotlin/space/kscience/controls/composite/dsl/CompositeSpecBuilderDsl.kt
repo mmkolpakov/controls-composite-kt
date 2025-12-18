@@ -11,15 +11,16 @@ import space.kscience.controls.composite.old.LocalChildComponentConfig
 import space.kscience.controls.composite.old.contracts.*
 import space.kscience.controls.composite.old.features.PlanExecutorFeature
 import space.kscience.controls.composite.old.features.TaskExecutorFeature
-import space.kscience.controls.composite.old.meta.DeviceActionSpec
-import space.kscience.controls.composite.old.meta.DevicePropertySpec
-import space.kscience.controls.composite.old.meta.DeviceStreamSpec
-import space.kscience.controls.composite.old.meta.MutableDevicePropertySpec
+import space.kscience.controls.core.meta.DeviceActionSpec
+import space.kscience.controls.core.meta.DevicePropertySpec
+import space.kscience.controls.core.meta.DeviceStreamSpec
+import space.kscience.controls.core.meta.MutableDevicePropertySpec
 import space.kscience.controls.core.descriptors.PropertyDescriptor
 import space.kscience.controls.core.descriptors.PropertyKind
 import space.kscience.controls.core.descriptors.StreamDescriptor
 import space.kscience.controls.composite.old.meta.unit
 import space.kscience.controls.core.contracts.Device
+import space.kscience.controls.core.contracts.StreamPort
 import space.kscience.dataforge.meta.*
 import space.kscience.dataforge.misc.DFExperimental
 import space.kscience.dataforge.names.Name
@@ -176,9 +177,6 @@ public fun <D : Device, I, O> CompositeSpecBuilder<D>.action(
         override val descriptor = descriptor
         override val inputConverter: MetaConverter<I> = inputConverter
         override val outputConverter: MetaConverter<O> = outputConverter
-        override val operationalEventTypeName: String? get() = descriptor.operationalEventTypeName
-        override val operationalSuccessEventTypeName: String? get() = descriptor.operationalSuccessEventTypeName
-        override val operationalFailureEventTypeName: String? get() = descriptor.operationalFailureEventTypeName
         override suspend fun execute(device: D, input: I): O? = device.execute(input)
     }
     registerAction(spec)
@@ -277,7 +275,7 @@ public inline fun <reified I, reified O, D> CompositeSpecBuilder<D>.taskAction(
  * @param T The type of the primary data object in the stream.
  * @param name The name of the stream.
  * @param descriptorBuilder A DSL block to configure the stream's descriptor.
- * @param get A suspendable factory lambda that creates a [StreamPort] instance. The runtime is responsible
+ * @param get A suspendable factory lambda that creates a [space.kscience.controls.core.contracts.StreamPort] instance. The runtime is responsible
  *            for managing the lifecycle of the created port.
  * @return The created and registered [DeviceStreamSpec].
  */

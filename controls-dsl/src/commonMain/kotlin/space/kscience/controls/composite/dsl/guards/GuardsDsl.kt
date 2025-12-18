@@ -5,7 +5,7 @@ import ru.nsk.kstatemachine.event.Event
 import space.kscience.controls.composite.dsl.CompositeSpecBuilder
 import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.composite.old.features.*
-import space.kscience.controls.composite.old.meta.DevicePropertySpec
+import space.kscience.controls.core.meta.DevicePropertySpec
 import space.kscience.controls.core.descriptors.PropertyKind
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.MutableMeta

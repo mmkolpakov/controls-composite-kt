@@ -2,8 +2,8 @@ package space.kscience.controls.composite.old.contracts.runtime
 
 import space.kscience.controls.composite.old.CompositeContext
 import space.kscience.controls.core.contracts.Device
-import space.kscience.controls.composite.old.meta.DevicePropertySpec
-import space.kscience.controls.composite.old.meta.MutableDevicePropertySpec
+import space.kscience.controls.core.meta.DevicePropertySpec
+import space.kscience.controls.core.meta.MutableDevicePropertySpec
 import space.kscience.controls.composite.old.state.DeviceState
 import space.kscience.controls.composite.old.state.MutableDeviceState
 import space.kscience.dataforge.names.Name

@@ -1,6 +1,5 @@
-package space.kscience.controls.composite.old.contracts
+package space.kscience.controls.core.contracts
 
-import space.kscience.controls.core.contracts.Device
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.meta.ObservableMeta
 

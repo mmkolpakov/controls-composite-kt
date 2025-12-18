@@ -1,7 +1,7 @@
 package space.kscience.controls.composite.old.contracts.runtime
 
 import kotlinx.coroutines.flow.StateFlow
-import space.kscience.controls.composite.old.meta.DevicePropertySpec
+import space.kscience.controls.core.meta.DevicePropertySpec
 import space.kscience.controls.composite.old.state.StateValue
 
 /**
