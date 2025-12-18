@@ -5,7 +5,7 @@ import space.kscience.dataforge.names.Name
 /**
  * Defines the Meta structure for a transactional plan. This serves as a formal contract
  * for serialization and remote execution.
- * @see TransactionPlan for the type-safe old.
+ * @see space.kscience.controls.automation.TransactionPlan for the type-safe old.
  */
 public object TransactionPlanSpec {
     public val ACTIONS_KEY: Name = Name.of("actions")

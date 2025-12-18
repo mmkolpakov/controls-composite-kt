@@ -2,7 +2,7 @@ package space.kscience.controls.composite.old
 
 import space.kscience.controls.core.identifiers.BlueprintId
 import space.kscience.controls.composite.old.contracts.DeviceBlueprint
-import space.kscience.controls.composite.old.contracts.PlanExecutorDevice
+import space.kscience.controls.automation.PlanExecutorDevice
 import space.kscience.controls.composite.old.contracts.TaskExecutorDevice
 import space.kscience.controls.core.descriptors.PropertyKind
 import space.kscience.controls.composite.old.state.StatefulDevice

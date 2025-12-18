@@ -7,12 +7,12 @@ import space.kscience.controls.composite.dsl.ActionDelegateProvider
 import space.kscience.controls.composite.dsl.DeviceSpecification
 import space.kscience.controls.composite.dsl.properties.ActionDescriptorBuilder
 import space.kscience.controls.core.contracts.Device
-import space.kscience.controls.composite.old.contracts.PlanExecutorDevice
+import space.kscience.controls.automation.PlanExecutorDevice
 import space.kscience.controls.composite.old.contracts.TaskExecutorDevice
-import space.kscience.controls.composite.old.features.PlanExecutorFeature
+import space.kscience.controls.automation.PlanExecutorFeature
 import space.kscience.controls.composite.old.features.TaskExecutorFeature
 import space.kscience.controls.composite.old.meta.*
-import space.kscience.controls.composite.old.plans.TransactionPlan
+import space.kscience.controls.automation.TransactionPlan
 import space.kscience.controls.composite.old.serialization.serializable
 import space.kscience.controls.core.descriptors.ActionDescriptor
 import space.kscience.controls.core.meta.DeviceActionSpec

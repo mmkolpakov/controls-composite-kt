@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.Serializable
+import space.kscience.controls.automation.PlanExecutorDevice
+import space.kscience.controls.automation.TransactionPlan
 import space.kscience.controls.composite.dsl.actions.metaAction
 import space.kscience.controls.composite.dsl.actions.plan
 import space.kscience.controls.composite.dsl.actions.taskAction
@@ -71,7 +73,7 @@ internal open class TestDeviceImpl(
     override fun <T> getMutableState(spec: MutableDevicePropertySpec<*, T>): MutableDeviceState<T> =
         error("Not for test")
 
-    override suspend fun executePlan(plan: space.kscience.controls.composite.old.plans.TransactionPlan, context: ExecutionContext): Meta? = null
+    override suspend fun executePlan(plan: TransactionPlan, context: ExecutionContext): Meta? = null
     override suspend fun executeTask(taskName: Name, input: Meta?, context: ExecutionContext): Meta? = null
 }
 

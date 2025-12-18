@@ -23,6 +23,7 @@ kscience {
 
     commonMain {
         api(project(":controls-core"))
+        api(project(":controls-feature-automation"))
         api(libs.dataforge.context)
         api(libs.dataforge.io)
         api(libs.dataforge.data)

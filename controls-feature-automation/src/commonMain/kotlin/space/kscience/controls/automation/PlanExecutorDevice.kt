@@ -1,8 +1,7 @@
-package space.kscience.controls.composite.old.contracts
+package space.kscience.controls.automation
 
 import space.kscience.controls.core.context.ExecutionContext
 import space.kscience.controls.core.context.SystemPrincipal
-import space.kscience.controls.composite.old.plans.TransactionPlan
 import space.kscience.controls.core.contracts.Device
 import space.kscience.dataforge.meta.Meta
 
@@ -10,7 +9,7 @@ import space.kscience.dataforge.meta.Meta
  * A capability interface for devices that can execute a [TransactionPlan].
  * This contract formalizes the ability of a device to orchestrate complex, multi-step operations.
  *
- * A [DeviceBlueprint] must declare the [space.kscience.controls.composite.old.features.PlanExecutorFeature]
+ * A [DeviceBlueprint] must declare the [PlanExecutorFeature]
  * for a device to implement this interface. The runtime is responsible for checking this capability
  * and invoking [executePlan] when a plan-based action is triggered.
  */
@@ -22,7 +21,7 @@ public interface PlanExecutorDevice : Device {
         /**
          * The unique, fully-qualified name for the [PlanExecutorDevice] capability.
          */
-        public const val CAPABILITY: String = "space.kscience.controls.composite.old.contracts.PlanExecutorDevice"
+        public const val CAPABILITY: String = "space.kscience.controls.automation.PlanExecutorDevice"
     }
 
     /**

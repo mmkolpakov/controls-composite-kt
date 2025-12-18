@@ -4,10 +4,27 @@ import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import ru.nsk.kstatemachine.event.Event
+import space.kscience.controls.automation.ActionSpec
+import space.kscience.controls.automation.AttachActionSpec
+import space.kscience.controls.automation.AwaitPredicateActionSpec
+import space.kscience.controls.automation.AwaitSignalActionSpec
+import space.kscience.controls.automation.ConditionalActionSpec
+import space.kscience.controls.automation.DelayActionSpec
+import space.kscience.controls.automation.DetachActionSpec
+import space.kscience.controls.automation.InvokeActionSpec
+import space.kscience.controls.automation.LoopActionSpec
+import space.kscience.controls.automation.ParallelActionSpec
+import space.kscience.controls.automation.PlanExecutorFeature
+import space.kscience.controls.automation.PredicateSpec
+import space.kscience.controls.automation.RunWorkspaceTaskSpec
+import space.kscience.controls.automation.SequenceActionSpec
+import space.kscience.controls.automation.StartActionSpec
+import space.kscience.controls.automation.StopActionSpec
+import space.kscience.controls.automation.TransactionPlan
+import space.kscience.controls.automation.WritePropertyActionSpec
 import space.kscience.controls.composite.old.*
 import space.kscience.controls.composite.old.features.*
 import space.kscience.controls.composite.old.messages.*
-import space.kscience.controls.composite.old.plans.*
 import space.kscience.controls.composite.old.serialization.controlsJson
 import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.core.faults.SerializableDeviceFailure
@@ -78,8 +95,8 @@ class SerializationTest {
     }
 
     /**
-     * Verifies that all subtypes of [ActionSpec] are correctly serialized, including nested plans.
-     * This is crucial for the [TransactionPlan] functionality.
+     * Verifies that all subtypes of [space.kscience.controls.automation.ActionSpec] are correctly serialized, including nested plans.
+     * This is crucial for the [space.kscience.controls.automation.TransactionPlan] functionality.
      */
     @Test
     fun testActionSpecSerialization() {
@@ -95,7 +112,7 @@ class SerializationTest {
             DelayActionSpec(2.seconds),
             AwaitPredicateActionSpec(testAddress, "isReady".asName(), 5.seconds),
             AwaitSignalActionSpec("user.confirm.action", "Please confirm"),
-            InvokeActionSpec(testAddress, "myAction".asName(), Meta{"arg" put 1}),
+            InvokeActionSpec(testAddress, "myAction".asName(), Meta { "arg" put 1 }),
             ConditionalActionSpec(
                 PredicateSpec(testAddress, "isReady".asName()),
                 thenPlan = TransactionPlan(SequenceActionSpec(emptyList())),

@@ -3,24 +3,32 @@ package space.kscience.controls.composite.old.serialization
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
+import space.kscience.controls.automation.ActionSpec
+import space.kscience.controls.automation.AttachActionSpec
+import space.kscience.controls.automation.AwaitPredicateActionSpec
+import space.kscience.controls.automation.DelayActionSpec
+import space.kscience.controls.automation.DetachActionSpec
+import space.kscience.controls.automation.InvokeActionSpec
+import space.kscience.controls.automation.ParallelActionSpec
+import space.kscience.controls.automation.PlanExecutorFeature
+import space.kscience.controls.automation.SequenceActionSpec
+import space.kscience.controls.automation.StartActionSpec
+import space.kscience.controls.automation.StopActionSpec
+import space.kscience.controls.automation.WritePropertyActionSpec
 import space.kscience.controls.composite.old.*
 import space.kscience.controls.composite.old.contracts.AddressSource
 import space.kscience.controls.composite.old.contracts.DiscoveredAddressSource
 import space.kscience.controls.composite.old.contracts.StaticAddressSource
 import space.kscience.controls.composite.old.features.*
 import space.kscience.controls.composite.old.messages.*
-import space.kscience.controls.composite.old.plans.*
 import space.kscience.controls.core.controlsCoreSerializersModule
 import space.kscience.controls.core.features.Feature
-import space.kscience.controls.core.messages.DescriptionMessage
-import space.kscience.controls.core.messages.DeviceErrorMessage
 import space.kscience.controls.core.messages.DeviceMessage
-import space.kscience.controls.core.messages.PropertyChangedMessage
 
 /**
  * A shared [SerializersModule] for the controls-composite models.
  * It provides the necessary polymorphic serialization rules for sealed interfaces
- * like [space.kscience.controls.core.messages.DeviceMessage], [ActionSpec], [PropertyBinding], and [ChildComponentConfig].
+ * like [space.kscience.controls.core.messages.DeviceMessage], [space.kscience.controls.automation.ActionSpec], [PropertyBinding], and [ChildComponentConfig].
  *
  * This module should be included in any `kotlinx.serialization` `Json` or `Cbor`
  * instance that needs to serialize or deserialize the composite device old.

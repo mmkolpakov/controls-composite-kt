@@ -3,7 +3,7 @@ package space.kscience.controls.composite.old.contracts
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import space.kscience.controls.core.addressing.Address
-import space.kscience.controls.composite.old.ResiliencePolicy
+import space.kscience.controls.core.spec.ResiliencePolicy
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.meta.Meta
 

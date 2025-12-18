@@ -1,6 +1,7 @@
 package space.kscience.controls.composite.dsl
 
 import kotlinx.serialization.serializer
+import space.kscience.controls.automation.PlanExecutorDevice
 import space.kscience.controls.composite.dsl.actions.PlanBuilder
 import space.kscience.controls.composite.dsl.actions.plan
 import space.kscience.controls.composite.dsl.children.ChildConfigBuilder
@@ -9,7 +10,7 @@ import space.kscience.controls.composite.dsl.properties.PropertyDescriptorBuilde
 import space.kscience.controls.composite.dsl.streams.StreamDescriptorBuilder
 import space.kscience.controls.composite.old.LocalChildComponentConfig
 import space.kscience.controls.composite.old.contracts.*
-import space.kscience.controls.composite.old.features.PlanExecutorFeature
+import space.kscience.controls.automation.PlanExecutorFeature
 import space.kscience.controls.composite.old.features.TaskExecutorFeature
 import space.kscience.controls.core.meta.DeviceActionSpec
 import space.kscience.controls.core.meta.DevicePropertySpec

@@ -30,6 +30,8 @@ kscience {
     commonMain {
         api(libs.dataforge.meta)
         api(libs.kstatemachine.core)
+        api(projects.controlsCore)
+        api(projects.controlsFeatureAutomation)
         api(projects.controlsModel)
     }
 

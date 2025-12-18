@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import space.kscience.controls.composite.old.RestartPolicy
 import space.kscience.controls.composite.old.contracts.PeerConnection
-import space.kscience.controls.composite.old.contracts.PlanExecutorDevice
+import space.kscience.controls.automation.PlanExecutorDevice
 import space.kscience.controls.composite.old.contracts.ReconfigurableDevice
 import space.kscience.controls.composite.old.contracts.TaskExecutorDevice
 import space.kscience.controls.composite.old.state.StatefulDevice
@@ -130,18 +130,4 @@ public data class BinaryDataFeature(
     override val capability: String = PeerConnection.CAPABILITY
 
     override fun toMeta(): Meta = serializableToMeta(serializer(), this)
-}
-
-/**
- * A feature indicating that the device can execute a [space.kscience.controls.composite.old.plans.TransactionPlan].
- * The runtime uses this feature to correctly dispatch plan-based actions to the device.
- */
-@Serializable
-@SerialName("feature.planExecutor")
-public data class PlanExecutorFeature(
-    override val capability: String = PlanExecutorDevice.CAPABILITY
-) : Feature {
-    override fun toMeta(): Meta = Meta {
-        "capability" put capability
-    }
 }

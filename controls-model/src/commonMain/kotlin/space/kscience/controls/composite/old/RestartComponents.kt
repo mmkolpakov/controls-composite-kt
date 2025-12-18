@@ -1,39 +1,12 @@
 package space.kscience.controls.composite.old
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import space.kscience.controls.composite.old.serialization.SchemeAsMetaSerializer
 import space.kscience.controls.composite.old.serialization.serializable
-import space.kscience.controls.core.serialization.serializableToMeta
+import space.kscience.controls.core.spec.RestartStrategy
 import space.kscience.dataforge.meta.*
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
-
-/**
- * Defines a strategy for calculating the delay between restart attempts.
- */
-@Serializable
-public sealed interface RestartStrategy : MetaRepr {
-
-    @Serializable
-    @SerialName("linear")
-    public data class Linear(val baseDelay: Duration) : RestartStrategy {
-        override fun toMeta(): Meta = serializableToMeta(serializer(), this)
-    }
-
-    @Serializable
-    @SerialName("exponential")
-    public data class ExponentialBackoff(val baseDelay: Duration) : RestartStrategy {
-        override fun toMeta(): Meta = serializableToMeta(serializer(), this)
-    }
-
-    @Serializable
-    @SerialName("fibonacci")
-    public data class Fibonacci(val baseDelay: Duration) : RestartStrategy {
-        override fun toMeta(): Meta = serializableToMeta(serializer(), this)
-    }
-}
 
 /**
  * Defines the policy for restarting a failed device.
@@ -42,7 +15,7 @@ public sealed interface RestartStrategy : MetaRepr {
  * It is now serializable and provides structural equality checks.
  *
  * @property maxAttempts The maximum number of restart attempts. `0` means no retries. A value less than 0 means infinite retries.
- * @property strategy The [RestartStrategy] to use for calculating delays between retries.
+ * @property strategy The [space.kscience.controls.core.spec.RestartStrategy] to use for calculating delays between retries.
  * @property resetOnSuccess If true, the attempt counter is reset after a successful start.
  */
 @Serializable(with = RestartPolicy.Serializer::class)
