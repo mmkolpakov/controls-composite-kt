@@ -1,11 +1,9 @@
-package space.kscience.controls.composite.old.contracts
+package space.kscience.controls.core.contracts
 
 import space.kscience.controls.core.meta.DeviceActionSpec
 import space.kscience.controls.core.meta.DevicePropertySpec
 import space.kscience.controls.core.meta.DeviceStreamSpec
 import space.kscience.controls.core.InternalControlsApi
-import space.kscience.controls.core.contracts.Device
-import space.kscience.controls.core.contracts.DeviceDriver
 import space.kscience.controls.core.features.Feature
 import space.kscience.controls.core.identifiers.BlueprintId
 import space.kscience.controls.core.meta.MemberTag

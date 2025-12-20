@@ -33,6 +33,7 @@ kscience {
         api(projects.controlsCore)
         api(projects.controlsFeatureAutomation)
         api(projects.controlsModel)
+        api(projects.controlsFeatureFsm)
     }
 
     commonTest {

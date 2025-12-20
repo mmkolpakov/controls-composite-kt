@@ -4,8 +4,11 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.ClassDiscriminatorMode
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.plus
 import kotlinx.serialization.serializer
+import space.kscience.controls.core.controlsCoreSerializersModule
 import space.kscience.controls.core.serialization.coreJson
+import space.kscience.controls.fsm.fsmSerializersModule
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.MetaConverter
 import space.kscience.dataforge.meta.MetaRepr
@@ -25,7 +28,7 @@ import space.kscience.dataforge.meta.toMeta
 @OptIn(ExperimentalSerializationApi::class)
 public val controlsJson: Json by lazy {
     Json {
-        serializersModule = ControlsCompositeSerializersModule
+        serializersModule = ControlsCompositeSerializersModule + fsmSerializersModule + controlsCoreSerializersModule
         ignoreUnknownKeys = false
         prettyPrint = true
         classDiscriminatorMode = ClassDiscriminatorMode.POLYMORPHIC

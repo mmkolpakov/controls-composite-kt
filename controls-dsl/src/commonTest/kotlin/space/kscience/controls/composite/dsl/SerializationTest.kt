@@ -35,6 +35,9 @@ import space.kscience.controls.core.messages.DescriptionMessage
 import space.kscience.controls.core.messages.DeviceErrorMessage
 import space.kscience.controls.core.messages.DeviceMessage
 import space.kscience.controls.core.messages.PropertyChangedMessage
+import space.kscience.controls.fsm.LifecycleFeature
+import space.kscience.controls.fsm.LifecycleStateChangedMessage
+import space.kscience.controls.fsm.OperationalFsmFeature
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.get
 import space.kscience.dataforge.meta.string

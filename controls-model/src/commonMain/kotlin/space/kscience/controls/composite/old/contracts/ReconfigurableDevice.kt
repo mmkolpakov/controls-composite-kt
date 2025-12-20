@@ -5,7 +5,7 @@ import space.kscience.dataforge.meta.Meta
 
 /**
  * A capability interface for devices that can have their configuration updated at runtime
- * without a full restart. A [DeviceBlueprint] must declare this capability for it to be used.
+ * without a full restart. A [space.kscience.controls.core.contracts.DeviceBlueprint] must declare this capability for it to be used.
  */
 public interface ReconfigurableDevice : Device {
     /**

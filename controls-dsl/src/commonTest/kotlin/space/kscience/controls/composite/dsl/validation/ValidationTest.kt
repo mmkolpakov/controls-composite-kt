@@ -23,6 +23,7 @@ import space.kscience.controls.composite.old.features.TimedPredicateGuardSpec
 import space.kscience.controls.core.meta.DevicePropertySpec
 import space.kscience.controls.composite.old.validation.*
 import space.kscience.controls.core.contracts.Device
+import space.kscience.controls.core.contracts.DeviceBlueprint
 import space.kscience.controls.core.identifiers.BlueprintId
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.PluginFactory

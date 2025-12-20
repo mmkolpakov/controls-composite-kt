@@ -6,7 +6,7 @@ import space.kscience.controls.composite.dsl.guards.GuardsBuilder
 import space.kscience.controls.composite.old.contracts.runtime.HydratableDeviceState
 import space.kscience.controls.core.InternalControlsApi
 import space.kscience.controls.core.contracts.Device
-import space.kscience.controls.composite.old.contracts.DeviceBlueprint
+import space.kscience.controls.core.contracts.DeviceBlueprint
 import space.kscience.controls.core.features.Feature
 import space.kscience.controls.core.meta.DeviceActionSpec
 import space.kscience.controls.core.meta.DevicePropertySpec

@@ -30,6 +30,7 @@ kscience {
         implementation(libs.kotlinx.atomicfu)
         api(libs.kstatemachine.core)
         api(libs.kotlinx.io.core)
+        api(projects.controlsFeatureFsm)
     }
 }
 

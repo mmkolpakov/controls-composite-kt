@@ -207,7 +207,7 @@ public inline fun <reified E : Event> TimedGuardContext.post(
  *
  * This function automatically performs two crucial integration steps:
  * 1. It adds an [OperationalGuardsFeature] to the blueprint, making the device's use of guards explicit and discoverable.
- * 2. It collects all event types posted by the guards and adds them to the [OperationalFsmFeature], ensuring that
+ * 2. It collects all event types posted by the guards and adds them to the [space.kscience.controls.fsm.OperationalFsmFeature], ensuring that
  *    the blueprint's static FSM old is complete and can be validated.
  *
  * @param D The type of the device contract.

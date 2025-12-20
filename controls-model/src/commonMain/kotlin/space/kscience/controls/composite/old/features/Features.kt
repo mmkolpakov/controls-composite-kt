@@ -15,24 +15,6 @@ import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.descriptors.MetaDescriptor
 
 /**
- * A feature describing the lifecycle management capabilities of a device.
- */
-@Serializable
-@SerialName("feature.lifecycle")
-public data class LifecycleFeature(
-    val supportedStates: Set<String> = setOf(
-        "Stopped",
-        "Running",
-        "Failed"
-    ),
-    val initialStateName: String = "Stopped",
-) : Feature {
-    override val capability: String get() = Device.CAPABILITY
-
-    override fun toMeta(): Meta = serializableToMeta(serializer(), this)
-}
-
-/**
  * A feature describing the device's ability to be reconfigured at runtime.
  */
 @Serializable
@@ -92,28 +74,6 @@ public data class TaskExecutorFeature(
     override val capability: String get() = TaskExecutorDevice.CAPABILITY
 
     override fun toMeta(): Meta = serializableToMeta(serializer(), this)
-}
-
-/**
- * A feature indicating that the device has an operational Finite State Machine (FSM)
- * in addition to its lifecycle FSM. This FSM manages the device's internal logic and operational states.
- *
- * @property states A set of names for the states in the operational FSM.
- * @property events A set of event class names that can drive the operational FSM.
- */
-@Serializable
-@SerialName("feature.operationalFsm")
-public data class OperationalFsmFeature(
-    val states: Set<String>,
-    val events: Set<String>,
-) : Feature {
-    override val capability: String = CAPABILITY
-
-    override fun toMeta(): Meta = serializableToMeta(serializer(), this)
-
-    public companion object {
-        public const val CAPABILITY: String = "ru.nsk.kstatemachine.statemachine.StateMachine"
-    }
 }
 
 /**

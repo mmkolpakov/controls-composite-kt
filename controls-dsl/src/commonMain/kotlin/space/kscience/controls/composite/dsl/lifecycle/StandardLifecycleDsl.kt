@@ -13,9 +13,9 @@ import space.kscience.controls.core.faults.CompositeHubException
 import space.kscience.controls.core.faults.CompositeHubTransactionException
 import space.kscience.controls.core.faults.DeviceLifecycleException
 import space.kscience.controls.core.contracts.Device
-import space.kscience.controls.composite.old.lifecycle.DeviceLifecycleEvent
+import space.kscience.controls.fsm.events.DeviceLifecycleEvent
 import space.kscience.controls.core.lifecycle.DeviceLifecycleState
-import space.kscience.controls.composite.old.lifecycle.LifecycleContext
+import space.kscience.controls.fsm.LifecycleContext
 import space.kscience.controls.core.meta.DeviceActionSpec
 import space.kscience.controls.core.meta.DevicePropertySpec
 import space.kscience.controls.core.meta.MutableDevicePropertySpec

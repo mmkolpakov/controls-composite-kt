@@ -9,12 +9,12 @@ import space.kscience.controls.composite.old.contracts.*
 import space.kscience.controls.composite.old.contracts.runtime.DeviceFlows
 import space.kscience.controls.composite.old.discovery.BlueprintRegistry
 import space.kscience.controls.core.features.Feature
-import space.kscience.controls.composite.old.features.LifecycleFeature
-import space.kscience.controls.composite.old.features.OperationalFsmFeature
+import space.kscience.controls.fsm.LifecycleFeature
+import space.kscience.controls.fsm.OperationalFsmFeature
 import space.kscience.controls.composite.old.features.OperationalGuardsFeature
 import space.kscience.controls.composite.old.features.TimedPredicateGuardSpec
 import space.kscience.controls.composite.old.features.ValueChangeGuardSpec
-import space.kscience.controls.composite.old.lifecycle.LifecycleContext
+import space.kscience.controls.fsm.LifecycleContext
 import space.kscience.controls.core.meta.DeviceActionSpec
 import space.kscience.controls.core.meta.DevicePropertySpec
 import space.kscience.controls.core.meta.DeviceStreamSpec
@@ -24,6 +24,7 @@ import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.composite.dsl.lifecycle.DriverLogicFragment
 import space.kscience.controls.core.InternalControlsApi
 import space.kscience.controls.core.contracts.Device
+import space.kscience.controls.core.contracts.DeviceBlueprint
 import space.kscience.controls.core.contracts.DeviceDriver
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.ContextAware
@@ -46,7 +47,7 @@ public annotation class CompositeSpecDsl
 
 
 /**
- * A builder for composing [DeviceBlueprint] instances using a DSL.
+ * A builder for composing [space.kscience.controls.core.contracts.DeviceBlueprint] instances using a DSL.
  * This class is the primary entry point for defining a device's structure and behavior.
  * Properties and actions are typically declared using delegated properties, which automatically register themselves.
  * This builder is used to configure other aspects like child components, lifecycle, and the device driver.

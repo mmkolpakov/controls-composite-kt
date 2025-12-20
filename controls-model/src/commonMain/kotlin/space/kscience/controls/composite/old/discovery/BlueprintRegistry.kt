@@ -1,7 +1,7 @@
 package space.kscience.controls.composite.old.discovery
 
 import space.kscience.controls.core.identifiers.BlueprintId
-import space.kscience.controls.composite.old.contracts.DeviceBlueprint
+import space.kscience.controls.core.contracts.DeviceBlueprint
 import space.kscience.dataforge.context.*
 import space.kscience.dataforge.meta.Meta
 

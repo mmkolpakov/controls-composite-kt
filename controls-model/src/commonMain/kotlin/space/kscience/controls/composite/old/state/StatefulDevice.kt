@@ -98,7 +98,7 @@ public class StatefulDeviceLogic {
 /**
  * A capability interface for devices that can have their state saved and restored.
  * This is used by persistence mechanisms to manage device state across restarts.
- * A [space.kscience.controls.composite.old.contracts.DeviceBlueprint] must declare this capability for it to be used.
+ * A [space.kscience.controls.core.contracts.DeviceBlueprint] must declare this capability for it to be used.
  */
 public interface StatefulDevice : Device {
     /**

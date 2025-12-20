@@ -13,7 +13,7 @@ import space.kscience.dataforge.names.Name
 /**
  * A contract for a reusable, standalone piece of business logic that can be executed as a device action.
  * This interface embodies the "Strategy" design pattern, allowing the logic of an action to be decoupled
- * from its declaration in a [DeviceBlueprint].
+ * from its declaration in a [space.kscience.controls.core.contracts.DeviceBlueprint].
  *
  * Implementations of this interface can be versioned, independently tested, and reused across multiple
  * device blueprints, promoting modularity and reducing code duplication.

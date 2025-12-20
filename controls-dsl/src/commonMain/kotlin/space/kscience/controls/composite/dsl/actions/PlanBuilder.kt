@@ -23,7 +23,7 @@ import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.core.spec.RestartStrategy
 import space.kscience.controls.core.spec.RetryPolicy
 import space.kscience.controls.core.spec.TimeoutPolicy
-import space.kscience.controls.composite.old.contracts.DeviceBlueprint
+import space.kscience.controls.core.contracts.DeviceBlueprint
 import space.kscience.controls.core.meta.DeviceActionSpec
 import space.kscience.controls.core.meta.DevicePropertySpec
 import space.kscience.controls.core.meta.MutableDevicePropertySpec

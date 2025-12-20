@@ -12,28 +12,6 @@ import space.kscience.dataforge.names.Name
 import kotlin.time.Instant
 
 /**
- * Notifies about a change in the device's lifecycle state machine.
- *
- * @param oldStateName The name of the state that was exited. Can be null if this is the initial transition.
- * @param newStateName The name of the state that was entered.
- * @param sourceDevice The name of the device whose state changed. Mandatory.
- */
-@Serializable
-@SerialName("lifecycle.stateChanged")
-public data class LifecycleStateChangedMessage(
-    override val time: Instant,
-    public val oldStateName: String?,
-    public val newStateName: String,
-    override val sourceDevice: Address,
-    override val targetDevice: Address? = null,
-    override val requestId: String? = null,
-    override val correlationId: CorrelationId? = null,
-) : DeviceMessage {
-    override fun changeSource(block: (Name) -> Name): LifecycleStateChangedMessage =
-        copy(sourceDevice = sourceDevice.copy(device = block(sourceDevice.device)))
-}
-
-/**
  * Notifies that the logical state of a boolean predicate property has changed.
  * This specialized message allows clients to react to changes in conditions (e.g., "ready", "in_range")
  * without needing to subscribe to and evaluate the underlying numeric properties themselves.

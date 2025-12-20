@@ -3,18 +3,7 @@ package space.kscience.controls.composite.old.serialization
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
-import space.kscience.controls.automation.ActionSpec
-import space.kscience.controls.automation.AttachActionSpec
-import space.kscience.controls.automation.AwaitPredicateActionSpec
-import space.kscience.controls.automation.DelayActionSpec
-import space.kscience.controls.automation.DetachActionSpec
-import space.kscience.controls.automation.InvokeActionSpec
-import space.kscience.controls.automation.ParallelActionSpec
-import space.kscience.controls.automation.PlanExecutorFeature
-import space.kscience.controls.automation.SequenceActionSpec
-import space.kscience.controls.automation.StartActionSpec
-import space.kscience.controls.automation.StopActionSpec
-import space.kscience.controls.automation.WritePropertyActionSpec
+import space.kscience.controls.automation.*
 import space.kscience.controls.composite.old.*
 import space.kscience.controls.composite.old.contracts.AddressSource
 import space.kscience.controls.composite.old.contracts.DiscoveredAddressSource
@@ -36,7 +25,6 @@ import space.kscience.controls.core.messages.DeviceMessage
 public val ControlsCompositeSerializersModule: SerializersModule = SerializersModule {
 
     polymorphic(DeviceMessage::class) {
-        subclass(LifecycleStateChangedMessage::class)
         subclass(PredicateChangedMessage::class)
         subclass(BinaryReadyNotification::class)
         subclass(BinaryDataRequest::class)
@@ -86,12 +74,10 @@ public val ControlsCompositeSerializersModule: SerializersModule = SerializersMo
     }
 
     polymorphic(Feature::class) {
-        subclass(LifecycleFeature::class)
         subclass(ReconfigurableFeature::class)
         subclass(StatefulFeature::class)
         subclass(DataSourceFeature::class)
         subclass(TaskExecutorFeature::class)
-        subclass(OperationalFsmFeature::class)
         subclass(BinaryDataFeature::class)
         subclass(PlanExecutorFeature::class)
         subclass(IntrospectionFeature::class)

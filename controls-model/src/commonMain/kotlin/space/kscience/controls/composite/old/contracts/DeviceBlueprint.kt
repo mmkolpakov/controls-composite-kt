@@ -9,8 +9,9 @@ import space.kscience.controls.core.InternalControlsApi
 import space.kscience.controls.composite.old.contracts.runtime.DeviceFlows
 import space.kscience.controls.composite.old.contracts.runtime.HydratableDeviceState
 import space.kscience.controls.core.features.Feature
-import space.kscience.controls.composite.old.lifecycle.LifecycleContext
+import space.kscience.controls.fsm.LifecycleContext
 import space.kscience.controls.core.contracts.Device
+import space.kscience.controls.core.contracts.DeviceBlueprint
 import space.kscience.controls.core.contracts.DeviceDriver
 import space.kscience.controls.core.identifiers.BlueprintId
 import space.kscience.controls.core.descriptors.ActionDescriptor
@@ -45,7 +46,7 @@ public data class BlueprintMeta(
 }
 
 /**
- * A simple data-holding implementation of [DeviceBlueprint].
+ * A simple data-holding implementation of [space.kscience.controls.core.contracts.DeviceBlueprint].
  * This class stores all parts of the blueprint, including the non-serializable behavior logic.
  * It also separates the public API members from the non-public ones, which are intended for internal
  * use by the device driver.

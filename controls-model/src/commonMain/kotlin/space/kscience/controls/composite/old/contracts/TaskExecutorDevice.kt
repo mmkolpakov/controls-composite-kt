@@ -9,7 +9,7 @@ import space.kscience.dataforge.names.Name
 /**
  * A capability interface for devices that can execute `dataforge-data` tasks.
  * This contract formalizes the integration with the DataForge workspace and task execution engine.
- * A [DeviceBlueprint] must declare the [space.kscience.controls.composite.old.features.TaskExecutorFeature]
+ * A [space.kscience.controls.core.contracts.DeviceBlueprint] must declare the [space.kscience.controls.composite.old.features.TaskExecutorFeature]
  * for a device to implement this interface. The runtime is responsible for checking this capability.
  */
 public interface TaskExecutorDevice : Device {

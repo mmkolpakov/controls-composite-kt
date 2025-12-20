@@ -29,6 +29,7 @@ kscience {
         api(libs.kstatemachine.core)
         api(libs.kstatemachine.coroutines)
         api(libs.kstatemachine.serialization)
+        api(projects.controlsFeatureFsm)
     }
 
     commonTest {

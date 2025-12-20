@@ -6,7 +6,7 @@ import kotlinx.serialization.modules.subclass
 import space.kscience.controls.composite.dsl.properties.doubleProperty
 import space.kscience.controls.core.identifiers.BlueprintId
 import space.kscience.controls.core.contracts.Device
-import space.kscience.controls.composite.old.contracts.DeviceBlueprint
+import space.kscience.controls.core.contracts.DeviceBlueprint
 import space.kscience.controls.composite.old.discovery.BlueprintRegistry
 import space.kscience.controls.core.meta.AdapterBinding
 import space.kscience.controls.core.meta.MemberTag

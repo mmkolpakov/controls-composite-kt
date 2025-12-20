@@ -7,7 +7,7 @@ import space.kscience.controls.composite.old.RemoteChildComponentConfig
 import space.kscience.controls.composite.old.TransformedPropertyBinding
 import space.kscience.controls.composite.old.ValidationError
 import space.kscience.controls.core.identifiers.BlueprintId
-import space.kscience.controls.composite.old.contracts.DeviceBlueprint
+import space.kscience.controls.core.contracts.DeviceBlueprint
 import space.kscience.controls.composite.old.discovery.BlueprintRegistry
 import space.kscience.controls.composite.old.discovery.blueprintRegistry
 import space.kscience.controls.core.meta.MutableDevicePropertySpec

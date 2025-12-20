@@ -7,7 +7,7 @@ import space.kscience.controls.composite.dsl.guards.guards
 import space.kscience.controls.composite.dsl.guards.post
 import space.kscience.controls.composite.dsl.properties.predicate
 import space.kscience.controls.core.contracts.Device
-import space.kscience.controls.composite.old.features.OperationalFsmFeature
+import space.kscience.controls.fsm.OperationalFsmFeature
 import space.kscience.controls.composite.old.features.OperationalGuardsFeature
 import space.kscience.controls.composite.old.features.TimedPredicateGuardSpec
 import space.kscience.dataforge.context.Global
@@ -15,7 +15,6 @@ import space.kscience.dataforge.misc.DFExperimental
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
 

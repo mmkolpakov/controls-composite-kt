@@ -1,4 +1,4 @@
-package space.kscience.controls.composite.old.lifecycle
+package space.kscience.controls.fsm
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
@@ -6,12 +6,12 @@ import ru.nsk.kstatemachine.event.Event
 import ru.nsk.kstatemachine.state.IState
 import ru.nsk.kstatemachine.statemachine.StateMachine
 import space.kscience.controls.core.contracts.Device
-import space.kscience.controls.composite.old.contracts.DeviceBlueprint
+import space.kscience.controls.core.contracts.DeviceBlueprint
 import space.kscience.controls.core.contracts.DeviceDriver
 import kotlin.time.Duration
 
 /**
- * Provides a type-safe context for defining the lifecycle FSM within a [DeviceBlueprint].
+ * Provides a type-safe context for defining the lifecycle FSM within a [space.kscience.controls.core.contracts.DeviceBlueprint].
  * It offers access to the device instance, its children, and the driver.
  *
  * This context serves as the bridge between the declarative FSM definition and the concrete device instance,
@@ -33,7 +33,7 @@ public interface LifecycleContext<D : Device> {
     public val driver: DeviceDriver<in D>
 
     /**
-     * The dedicated [CoroutineScope] for this device instance.
+     * The dedicated [kotlinx.coroutines.CoroutineScope] for this device instance.
      * All long-running operations and listeners related to the device's logic should be launched in this scope.
      */
     public val deviceScope: CoroutineScope
@@ -45,7 +45,7 @@ public interface LifecycleContext<D : Device> {
     public suspend fun <CD : Device> child(blueprint: DeviceBlueprint<CD>): CD
 
     /**
-     * Programmatically posts a new [Event] to the device's lifecycle FSM.
+     * Programmatically posts a new [ru.nsk.kstatemachine.event.Event] to the device's lifecycle FSM.
      * This allows for creating custom, logic-driven workflows within the state machine.
      *
      * @param event The lifecycle event to post to the FSM.
@@ -67,7 +67,7 @@ public interface LifecycleContext<D : Device> {
     public val operationalFsm: StateMachine?
 
     /**
-     * A [StateFlow] representing the current active state of the operational FSM.
+     * A [kotlinx.coroutines.flow.StateFlow] representing the current active state of the operational FSM.
      * Returns `null` if no operational FSM is defined for the device.
      * This allows lifecycle states to react to operational state changes.
      */
@@ -84,7 +84,7 @@ public interface LifecycleContext<D : Device> {
 
     /**
      * Instructs the runtime to start a periodic timer associated with this device.
-     * The timer will post [TimerTickEvent]s to the device's lifecycle FSM. The runtime is responsible
+     * The timer will post [space.kscience.controls.fsm.events.TimerTickEvent]s to the device's lifecycle FSM. The runtime is responsible
      * for managing the timer's lifecycle, ensuring it is active only when the device is.
      *
      * This method is idempotent; calling it multiple times with the same name will not create multiple timers.
@@ -93,7 +93,7 @@ public interface LifecycleContext<D : Device> {
      * @param tick The interval between ticks.
      * @param initialDelay An optional delay before the first tick.
      */
-    public fun startTimer(name: String, tick: Duration, initialDelay: Duration = Duration.ZERO)
+    public fun startTimer(name: String, tick: Duration, initialDelay: Duration = Duration.Companion.ZERO)
 
     /**
      * Instructs the runtime to stop and remove a previously started timer.
