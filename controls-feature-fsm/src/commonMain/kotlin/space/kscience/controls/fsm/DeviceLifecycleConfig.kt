@@ -1,9 +1,8 @@
-package space.kscience.controls.composite.old.lifecycle
+package space.kscience.controls.fsm
 
 import kotlinx.serialization.Serializable
-import space.kscience.controls.composite.old.RestartPolicy
-import space.kscience.controls.composite.old.serialization.SchemeAsMetaSerializer
-import space.kscience.controls.composite.old.serialization.duration
+import space.kscience.controls.core.serialization.SchemeAsMetaSerializer
+import space.kscience.controls.core.serialization.duration
 import space.kscience.dataforge.meta.*
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds

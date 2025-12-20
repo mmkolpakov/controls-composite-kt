@@ -4,7 +4,6 @@ import ru.nsk.kstatemachine.statemachine.BuildingStateMachine
 import space.kscience.controls.composite.dsl.children.ChildConfigBuilder
 import space.kscience.controls.composite.dsl.lifecycle.DriverLogicBuilder
 import space.kscience.controls.composite.old.contracts.runtime.HydratableDeviceState
-import space.kscience.controls.composite.old.*
 import space.kscience.controls.composite.old.contracts.*
 import space.kscience.controls.composite.old.contracts.runtime.DeviceFlows
 import space.kscience.controls.composite.old.discovery.BlueprintRegistry
@@ -22,6 +21,13 @@ import space.kscience.controls.core.meta.MemberTag
 import space.kscience.controls.core.identifiers.BlueprintId
 import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.composite.dsl.lifecycle.DriverLogicFragment
+import space.kscience.controls.connectivity.ChildComponentConfig
+import space.kscience.controls.connectivity.DiscoveredAddressSource
+import space.kscience.controls.connectivity.FailoverStrategy
+import space.kscience.controls.connectivity.LocalChildComponentConfig
+import space.kscience.controls.connectivity.PeerConnection
+import space.kscience.controls.connectivity.RemoteChildComponentConfig
+import space.kscience.controls.connectivity.StaticAddressSource
 import space.kscience.controls.core.InternalControlsApi
 import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.core.contracts.DeviceBlueprint

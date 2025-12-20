@@ -1,7 +1,7 @@
 package space.kscience.controls.composite.simulation
 
 import kotlinx.coroutines.*
-import space.kscience.controls.composite.old.serialization.instant
+import space.kscience.controls.core.serialization.instant
 import space.kscience.dataforge.context.*
 import space.kscience.dataforge.meta.*
 import kotlin.coroutines.CoroutineContext

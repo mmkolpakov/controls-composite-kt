@@ -1,4 +1,4 @@
-package space.kscience.controls.composite.old.lifecycle
+package space.kscience.controls.fsm
 
 import kotlinx.serialization.Serializable
 

@@ -8,7 +8,7 @@ import space.kscience.controls.composite.dsl.children.ChildConfigBuilder
 import space.kscience.controls.composite.dsl.properties.ActionDescriptorBuilder
 import space.kscience.controls.composite.dsl.properties.PropertyDescriptorBuilder
 import space.kscience.controls.composite.dsl.streams.StreamDescriptorBuilder
-import space.kscience.controls.composite.old.LocalChildComponentConfig
+import space.kscience.controls.connectivity.LocalChildComponentConfig
 import space.kscience.controls.composite.old.contracts.*
 import space.kscience.controls.automation.PlanExecutorFeature
 import space.kscience.controls.composite.old.features.TaskExecutorFeature

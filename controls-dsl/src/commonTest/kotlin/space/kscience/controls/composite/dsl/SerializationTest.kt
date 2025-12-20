@@ -22,10 +22,15 @@ import space.kscience.controls.automation.StartActionSpec
 import space.kscience.controls.automation.StopActionSpec
 import space.kscience.controls.automation.TransactionPlan
 import space.kscience.controls.automation.WritePropertyActionSpec
-import space.kscience.controls.composite.old.*
 import space.kscience.controls.composite.old.features.*
 import space.kscience.controls.composite.old.messages.*
 import space.kscience.controls.composite.old.serialization.controlsJson
+import space.kscience.controls.connectivity.ConstPropertyBinding
+import space.kscience.controls.connectivity.ParentPropertyBinding
+import space.kscience.controls.connectivity.PropertyBinding
+import space.kscience.controls.connectivity.RemoteMirrorFeature
+import space.kscience.controls.connectivity.ToStringTransformerDescriptor
+import space.kscience.controls.connectivity.TransformedPropertyBinding
 import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.core.faults.SerializableDeviceFailure
 import space.kscience.controls.core.faults.ValidationFault
@@ -133,7 +138,7 @@ class SerializationTest {
     }
 
     /**
-     * Verifies that all subtypes of [PropertyBinding] are correctly serialized.
+     * Verifies that all subtypes of [space.kscience.controls.connectivity.PropertyBinding] are correctly serialized.
      */
     @Test
     fun testPropertyBindingSerialization() {

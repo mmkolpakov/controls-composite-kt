@@ -6,7 +6,7 @@ import space.kscience.controls.composite.dsl.children.mirrors
 import space.kscience.controls.composite.dsl.properties.doubleProperty
 import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.core.contracts.Device
-import space.kscience.controls.composite.old.features.RemoteMirrorFeature
+import space.kscience.controls.connectivity.RemoteMirrorFeature
 import space.kscience.controls.core.descriptors.PropertyKind
 import space.kscience.dataforge.context.Global
 import space.kscience.dataforge.meta.MetaConverter

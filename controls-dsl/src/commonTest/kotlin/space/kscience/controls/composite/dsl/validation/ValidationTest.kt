@@ -16,9 +16,9 @@ import space.kscience.controls.core.InternalControlsApi
 import space.kscience.controls.composite.old.ValidationError
 import space.kscience.controls.composite.old.contracts.*
 import space.kscience.controls.composite.old.discovery.BlueprintRegistry
-import space.kscience.controls.composite.old.features.MirrorEntry
+import space.kscience.controls.connectivity.MirrorEntry
 import space.kscience.controls.composite.old.features.OperationalGuardsFeature
-import space.kscience.controls.composite.old.features.RemoteMirrorFeature
+import space.kscience.controls.connectivity.RemoteMirrorFeature
 import space.kscience.controls.composite.old.features.TimedPredicateGuardSpec
 import space.kscience.controls.core.meta.DevicePropertySpec
 import space.kscience.controls.composite.old.validation.*

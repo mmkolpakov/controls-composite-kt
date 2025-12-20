@@ -1,7 +1,7 @@
 package space.kscience.controls.composite.dsl.children
 
-import space.kscience.controls.composite.old.lifecycle.DeviceLifecycleConfig
-import space.kscience.controls.composite.old.lifecycle.StartMode
+import space.kscience.controls.fsm.DeviceLifecycleConfig
+import space.kscience.controls.fsm.StartMode
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.MutableMeta
 import space.kscience.dataforge.names.Name

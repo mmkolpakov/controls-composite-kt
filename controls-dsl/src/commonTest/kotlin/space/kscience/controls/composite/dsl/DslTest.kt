@@ -22,6 +22,9 @@ import space.kscience.controls.core.meta.DevicePropertySpec
 import space.kscience.controls.composite.old.state.MutableDeviceState
 import space.kscience.controls.composite.old.state.StatefulDevice
 import space.kscience.controls.composite.old.state.StatefulDeviceLogic
+import space.kscience.controls.connectivity.FailoverStrategy
+import space.kscience.controls.connectivity.PeerConnection
+import space.kscience.controls.connectivity.StaticAddressSource
 import space.kscience.controls.core.InternalControlsApi
 import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.core.context.ExecutionContext
@@ -159,7 +162,8 @@ class DslTest {
         val spec = object : DeviceSpecification<TestDevice>() {
             override fun CompositeSpecBuilder<TestDevice>.configure() {
                 driver { ctx, meta -> TestDeviceImpl(ctx, "remoteInvalid".asName(), meta, coroutineContext) }
-                val fakePeer = SimplePeerBlueprint<PeerConnection>("fake.peer", StaticAddressSource(emptyList()), FailoverStrategy.ORDERED) { _, _ -> error("Should not be called") }
+                val fakePeer = SimplePeerBlueprint<PeerConnection>("fake.peer",
+                    StaticAddressSource(emptyList()), FailoverStrategy.ORDERED) { _, _ -> error("Should not be called") }
                 remoteChild(
                     name = "remoteChild".asName(),
                     blueprint = compositeDeviceUnchecked(ChildDeviceSpec(), Global),

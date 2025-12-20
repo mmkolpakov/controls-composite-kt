@@ -1,4 +1,4 @@
-package space.kscience.controls.composite.old.serialization
+package space.kscience.controls.core.serialization
 
 import space.kscience.dataforge.meta.*
 import kotlin.properties.ReadWriteProperty

@@ -2,16 +2,12 @@ package space.kscience.controls.composite.dsl
 
 import space.kscience.controls.composite.dsl.properties.doubleProperty
 import space.kscience.controls.composite.dsl.properties.mutableDoubleProperty
-import space.kscience.controls.composite.old.*
+import space.kscience.controls.connectivity.LinearTransformDescriptor
 import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.core.addressing.Address
 import space.kscience.dataforge.context.Global
-import space.kscience.dataforge.meta.*
 import space.kscience.dataforge.names.asName
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertIs
-import kotlin.test.assertNotNull
 
 // --- Mocks and Test Fixtures ---
 
@@ -34,7 +30,7 @@ class CompositionDslTest {
     private val childBlueprint = compositeDeviceUnchecked(childSpec, Global)
 
     /**
-     * Verifies that `child` and `children` blocks correctly register [LocalChildComponentConfig]
+     * Verifies that `child` and `children` blocks correctly register [space.kscience.controls.connectivity.LocalChildComponentConfig]
      * with the specified blueprint ID, metadata, and lifecycle overrides.
      */
     @Test
@@ -108,7 +104,7 @@ class CompositionDslTest {
     }
 
     /**
-     * Verifies that the `remoteChild` DSL correctly creates a [RemoteChildComponentConfig]
+     * Verifies that the `remoteChild` DSL correctly creates a [space.kscience.controls.connectivity.RemoteChildComponentConfig]
      * and populates it with the correct remote device name and peer connection name.
      */
     @Test

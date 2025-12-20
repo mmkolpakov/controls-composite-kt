@@ -1,10 +1,10 @@
 package space.kscience.controls.composite.old.validation
 
-import space.kscience.controls.composite.old.ConstPropertyBinding
-import space.kscience.controls.composite.old.LocalChildComponentConfig
-import space.kscience.controls.composite.old.ParentPropertyBinding
-import space.kscience.controls.composite.old.RemoteChildComponentConfig
-import space.kscience.controls.composite.old.TransformedPropertyBinding
+import space.kscience.controls.connectivity.ConstPropertyBinding
+import space.kscience.controls.connectivity.LocalChildComponentConfig
+import space.kscience.controls.connectivity.ParentPropertyBinding
+import space.kscience.controls.connectivity.RemoteChildComponentConfig
+import space.kscience.controls.connectivity.TransformedPropertyBinding
 import space.kscience.controls.composite.old.ValidationError
 import space.kscience.controls.core.identifiers.BlueprintId
 import space.kscience.controls.core.contracts.DeviceBlueprint

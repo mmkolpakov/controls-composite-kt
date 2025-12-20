@@ -1,9 +1,14 @@
 package space.kscience.controls.composite.dsl.children
 
 import space.kscience.controls.composite.dsl.CompositeSpecDsl
-import space.kscience.controls.composite.old.*
 import space.kscience.controls.core.contracts.Device
-import space.kscience.controls.composite.old.lifecycle.DeviceLifecycleConfig
+import space.kscience.controls.fsm.DeviceLifecycleConfig
+import space.kscience.controls.connectivity.ChildPropertyBindings
+import space.kscience.controls.connectivity.ConstPropertyBinding
+import space.kscience.controls.connectivity.ParentPropertyBinding
+import space.kscience.controls.connectivity.PropertyBinding
+import space.kscience.controls.connectivity.PropertyTransformerDescriptor
+import space.kscience.controls.connectivity.TransformedPropertyBinding
 import space.kscience.controls.core.meta.DevicePropertySpec
 import space.kscience.controls.core.meta.MutableDevicePropertySpec
 import space.kscience.dataforge.meta.Meta
@@ -36,14 +41,14 @@ public class BindingConfigurator<P : Device, C : Device, S, T>(
      * descriptor to a transformation logic instance and use it to convert the source property's value
      * before updating the target property.
      *
-     * This replaces the default direct binding with a [TransformedPropertyBinding].
+     * This replaces the default direct binding with a [space.kscience.controls.connectivity.TransformedPropertyBinding].
      *
      * Example:
      * ```
      * child.scaledValue bindsTo parent.rawValue using LinearTransformDescriptor(scale = 1.5)
      * ```
      *
-     * @param transformer The serializable [PropertyTransformerDescriptor] instance describing the conversion.
+     * @param transformer The serializable [space.kscience.controls.connectivity.PropertyTransformerDescriptor] instance describing the conversion.
      */
     public infix fun using(transformer: PropertyTransformerDescriptor) {
         val bindingToRemove = ParentPropertyBinding(targetSpec.name, sourceSpec.name)
@@ -54,7 +59,7 @@ public class BindingConfigurator<P : Device, C : Device, S, T>(
 
 
 /**
- * A DSL builder for creating a list of [PropertyBinding] for a child device.
+ * A DSL builder for creating a list of [space.kscience.controls.connectivity.PropertyBinding] for a child device.
  * Annotated with `@CompositeSpecDsl` to ensure proper receiver scoping.
  * @param P The type of the parent device.
  * @param C The type of the child device.

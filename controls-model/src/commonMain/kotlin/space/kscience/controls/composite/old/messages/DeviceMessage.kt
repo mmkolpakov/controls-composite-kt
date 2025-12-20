@@ -38,7 +38,7 @@ public data class PredicateChangedMessage(
 
 /**
  * Notifies listeners that a new binary content is available for retrieval from this device.
- * The actual data transfer must be done via a separate mechanism like [space.kscience.controls.composite.old.contracts.PeerConnection].
+ * The actual data transfer must be done via a separate mechanism like [space.kscience.controls.connectivity.PeerConnection].
  *
  * @param contentId A unique identifier for this specific piece of binary content.
  * @param contentMeta Metadata describing the binary content (e.g., size, format).

@@ -1,4 +1,4 @@
-package space.kscience.controls.composite.old.contracts
+package space.kscience.controls.connectivity
 
 import kotlinx.coroutines.flow.StateFlow
 import space.kscience.controls.core.addressing.Address
@@ -34,7 +34,7 @@ public interface PeerConnection {
         /**
          * The unique, fully-qualified name for the [PeerConnection] capability.
          */
-        public const val CAPABILITY: String = "space.kscience.controls.composite.old.contracts.PeerConnection"
+        public const val CAPABILITY: String = "space.kscience.controls.connectivity.PeerConnection"
     }
 
     /**

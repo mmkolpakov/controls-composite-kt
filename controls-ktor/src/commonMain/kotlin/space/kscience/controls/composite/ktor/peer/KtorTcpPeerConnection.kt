@@ -11,8 +11,8 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.io.readByteArray
 import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.core.context.ExecutionContext
-import space.kscience.controls.composite.old.contracts.PeerConnection
-import space.kscience.controls.composite.old.contracts.PeerConnectionException
+import space.kscience.controls.connectivity.PeerConnection
+import space.kscience.controls.connectivity.PeerConnectionException
 import space.kscience.controls.core.spec.QoS
 import space.kscience.controls.core.lifecycle.DeviceLifecycleState
 import space.kscience.controls.core.contracts.ManagedComponent

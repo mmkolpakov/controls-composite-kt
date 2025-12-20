@@ -1,28 +1,24 @@
-package space.kscience.controls.composite.old
+package space.kscience.controls.fsm
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import space.kscience.controls.composite.old.serialization.SchemeAsMetaSerializer
-import space.kscience.controls.composite.old.serialization.serializable
+import space.kscience.controls.core.serialization.SchemeAsMetaSerializer
 import space.kscience.controls.core.spec.RestartStrategy
 import space.kscience.dataforge.meta.*
 import kotlin.time.Duration.Companion.seconds
 
 /**
  * Defines the policy for restarting a failed device.
- * This class is a [Scheme], allowing for type-safe configuration via DSL and
- * automatic conversion to and from [Meta].
- * It is now serializable and provides structural equality checks.
  *
  * @property maxAttempts The maximum number of restart attempts. `0` means no retries. A value less than 0 means infinite retries.
- * @property strategy The [space.kscience.controls.core.spec.RestartStrategy] to use for calculating delays between retries.
+ * @property strategy The [RestartStrategy] to use for calculating delays between retries.
  * @property resetOnSuccess If true, the attempt counter is reset after a successful start.
  */
 @Serializable(with = RestartPolicy.Serializer::class)
 public class RestartPolicy : Scheme() {
     public var maxAttempts: Int by int(5)
     public var strategy: RestartStrategy by convertable(
-        MetaConverter.serializable(RestartStrategy.serializer()),
+        MetaConverter.serializable(TODO()),
         default = RestartStrategy.Linear(2.seconds)
     )
     public var resetOnSuccess: Boolean by boolean(true)

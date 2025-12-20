@@ -1,4 +1,4 @@
-package space.kscience.controls.composite.old.features
+package space.kscience.controls.connectivity
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -1,10 +1,10 @@
-package space.kscience.controls.composite.old
+package space.kscience.controls.connectivity
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import space.kscience.controls.core.identifiers.BlueprintId
 import space.kscience.controls.core.contracts.DeviceBlueprint
-import space.kscience.controls.composite.old.lifecycle.DeviceLifecycleConfig
+import space.kscience.controls.fsm.DeviceLifecycleConfig
 import space.kscience.controls.core.serialization.serializableToMeta
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.MetaRepr
