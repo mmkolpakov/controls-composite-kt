@@ -15,6 +15,9 @@ import space.kscience.controls.composite.old.contracts.runtime.HydratableDeviceS
 import space.kscience.controls.core.meta.DevicePropertySpec
 import space.kscience.controls.core.descriptors.PropertyKind
 import space.kscience.controls.composite.old.state.*
+import space.kscience.controls.core.data.Quality
+import space.kscience.controls.core.data.StateValue
+import space.kscience.controls.core.data.okState
 import space.kscience.dataforge.context.error
 import space.kscience.dataforge.context.logger
 import space.kscience.dataforge.meta.MetaConverter

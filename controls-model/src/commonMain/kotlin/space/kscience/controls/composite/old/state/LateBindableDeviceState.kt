@@ -3,6 +3,9 @@ package space.kscience.controls.composite.old.state
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import space.kscience.controls.core.data.Quality
+import space.kscience.controls.core.data.StateValue
+import space.kscience.controls.core.data.okState
 import kotlin.concurrent.Volatile
 
 /**

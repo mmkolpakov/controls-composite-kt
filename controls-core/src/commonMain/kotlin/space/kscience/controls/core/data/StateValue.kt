@@ -1,4 +1,4 @@
-package space.kscience.controls.composite.old.state
+package space.kscience.controls.core.data
 
 import kotlin.time.Clock
 import kotlin.time.Instant

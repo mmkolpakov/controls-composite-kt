@@ -23,6 +23,7 @@ import space.kscience.controls.core.controlsCoreSerializersModule
 import space.kscience.controls.core.features.Feature
 import space.kscience.controls.core.messages.DeviceMessage
 import space.kscience.controls.fsm.fsmSerializersModule
+import space.kscience.controls.telemetry.telemetrySerializersModule
 import space.kscience.dataforge.meta.Meta
 
 /**
@@ -38,7 +39,7 @@ import space.kscience.dataforge.meta.Meta
 @OptIn(ExperimentalSerializationApi::class)
 public val controlsJson: Json by lazy {
     Json {
-        serializersModule = ControlsCompositeSerializersModule + fsmSerializersModule + controlsCoreSerializersModule + connectivitySerializersModule
+        serializersModule = ControlsCompositeSerializersModule
         ignoreUnknownKeys = false
         prettyPrint = true
         classDiscriminatorMode = ClassDiscriminatorMode.POLYMORPHIC
@@ -59,6 +60,7 @@ public val ControlsCompositeSerializersModule: SerializersModule = SerializersMo
     include(automationSerializersModule)
     include(fsmSerializersModule)
     include(alarmsSerializersModule)
+    include(telemetrySerializersModule)
 
     polymorphic(DeviceMessage::class) {
         subclass(PredicateChangedMessage::class)

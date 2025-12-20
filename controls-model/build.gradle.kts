@@ -27,6 +27,7 @@ kscience {
         api(projects.controlsFeatureAlarms)
         api(projects.controlsFeatureFsm)
         api(projects.controlsFeatureConnectivity)
+        api(projects.controlsFeatureTelemetry)
         api(libs.dataforge.context)
         api(libs.dataforge.io)
         api(libs.dataforge.data)

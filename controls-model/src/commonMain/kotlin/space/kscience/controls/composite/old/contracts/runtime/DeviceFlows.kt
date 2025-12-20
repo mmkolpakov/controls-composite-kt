@@ -2,7 +2,7 @@ package space.kscience.controls.composite.old.contracts.runtime
 
 import kotlinx.coroutines.flow.StateFlow
 import space.kscience.controls.core.meta.DevicePropertySpec
-import space.kscience.controls.composite.old.state.StateValue
+import space.kscience.controls.core.data.StateValue
 
 /**
  * A context provided to the `logic` block of a device blueprint.
