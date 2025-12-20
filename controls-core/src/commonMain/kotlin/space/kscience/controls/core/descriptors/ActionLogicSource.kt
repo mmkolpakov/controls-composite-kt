@@ -1,5 +1,6 @@
 package space.kscience.controls.core.descriptors
 
+import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import space.kscience.dataforge.names.Name
@@ -9,8 +10,8 @@ import space.kscience.dataforge.names.Name
  * This provides a strict, type-safe, and declarative way to specify how an action
  * should be executed.
  */
-@Serializable
-public sealed interface ActionLogicSource
+@Polymorphic
+public interface ActionLogicSource
 
 /**
  * Specifies that the action's logic is implemented by an external, reusable, and versioned component.

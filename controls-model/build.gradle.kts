@@ -22,15 +22,16 @@ kscience {
     useSerialization()
 
     commonMain {
-        api(project(":controls-core"))
-        api(project(":controls-feature-automation"))
+        api(projects.controlsCore)
+        api(projects.controlsFeatureAutomation)
+        api(projects.controlsFeatureAlarms)
+        api(projects.controlsFeatureFsm)
         api(libs.dataforge.context)
         api(libs.dataforge.io)
         api(libs.dataforge.data)
         implementation(libs.kotlinx.atomicfu)
         api(libs.kstatemachine.core)
         api(libs.kotlinx.io.core)
-        api(projects.controlsFeatureFsm)
     }
 }
 

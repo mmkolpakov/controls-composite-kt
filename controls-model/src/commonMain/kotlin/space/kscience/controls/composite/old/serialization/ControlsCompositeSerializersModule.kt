@@ -3,7 +3,8 @@ package space.kscience.controls.composite.old.serialization
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
-import space.kscience.controls.automation.*
+import space.kscience.controls.alarms.alarmsSerializersModule
+import space.kscience.controls.automation.automationSerializersModule
 import space.kscience.controls.composite.old.*
 import space.kscience.controls.composite.old.contracts.AddressSource
 import space.kscience.controls.composite.old.contracts.DiscoveredAddressSource
@@ -13,6 +14,7 @@ import space.kscience.controls.composite.old.messages.*
 import space.kscience.controls.core.controlsCoreSerializersModule
 import space.kscience.controls.core.features.Feature
 import space.kscience.controls.core.messages.DeviceMessage
+import space.kscience.controls.fsm.fsmSerializersModule
 
 /**
  * A shared [SerializersModule] for the controls-composite models.
@@ -24,6 +26,11 @@ import space.kscience.controls.core.messages.DeviceMessage
  */
 public val ControlsCompositeSerializersModule: SerializersModule = SerializersModule {
 
+    include(controlsCoreSerializersModule)
+    include(automationSerializersModule)
+    include(fsmSerializersModule)
+    include(alarmsSerializersModule)
+
     polymorphic(DeviceMessage::class) {
         subclass(PredicateChangedMessage::class)
         subclass(BinaryReadyNotification::class)
@@ -31,8 +38,6 @@ public val ControlsCompositeSerializersModule: SerializersModule = SerializersMo
         subclass(DeviceAttachedMessage::class)
         subclass(DeviceDetachedMessage::class)
     }
-
-    include(controlsCoreSerializersModule)
 
     polymorphic(PropertyBinding::class) {
         subclass(ConstPropertyBinding::class)
@@ -43,19 +48,6 @@ public val ControlsCompositeSerializersModule: SerializersModule = SerializersMo
     polymorphic(PropertyTransformerDescriptor::class) {
         subclass(ToStringTransformerDescriptor::class)
         subclass(LinearTransformDescriptor::class)
-    }
-
-    polymorphic(ActionSpec::class) {
-        subclass(AttachActionSpec::class)
-        subclass(DetachActionSpec::class)
-        subclass(StartActionSpec::class)
-        subclass(StopActionSpec::class)
-        subclass(WritePropertyActionSpec::class)
-        subclass(SequenceActionSpec::class)
-        subclass(ParallelActionSpec::class)
-        subclass(DelayActionSpec::class)
-        subclass(AwaitPredicateActionSpec::class)
-        subclass(InvokeActionSpec::class)
     }
 
     polymorphic(ChildComponentConfig::class) {
@@ -79,7 +71,6 @@ public val ControlsCompositeSerializersModule: SerializersModule = SerializersMo
         subclass(DataSourceFeature::class)
         subclass(TaskExecutorFeature::class)
         subclass(BinaryDataFeature::class)
-        subclass(PlanExecutorFeature::class)
         subclass(IntrospectionFeature::class)
         subclass(RemoteMirrorFeature::class)
         subclass(OperationalGuardsFeature::class)

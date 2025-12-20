@@ -10,7 +10,7 @@ import space.kscience.dataforge.names.Name
  * A foundational, sealed interface for all declarative descriptors of device members
  * (properties, actions, and streams).
  */
-public sealed interface MemberDescriptor : MetaRepr {
+public interface MemberDescriptor : MetaRepr {
     /**
      * The unique, potentially hierarchical name of the device member.
      */
@@ -37,8 +37,4 @@ public sealed interface MemberDescriptor : MetaRepr {
      * A map of type-safe, protocol-specific configurations.
      */
     public val bindings: Map<String, AdapterBinding>
-
-    // Note: Policies are intentionally left out of the core interface for now
-    // or should be passed as Meta/specific objects if moved to core.
-    // In V2 plan we treat policies as part of the descriptor data class.
 }
