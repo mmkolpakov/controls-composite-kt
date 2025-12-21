@@ -1,8 +1,6 @@
-package space.kscience.controls.composite.old.contracts
+package space.kscience.controls.connectivity
 
-import space.kscience.controls.connectivity.AddressSource
-import space.kscience.controls.connectivity.FailoverStrategy
-import space.kscience.controls.connectivity.PeerConnection
+import space.kscience.controls.core.addressing.AddressSource
 import space.kscience.controls.core.spec.ResiliencePolicy
 
 /**

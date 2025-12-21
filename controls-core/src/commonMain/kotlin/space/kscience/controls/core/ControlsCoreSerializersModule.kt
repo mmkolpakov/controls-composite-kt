@@ -3,6 +3,9 @@ package space.kscience.controls.core
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
+import space.kscience.controls.core.composition.ChildComponentConfig
+import space.kscience.controls.core.composition.LocalChildComponentConfig
+import space.kscience.controls.core.composition.RemoteChildComponentConfig
 import space.kscience.controls.core.descriptors.*
 import space.kscience.controls.core.events.*
 import space.kscience.controls.core.faults.*
@@ -26,6 +29,11 @@ public val controlsCoreSerializersModule: SerializersModule = SerializersModule 
         subclass(CacheHit::class)
         subclass(CacheMiss::class)
         subclass(FaultReported::class)
+    }
+
+    polymorphic(ChildComponentConfig::class) {
+        subclass(LocalChildComponentConfig::class)
+        subclass(RemoteChildComponentConfig::class)
     }
 
     polymorphic(DeviceFault::class) {

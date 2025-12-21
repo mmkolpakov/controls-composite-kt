@@ -4,10 +4,11 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import ru.nsk.kstatemachine.statemachine.BuildingStateMachine
-import space.kscience.controls.connectivity.ChildComponentConfig
+import space.kscience.controls.core.composition.ChildComponentConfig
 import space.kscience.controls.core.InternalControlsApi
 import space.kscience.controls.composite.old.contracts.runtime.DeviceFlows
 import space.kscience.controls.composite.old.contracts.runtime.HydratableDeviceState
+import space.kscience.controls.connectivity.PeerBlueprint
 import space.kscience.controls.connectivity.PeerConnection
 import space.kscience.controls.core.features.Feature
 import space.kscience.controls.fsm.LifecycleContext

@@ -21,13 +21,16 @@ import space.kscience.controls.core.meta.MemberTag
 import space.kscience.controls.core.identifiers.BlueprintId
 import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.composite.dsl.lifecycle.DriverLogicFragment
-import space.kscience.controls.connectivity.ChildComponentConfig
-import space.kscience.controls.connectivity.DiscoveredAddressSource
+import space.kscience.controls.core.composition.ChildComponentConfig
+import space.kscience.controls.core.addressing.DiscoveredAddressSource
 import space.kscience.controls.connectivity.FailoverStrategy
-import space.kscience.controls.connectivity.LocalChildComponentConfig
+import space.kscience.controls.connectivity.PeerBlueprint
+import space.kscience.controls.core.composition.LocalChildComponentConfig
 import space.kscience.controls.connectivity.PeerConnection
-import space.kscience.controls.connectivity.RemoteChildComponentConfig
-import space.kscience.controls.connectivity.StaticAddressSource
+import space.kscience.controls.connectivity.PeerDriver
+import space.kscience.controls.connectivity.SimplePeerBlueprint
+import space.kscience.controls.core.composition.RemoteChildComponentConfig
+import space.kscience.controls.core.addressing.StaticAddressSource
 import space.kscience.controls.core.InternalControlsApi
 import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.core.contracts.DeviceBlueprint
@@ -465,7 +468,6 @@ public class CompositeSpecBuilder<D : Device>(
             peerName = peerName,
             blueprintId = blueprint.id,
             blueprintVersion = blueprint.version,
-            config = builder.lifecycle,
             meta = builder.meta
         )
         registerChild(name, config)
@@ -488,9 +490,7 @@ public class CompositeSpecBuilder<D : Device>(
         val config = LocalChildComponentConfig(
             blueprintId = blueprint.id,
             blueprintVersion = blueprint.version,
-            config = builder.lifecycle,
             meta = builder.meta,
-            bindings = builder.buildBindings()
         )
         registerChild(name, config)
     }
@@ -513,9 +513,7 @@ public class CompositeSpecBuilder<D : Device>(
             val config = LocalChildComponentConfig(
                 blueprintId = blueprint.id,
                 blueprintVersion = blueprint.version,
-                config = builder.lifecycle,
                 meta = builder.meta,
-                bindings = builder.buildBindings()
             )
             registerChild(childName, config)
         }

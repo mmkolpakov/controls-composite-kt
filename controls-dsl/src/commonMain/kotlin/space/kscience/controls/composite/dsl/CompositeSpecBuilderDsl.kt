@@ -8,7 +8,7 @@ import space.kscience.controls.composite.dsl.children.ChildConfigBuilder
 import space.kscience.controls.composite.dsl.properties.ActionDescriptorBuilder
 import space.kscience.controls.composite.dsl.properties.PropertyDescriptorBuilder
 import space.kscience.controls.composite.dsl.streams.StreamDescriptorBuilder
-import space.kscience.controls.connectivity.LocalChildComponentConfig
+import space.kscience.controls.core.composition.LocalChildComponentConfig
 import space.kscience.controls.composite.old.contracts.*
 import space.kscience.controls.automation.PlanExecutorFeature
 import space.kscience.controls.composite.old.features.TaskExecutorFeature
@@ -63,11 +63,9 @@ public fun <D : Device, C : Device> CompositeSpecBuilder<D>.child(
     // The logic is identical to the one in DeviceSpecification, but now available directly on the builder.
     val builder = ChildConfigBuilder<D, C>().apply(configBuilder)
     val config = LocalChildComponentConfig(
-        blueprintId = blueprint.id, // Correctly uses id
-        blueprintVersion = blueprint.version, // Correctly uses version
-        config = builder.lifecycle,
+        blueprintId = blueprint.id,
+        blueprintVersion = blueprint.version,
         meta = builder.meta,
-        bindings = builder.buildBindings()
     )
     registerChild(name, config)
 }

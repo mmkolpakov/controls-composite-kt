@@ -1,8 +1,7 @@
-package space.kscience.controls.connectivity
+package space.kscience.controls.core.addressing
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import space.kscience.controls.core.addressing.Address
 
 /**
  * Defines the source of addresses for a peer connection, allowing for both static and dynamic configurations.

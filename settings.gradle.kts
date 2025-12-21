@@ -59,9 +59,19 @@ dependencyResolutionManagement {
 }
 
 include(
-    ":controls-model",
-    ":controls-dsl",
-    ":controls-runtime",
+    // Core & Base
+    ":controls-core",
+    ":controls-service-api",
+    ":controls-validation",
+
+    // Features
+    ":controls-feature-fsm",
+    ":controls-feature-automation",
+    ":controls-feature-alarms",
+    ":controls-feature-telemetry",
+    ":controls-feature-connectivity",
+
+    // Infrastructure
     ":controls-metrics",
     ":controls-persistence",
     ":controls-persistence-log",
@@ -69,17 +79,20 @@ include(
     ":controls-protocol-api",
     ":controls-protocol-modbus",
     ":controls-exporter-prometheus",
+
+    // Transport
     ":magix-api",
     ":magix-rsocket-core",
     ":magix-transport-rsocket-ws",
     ":magix-transport-rsocket-tcp",
     ":controls-magix",
     ":controls-ktor",
+
+    // Tools
+    ":controls-dsl",
     ":controls-simulation",
-    ":controls-core",
-    ":controls-feature-fsm",
-    ":controls-feature-automation",
-    ":controls-feature-alarms",
-    ":controls-feature-telemetry",
-    ":controls-feature-connectivity"
+    ":controls-runtime",
+
+    // DEPRECATED
+    ":controls-model"
 )

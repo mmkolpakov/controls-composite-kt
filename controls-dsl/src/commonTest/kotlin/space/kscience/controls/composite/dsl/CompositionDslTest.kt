@@ -30,7 +30,7 @@ class CompositionDslTest {
     private val childBlueprint = compositeDeviceUnchecked(childSpec, Global)
 
     /**
-     * Verifies that `child` and `children` blocks correctly register [space.kscience.controls.connectivity.LocalChildComponentConfig]
+     * Verifies that `child` and `children` blocks correctly register [space.kscience.controls.core.composition.LocalChildComponentConfig]
      * with the specified blueprint ID, metadata, and lifecycle overrides.
      */
     @Test
@@ -104,7 +104,7 @@ class CompositionDslTest {
     }
 
     /**
-     * Verifies that the `remoteChild` DSL correctly creates a [space.kscience.controls.connectivity.RemoteChildComponentConfig]
+     * Verifies that the `remoteChild` DSL correctly creates a [space.kscience.controls.core.composition.RemoteChildComponentConfig]
      * and populates it with the correct remote device name and peer connection name.
      */
     @Test

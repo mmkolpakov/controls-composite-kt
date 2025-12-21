@@ -1,11 +1,10 @@
-package space.kscience.controls.composite.old.contracts
+package space.kscience.controls.connectivity
 
-import space.kscience.controls.connectivity.PeerConnection
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.meta.Meta
 
 /**
- * A factory responsible for creating an instance of a [space.kscience.controls.connectivity.PeerConnection].
+ * A factory responsible for creating an instance of a [PeerConnection].
  *
  * @param P The type of the peer connection this driver creates.
  */
