@@ -8,9 +8,9 @@ import space.kscience.controls.composite.dsl.DeviceSpecification
 import space.kscience.controls.composite.dsl.properties.ActionDescriptorBuilder
 import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.automation.PlanExecutorDevice
-import space.kscience.controls.composite.old.contracts.TaskExecutorDevice
+import space.kscience.controls.automation.TaskExecutorDevice
 import space.kscience.controls.automation.PlanExecutorFeature
-import space.kscience.controls.composite.old.features.TaskExecutorFeature
+import space.kscience.controls.automation.TaskExecutorFeature
 import space.kscience.controls.composite.old.meta.*
 import space.kscience.controls.automation.TransactionPlan
 import space.kscience.controls.composite.old.serialization.serializable
@@ -274,7 +274,7 @@ public inline fun <reified I, reified O, D> DeviceSpecification<D>.taskAction(
  * compile-time safety. Using this function automatically adds [PlanExecutorFeature] to the blueprint.
  *
  * The plan is serialized into the action's descriptor metadata. The runtime is responsible for
- * finding a [space.kscience.controls.composite.old.services.TransactionCoordinator] and executing the plan,
+ * finding a [space.kscience.controls.automation.TransactionCoordinator] and executing the plan,
  * which should ultimately invoke the [PlanExecutorDevice.executePlan] method on the device.
  * The local `execute` block throws an error to prevent direct execution by a non-plan-aware runtime.
  *

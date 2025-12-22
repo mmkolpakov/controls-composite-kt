@@ -4,75 +4,12 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import space.kscience.controls.fsm.RestartPolicy
 import space.kscience.controls.connectivity.PeerConnection
-import space.kscience.controls.composite.old.contracts.ReconfigurableDevice
-import space.kscience.controls.composite.old.contracts.TaskExecutorDevice
-import space.kscience.controls.composite.old.state.StatefulDevice
+import space.kscience.controls.core.contracts.ReconfigurableDevice
+import space.kscience.controls.core.state.StatefulDevice
 import space.kscience.controls.core.features.Feature
 import space.kscience.controls.core.serialization.serializableToMeta
 import space.kscience.dataforge.meta.Meta
 import space.kscience.dataforge.meta.descriptors.MetaDescriptor
-
-/**
- * A feature describing the device's ability to be reconfigured at runtime.
- */
-@Serializable
-@SerialName("feature.reconfigurable")
-public data class ReconfigurableFeature(
-    val reconfigDescriptor: MetaDescriptor = MetaDescriptor.EMPTY,
-) : Feature {
-    override val capability: String get() = ReconfigurableDevice.CAPABILITY
-
-    override fun toMeta(): Meta = serializableToMeta(serializer(), this)
-}
-
-/**
- * A feature describing the state persistence capabilities of a device.
- */
-@Serializable
-@SerialName("feature.stateful")
-public data class StatefulFeature(
-    val supportsHotRestore: Boolean = false,
-    val defaultRestartPolicy: RestartPolicy = RestartPolicy(),
-) : Feature {
-    override val capability: String get() = StatefulDevice.CAPABILITY
-
-    override fun toMeta(): Meta = serializableToMeta(serializer(), this)
-}
-
-/**
- * A feature indicating that the device can expose its properties as a `dataforge-data` `DataSource`.
- * This enables seamless integration with the DataForge data processing and analysis ecosystem.
- * The runtime is responsible for providing the actual `DataSource` implementation based on this feature.
- *
- * @property dataTypeString The common upper bound type for all data items produced by this source, represented as a string.
- *                          The actual [KType] is not serializable and must be handled by the runtime.
- */
-@Serializable
-@SerialName("feature.dataSource")
-public data class DataSourceFeature(
-    val dataTypeString: String?,
-) : Feature {
-    override val capability: String get() = "space.kscience.dataforge.data.DataSource"
-
-    override fun toMeta(): Meta = serializableToMeta(serializer(), this)
-}
-
-/**
- * A new feature indicating that the device can execute `dataforge-data` Tasks.
- * This enables complex, multi-step data processing and analysis workflows to be
- * triggered as device actions.
- *
- * @property supportedTaskBlueprints A list of `dataforge-data` Task Blueprint IDs that this device can execute.
- */
-@Serializable
-@SerialName("feature.taskExecutor")
-public data class TaskExecutorFeature(
-    val supportedTaskBlueprints: List<String>
-) : Feature {
-    override val capability: String get() = TaskExecutorDevice.CAPABILITY
-
-    override fun toMeta(): Meta = serializableToMeta(serializer(), this)
-}
 
 /**
  * A feature indicating that the device supports direct transfer of large binary data,

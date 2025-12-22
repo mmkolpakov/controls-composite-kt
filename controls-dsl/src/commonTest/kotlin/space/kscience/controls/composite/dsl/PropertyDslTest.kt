@@ -6,7 +6,7 @@ import space.kscience.controls.core.InternalControlsApi
 import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.composite.old.contracts.runtime.CompositeDeviceContext
 import space.kscience.controls.core.descriptors.PropertyKind
-import space.kscience.controls.composite.old.state.StatefulDevice
+import space.kscience.controls.core.state.StatefulDevice
 import space.kscience.dataforge.context.Global
 import space.kscience.dataforge.meta.MetaConverter
 import space.kscience.dataforge.misc.DFExperimental

@@ -1,4 +1,4 @@
-package space.kscience.controls.composite.old.discovery
+package space.kscience.controls.services
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable

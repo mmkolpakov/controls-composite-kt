@@ -20,6 +20,7 @@ import space.kscience.controls.automation.RunWorkspaceTaskSpec
 import space.kscience.controls.automation.SequenceActionSpec
 import space.kscience.controls.automation.StartActionSpec
 import space.kscience.controls.automation.StopActionSpec
+import space.kscience.controls.automation.TaskExecutorFeature
 import space.kscience.controls.automation.TransactionPlan
 import space.kscience.controls.automation.WritePropertyActionSpec
 import space.kscience.controls.composite.old.features.*
@@ -34,7 +35,9 @@ import space.kscience.controls.connectivity.TransformedPropertyBinding
 import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.core.faults.SerializableDeviceFailure
 import space.kscience.controls.core.faults.ValidationFault
+import space.kscience.controls.telemetry.DataSourceFeature
 import space.kscience.controls.core.features.Feature
+import space.kscience.controls.core.features.ReconfigurableFeature
 import space.kscience.controls.core.identifiers.toBlueprintId
 import space.kscience.controls.core.messages.DescriptionMessage
 import space.kscience.controls.core.messages.DeviceErrorMessage
@@ -164,7 +167,6 @@ class SerializationTest {
         val features = listOf(
             LifecycleFeature(),
             ReconfigurableFeature(),
-            StatefulFeature(),
             DataSourceFeature("kotlin.String"),
             TaskExecutorFeature(listOf("myTask")),
             OperationalFsmFeature(setOf("IDLE"), setOf("start")),

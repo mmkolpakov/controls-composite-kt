@@ -4,15 +4,11 @@ import space.kscience.controls.composite.dsl.DeviceSpecification
 import space.kscience.controls.composite.dsl.StatePropertyDelegate
 import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.composite.old.contracts.runtime.CompositeDeviceContext
-import space.kscience.controls.composite.old.contracts.runtime.StatefulDelegateElement
-import space.kscience.controls.composite.old.contracts.runtime.VirtualMutableDeviceState
-import space.kscience.controls.composite.old.contracts.runtime.onChange
-import space.kscience.controls.composite.old.features.StatefulFeature
 import space.kscience.controls.core.meta.MutableDevicePropertySpec
 import space.kscience.controls.core.descriptors.PropertyKind
-import space.kscience.controls.composite.old.state.MutableDeviceState
-import space.kscience.controls.composite.old.state.StatefulDevice
-import space.kscience.controls.composite.old.state.value
+import space.kscience.controls.core.state.MutableDeviceState
+import space.kscience.controls.core.state.StatefulDevice
+import space.kscience.controls.core.state.value
 import space.kscience.dataforge.meta.MetaConverter
 import space.kscience.dataforge.names.parseAsName
 import kotlin.properties.PropertyDelegateProvider
@@ -48,8 +44,8 @@ public inline fun <reified T, D> DeviceSpecification<D>.stateProperty(
     noinline descriptorBuilder: PropertyDescriptorBuilder.() -> Unit = {},
 ): StatePropertyDelegate<D, T> where D : Device, D : CompositeDeviceContext, D : StatefulDevice {
     return PropertyDelegateProvider { thisRef, property ->
-
-        thisRef.registerFeature(StatefulFeature())
+//        TODO("StatefulFeature moved to persist module")
+//        thisRef.registerFeature(StatefulFeature())
 
         lateinit var spec: MutableDevicePropertySpec<D, T>
 
@@ -79,19 +75,20 @@ public inline fun <reified T, D> DeviceSpecification<D>.stateProperty(
         // This is the delegate that will be used at runtime inside the device instance.
         val runtimeDelegateProvider = PropertyDelegateProvider<Any?, ReadOnlyProperty<D, MutableDeviceState<T>>> { _, runtimeProp ->
             ReadOnlyProperty { thisRefRuntime, _ ->
-                thisRefRuntime.statefulLogic.getOrPutState(runtimeProp.name) {
-                    val newState = VirtualMutableDeviceState(initialValue)
-                    // Automatically mark the device as dirty when the state changes.
-                    newState.onChange(thisRefRuntime) { _, _ ->
-                        thisRefRuntime.markDirty()
-                    }
-                    // Register the stateful element for snapshotting.
-                    thisRefRuntime.registerElement(
-                        StatefulDelegateElement(runtimeProp.name, newState, converter)
-                    )
-
-                    newState
-                }
+//                thisRefRuntime.statefulLogic.getOrPutState(runtimeProp.name) {
+//                    val newState = VirtualMutableDeviceState(initialValue)
+//                    // Automatically mark the device as dirty when the state changes.
+//                    newState.onChange(thisRefRuntime) { _, _ ->
+//                        thisRefRuntime.markDirty()
+//                    }
+//                    // Register the stateful element for snapshotting.
+//                    thisRefRuntime.registerElement(
+//                        StatefulDelegateElement(runtimeProp.name, newState, converter)
+//                    )
+//
+//                    newState
+//                }
+                TODO("StatefulDevice simplified now")
             }
         }
 

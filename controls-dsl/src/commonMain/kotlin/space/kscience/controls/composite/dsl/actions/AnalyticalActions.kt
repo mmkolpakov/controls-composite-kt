@@ -7,7 +7,7 @@ import space.kscience.controls.composite.dsl.properties.ActionDescriptorBuilder
 import space.kscience.controls.composite.old.analytics.ActionFrequencyTaskSpec
 import space.kscience.controls.composite.old.analytics.AveragePropertyValueTaskSpec
 import space.kscience.controls.core.contracts.Device
-import space.kscience.controls.composite.old.contracts.TaskExecutorDevice
+import space.kscience.controls.automation.TaskExecutorDevice
 import space.kscience.controls.core.meta.DeviceActionSpec
 import space.kscience.dataforge.misc.DFExperimental
 import space.kscience.dataforge.names.Name

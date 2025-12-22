@@ -4,7 +4,7 @@ import space.kscience.controls.composite.dsl.DeviceSpecification
 import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.composite.old.state.LateBindableDeviceState
 import space.kscience.controls.core.data.okState
-import space.kscience.controls.composite.old.state.value
+import space.kscience.controls.core.state.value
 import space.kscience.dataforge.meta.MetaConverter
 import space.kscience.dataforge.names.asName
 import kotlin.properties.PropertyDelegateProvider

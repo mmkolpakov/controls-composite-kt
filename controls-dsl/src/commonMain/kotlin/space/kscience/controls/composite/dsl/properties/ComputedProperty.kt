@@ -6,7 +6,7 @@ import space.kscience.controls.core.meta.DevicePropertySpec
 import space.kscience.controls.core.descriptors.PropertyDescriptor
 import space.kscience.controls.composite.old.contracts.runtime.CompositeDeviceContext
 import space.kscience.controls.core.descriptors.PropertyKind
-import space.kscience.controls.composite.old.state.DeviceState
+import space.kscience.controls.core.state.DeviceState
 import space.kscience.dataforge.meta.MetaConverter
 import space.kscience.dataforge.names.Name
 import space.kscience.dataforge.names.asName

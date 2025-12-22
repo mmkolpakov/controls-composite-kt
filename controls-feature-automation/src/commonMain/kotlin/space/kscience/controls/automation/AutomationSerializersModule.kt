@@ -13,6 +13,7 @@ public val automationSerializersModule: SerializersModule = SerializersModule {
 
     polymorphic(Feature::class) {
         subclass(PlanExecutorFeature::class)
+        subclass(TaskExecutorFeature::class)
     }
 
     polymorphic(ActionSpec::class) {

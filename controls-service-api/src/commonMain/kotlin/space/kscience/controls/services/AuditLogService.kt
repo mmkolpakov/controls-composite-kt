@@ -1,4 +1,4 @@
-package space.kscience.controls.composite.old.services
+package space.kscience.controls.services
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable

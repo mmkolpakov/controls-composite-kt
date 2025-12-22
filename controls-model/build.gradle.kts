@@ -28,6 +28,7 @@ kscience {
         api(projects.controlsFeatureFsm)
         api(projects.controlsFeatureConnectivity)
         api(projects.controlsFeatureTelemetry)
+        api(projects.controlsServiceApi)
         api(libs.dataforge.context)
         api(libs.dataforge.io)
         api(libs.dataforge.data)

@@ -4,8 +4,8 @@ import space.kscience.controls.composite.old.CompositeContext
 import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.core.meta.DevicePropertySpec
 import space.kscience.controls.core.meta.MutableDevicePropertySpec
-import space.kscience.controls.composite.old.state.DeviceState
-import space.kscience.controls.composite.old.state.MutableDeviceState
+import space.kscience.controls.core.state.DeviceState
+import space.kscience.controls.core.state.MutableDeviceState
 import space.kscience.dataforge.names.Name
 import kotlin.time.Clock
 

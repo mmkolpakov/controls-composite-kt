@@ -1,4 +1,4 @@
-package space.kscience.controls.composite.old.services
+package space.kscience.controls.services
 
 import space.kscience.controls.core.faults.DeviceSecurityException
 import space.kscience.controls.core.context.Principal

@@ -6,10 +6,12 @@ import kotlinx.coroutines.flow.*
 import space.kscience.controls.core.data.Quality
 import space.kscience.controls.core.data.StateValue
 import space.kscience.controls.core.data.okState
+import space.kscience.controls.core.state.DeviceState
+import space.kscience.controls.core.state.MutableDeviceState
 import kotlin.concurrent.Volatile
 
 /**
- * A [MutableDeviceState] that can be bound to another [DeviceState] at a later time.
+ * A [space.kscience.controls.core.state.MutableDeviceState] that can be bound to another [space.kscience.controls.core.state.DeviceState] at a later time.
  * Before binding, it holds an initial value. After binding, it acts as a proxy to the source state.
  * This is useful for resolving circular dependencies in complex device graphs, especially in simulations.
  *

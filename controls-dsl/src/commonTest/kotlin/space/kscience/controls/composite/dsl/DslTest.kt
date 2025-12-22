@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.Serializable
 import space.kscience.controls.automation.PlanExecutorDevice
+import space.kscience.controls.automation.TaskExecutorDevice
 import space.kscience.controls.automation.TransactionPlan
 import space.kscience.controls.composite.dsl.actions.metaAction
 import space.kscience.controls.composite.dsl.actions.plan
@@ -19,8 +20,8 @@ import space.kscience.controls.composite.old.contracts.runtime.ConstructorElemen
 import space.kscience.controls.core.lifecycle.DeviceLifecycleState
 import space.kscience.controls.core.messages.DeviceMessage
 import space.kscience.controls.core.meta.DevicePropertySpec
-import space.kscience.controls.composite.old.state.MutableDeviceState
-import space.kscience.controls.composite.old.state.StatefulDevice
+import space.kscience.controls.core.state.MutableDeviceState
+import space.kscience.controls.core.state.StatefulDevice
 import space.kscience.controls.composite.old.state.StatefulDeviceLogic
 import space.kscience.controls.connectivity.FailoverStrategy
 import space.kscience.controls.connectivity.PeerConnection
@@ -33,6 +34,7 @@ import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.core.descriptors.ActionDescriptor
 import space.kscience.controls.core.descriptors.PropertyDescriptor
 import space.kscience.controls.core.meta.MutableDevicePropertySpec
+import space.kscience.controls.core.state.StateSnapshot
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.Global
 import space.kscience.dataforge.meta.*
@@ -67,12 +69,11 @@ internal open class TestDeviceImpl(
     override suspend fun writeProperty(propertyName: Name, value: Meta, context: ExecutionContext) {}
     override suspend fun execute(actionName: Name, argument: Meta?, context: ExecutionContext): Meta? = null
 
-    override val statefulLogic = StatefulDeviceLogic()
     override val constructorElements = emptySet<ConstructorElement>()
     override fun registerElement(constructorElement: ConstructorElement) {}
     override fun unregisterElement(constructorElement: ConstructorElement) {}
     override suspend fun snapshot() = error("Not for test")
-    override suspend fun restore(snapshot: space.kscience.controls.composite.old.state.StateSnapshot) = error("Not for test")
+    override suspend fun restore(snapshot: StateSnapshot) = error("Not for test")
     override fun <T> getState(spec: DevicePropertySpec<*, T>) = error("Not for test")
     override fun <T> getMutableState(spec: MutableDevicePropertySpec<*, T>): MutableDeviceState<T> =
         error("Not for test")

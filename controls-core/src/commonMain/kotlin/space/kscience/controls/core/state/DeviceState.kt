@@ -1,4 +1,4 @@
-package space.kscience.controls.composite.old.state
+package space.kscience.controls.core.state
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
@@ -118,7 +118,7 @@ public fun <T1, T2, R> DeviceState<T1>.combine(
 ): DeviceStateWithDependencies<R> = object : DeviceStateWithDependencies<R> {
     override val dependencies: Collection<DeviceState<*>> = listOf(this@combine, other)
     override val stateValue: StateValue<R?> get() = StateValue.combine(this@combine.stateValue, other.stateValue, mapper)
-    override val stateFlow: Flow<StateValue<R?>> = kotlinx.coroutines.flow.combine(
+    override val stateFlow: Flow<StateValue<R?>> = combine(
         this@combine.stateFlow,
         other.stateFlow
     ) { s1, s2 ->

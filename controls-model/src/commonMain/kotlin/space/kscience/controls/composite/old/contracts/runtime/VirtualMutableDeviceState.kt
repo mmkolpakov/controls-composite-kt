@@ -2,11 +2,11 @@ package space.kscience.controls.composite.old.contracts.runtime
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import space.kscience.controls.composite.old.state.MutableDeviceState
+import space.kscience.controls.core.state.MutableDeviceState
 import space.kscience.controls.core.data.Quality
 import space.kscience.controls.core.data.StateValue
 import space.kscience.controls.core.data.okState
-import space.kscience.controls.composite.old.state.value
+import space.kscience.controls.core.state.value
 
 /**
  * A [MutableDeviceState] that does not correspond to a physical state,

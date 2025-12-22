@@ -1,7 +1,7 @@
 package space.kscience.controls.composite.dsl
 
 import space.kscience.controls.core.meta.DeviceActionSpec
-import space.kscience.controls.composite.old.state.MutableDeviceState
+import space.kscience.controls.core.state.MutableDeviceState
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
 

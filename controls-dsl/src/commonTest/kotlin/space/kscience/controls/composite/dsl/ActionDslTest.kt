@@ -8,9 +8,9 @@ import space.kscience.controls.composite.dsl.actions.unitAction
 import space.kscience.controls.core.addressing.Address
 import space.kscience.controls.core.contracts.Device
 import space.kscience.controls.automation.PlanExecutorDevice
-import space.kscience.controls.composite.old.contracts.TaskExecutorDevice
+import space.kscience.controls.automation.TaskExecutorDevice
 import space.kscience.controls.automation.PlanExecutorFeature
-import space.kscience.controls.composite.old.features.TaskExecutorFeature
+import space.kscience.controls.automation.TaskExecutorFeature
 import space.kscience.controls.composite.old.meta.UnitMetaConverter
 import space.kscience.dataforge.context.Global
 import space.kscience.dataforge.meta.MetaConverter

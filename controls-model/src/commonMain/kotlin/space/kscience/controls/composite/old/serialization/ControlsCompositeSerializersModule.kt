@@ -84,10 +84,6 @@ public val ControlsCompositeSerializersModule: SerializersModule = SerializersMo
     }
 
     polymorphic(Feature::class) {
-        subclass(ReconfigurableFeature::class)
-        subclass(StatefulFeature::class)
-        subclass(DataSourceFeature::class)
-        subclass(TaskExecutorFeature::class)
         subclass(BinaryDataFeature::class)
         subclass(IntrospectionFeature::class)
         subclass(RemoteMirrorFeature::class)

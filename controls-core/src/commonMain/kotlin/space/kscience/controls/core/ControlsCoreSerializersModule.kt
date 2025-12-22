@@ -9,6 +9,8 @@ import space.kscience.controls.core.composition.RemoteChildComponentConfig
 import space.kscience.controls.core.descriptors.*
 import space.kscience.controls.core.events.*
 import space.kscience.controls.core.faults.*
+import space.kscience.controls.core.features.Feature
+import space.kscience.controls.core.features.ReconfigurableFeature
 import space.kscience.controls.core.messages.ActionFaultMessage
 import space.kscience.controls.core.messages.DescriptionMessage
 import space.kscience.controls.core.messages.DeviceErrorMessage
@@ -79,5 +81,9 @@ public val controlsCoreSerializersModule: SerializersModule = SerializersModule 
         subclass(PropertyDescriptor::class)
         subclass(ActionDescriptor::class)
         subclass(StreamDescriptor::class)
+    }
+
+    polymorphic(Feature::class) {
+        subclass(ReconfigurableFeature::class)
     }
 }

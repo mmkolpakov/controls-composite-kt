@@ -1,7 +1,7 @@
 package space.kscience.controls.composite.persistence.log
 
 import app.cash.sqldelight.db.SqlDriver
-import space.kscience.controls.composite.old.services.AuditLogService
+import space.kscience.controls.services.AuditLogService
 import space.kscience.dataforge.context.AbstractPlugin
 import space.kscience.dataforge.context.Context
 import space.kscience.dataforge.context.PluginFactory
@@ -41,7 +41,7 @@ public class SqlDelightAuditLogPlugin(meta: Meta) : AbstractPlugin(meta) {
     }
 
     /**
-     * Provides the [AuditLogService] instance to the DataForge provider mechanism.
+     * Provides the [space.kscience.controls.services.AuditLogService] instance to the DataForge provider mechanism.
      */
     override fun content(target: String): Map<Name, Any> = when (target) {
         AuditLogService::class.simpleName!! -> mapOf(tag.name.asName() to service)

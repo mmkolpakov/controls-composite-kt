@@ -1,4 +1,4 @@
-package space.kscience.controls.composite.old.services
+package space.kscience.controls.services
 
 import space.kscience.controls.core.context.Principal
 import space.kscience.dataforge.context.*
