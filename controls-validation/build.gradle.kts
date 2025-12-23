@@ -3,7 +3,7 @@ plugins {
     `maven-publish`
 }
 
-description = "High-performance telemetry (data plane) features"
+description = "Static validation logic for Device Blueprints"
 
 kscience {
     jvm()
@@ -12,10 +12,11 @@ kscience {
     wasmJs()
 
     useCoroutines()
-    useSerialization()
 
     commonMain {
         api(projects.controlsCore)
-        api(libs.dataforge.meta)
+        api(projects.controlsServiceApi)
+        api(projects.controlsFeatureConnectivity)
+        api(projects.controlsFeatureFsm)
     }
 }

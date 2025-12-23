@@ -15,8 +15,8 @@ kscience {
     useSerialization()
 
     commonMain {
-        api(project(":controls-core"))
-        api(project(":controls-feature-fsm"))
+        api(projects.controlsCore)
+        api(projects.controlsFeatureFsm)
         api(libs.dataforge.meta)
         api(libs.dataforge.context)
         api(libs.dataforge.io)

@@ -3,7 +3,7 @@ plugins {
     `maven-publish`
 }
 
-description = "High-performance telemetry (data plane) features"
+description = "Integration with DataForge DataTree"
 
 kscience {
     jvm()
@@ -12,10 +12,9 @@ kscience {
     wasmJs()
 
     useCoroutines()
-    useSerialization()
 
     commonMain {
         api(projects.controlsCore)
-        api(libs.dataforge.meta)
+        api(libs.dataforge.data)
     }
 }

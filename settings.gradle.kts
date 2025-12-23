@@ -70,6 +70,7 @@ include(
     ":controls-feature-alarms",
     ":controls-feature-telemetry",
     ":controls-feature-connectivity",
+    ":controls-state",
 
     // Infrastructure
     ":controls-metrics",
@@ -92,6 +93,7 @@ include(
     ":controls-dsl",
     ":controls-simulation",
     ":controls-runtime",
+    ":controls-data",
 
     // DEPRECATED
     ":controls-model"
